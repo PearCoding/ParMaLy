@@ -1,0 +1,6 @@
+%token IDENTIFIER;
+
+S: 	A '+' A
+	;
+	
+A:	IDENTIFIER;
