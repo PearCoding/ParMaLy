@@ -2,4 +2,6 @@ language: csharp
 solution: ParMaLy.sln
 script:
   - xbuild /p:Configuration=Release ParMaLy.sln
+  - cd ./packages/ && ls
+  - cd ./NUnit.ConsoleRunners.3.2.0/tools && ls
   - mono ./packages/NUnit.ConsoleRunners.3.2.0/tools/nunit3-console.exe ./Tests/bin/Release/Tests.dll
