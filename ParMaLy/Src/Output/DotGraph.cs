@@ -28,43 +28,30 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
-using System;
 using System.IO;
 
-namespace PML
+namespace PML.Output
 {
-    class Program
+    class DotGraph
     {
-        static void Main(string[] args)
+        public static void PrintGroupGraph(TextWriter writer, Environment env)
         {
-            if(args.Length != 1)
-            {
-                Console.Error.Write("Not enough arguments given.");
-                return;
-            }
+            Graph.GroupGraph grpGraph = new Graph.GroupGraph();
+            grpGraph.Generate(env);
 
-            string file = args[0];
+            writer.WriteLine("digraph G {");
+            if (env.Start != null)
+                writer.WriteLine("\t" + env.Start.Name + " [style=filled,fillcolor=\"#666666\",fontcolor=white]");
 
-            Environment env = new Environment(new Logger());
-            try
+            foreach (var node in grpGraph.Nodes)
             {
-                string source = File.ReadAllText(file);
-                env.Parse(source);
-
+                foreach (var con in node.Connections)
+                {
+                    writer.WriteLine("\t" + node.Group.Name + " -> " + con.Group.Name);
+                }
             }
-            catch(Error err)
-            {
-                Console.Error.Write(err.Type.ToString());
-                return;
-            }
-            catch(FileNotFoundException ex)
-            {
-                Console.Error.Write(ex.Message);
-                return;
-            }
-            
-            Output.SimpleBreakdown.Print(File.CreateText("out.txt"), env);
-            Output.DotGraph.PrintGroupGraph(File.CreateText("group.gv"), env);
+            writer.WriteLine("}");
+            writer.Flush();
         }
     }
 }
