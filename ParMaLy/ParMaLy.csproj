@@ -48,6 +48,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Src\RuleToken.cs" />
+    <Compile Include="Src\Rule.cs" />
+    <Compile Include="Src\Environment.cs" />
     <Compile Include="Src\Error.cs" />
     <Compile Include="Src\Logger.cs" />
     <Compile Include="Src\Parser\Lexer.cs" />

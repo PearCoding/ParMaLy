@@ -46,7 +46,7 @@ namespace PML.Parser
 
     internal class RuleStatement : Statement
     {
-        public List<Rule> Rules = new List<Rule>();
+        public List<RuleDef> Rules = new List<RuleDef>();
 
         public RuleStatement()
         {
@@ -65,23 +65,23 @@ namespace PML.Parser
         }
     }
     
-    internal class Rule
+    internal class RuleDef
     {
         public string Name;
-        public List<RuleToken> Tokens = new List<RuleToken>();
+        public List<RuleDefToken> Tokens = new List<RuleDefToken>();
 
-        public Rule(string name)
+        public RuleDef(string name)
         {
             Name = name;
         }
     }
 
-    internal class RuleToken
+    internal class RuleDefToken
     {
         public string Name;
         public bool WasString;
 
-        public RuleToken(string name, bool wasstring)
+        public RuleDefToken(string name, bool wasstring)
         {
             Name = name;
             WasString = wasstring;

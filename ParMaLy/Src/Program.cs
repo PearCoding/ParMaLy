@@ -14,21 +14,46 @@ namespace PML
             }
 
             string file = args[0];
-            string source = File.ReadAllText(file);
 
-            var parser = new Parser.Parser(source, new Logger());
-
-            Parser.SyntaxTree tree;
+            Environment env = new Environment(new Logger());
             try
             {
-                tree = parser.Parse();
-                return;
+                string source = File.ReadAllText(file);
+                env.Parse(source);
+
             }
             catch(Error err)
             {
                 Console.Error.Write(err.Type.ToString());
                 return;
             }
+            catch(FileNotFoundException ex)
+            {
+                Console.Error.Write(ex.Message);
+                return;
+            }
+
+            Console.WriteLine("Tokens:");
+            foreach(string str in env.Tokens)
+            {
+                Console.Write("'" + str + "', ");
+            }
+            Console.WriteLine();
+
+            Console.WriteLine("Rules:");
+            foreach(Rule r in env.Rules)
+            {
+                Console.Write("[" + r.ID + "] " + r.Name + ": ");
+                foreach(RuleToken t in r.Tokens)
+                {
+                    if(t.Type == RuleTokenType.Rule)
+                        Console.Write("<" + t.String + "> ");
+                    else
+                        Console.Write(t.String + " ");
+                }
+                Console.WriteLine();
+            }
+            return;
         }
     }
 }

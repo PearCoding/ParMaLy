@@ -93,7 +93,7 @@ namespace PML.Parser
             RuleStatement stmt = new RuleStatement();
             while (true)
             {
-                Rule rule = new Rule(name.Value);
+                RuleDef rule = new RuleDef(name.Value);
                 rule.Tokens = gr_rule_list();
                 stmt.Rules.Add(rule);
                 if (!IsEOF() && !Lookahead(TokenType.Semicolon))
@@ -108,25 +108,25 @@ namespace PML.Parser
             return stmt;
         }
         
-        List<RuleToken> gr_rule_list()
+        List<RuleDefToken> gr_rule_list()
         {
-            List<RuleToken> rules = new List<RuleToken>();
+            List<RuleDefToken> rules = new List<RuleDefToken>();
 
             while(!Lookahead(TokenType.Bar) && !Lookahead(TokenType.Semicolon))
             {
-                RuleToken t = gr_rule_part();
+                RuleDefToken t = gr_rule_part();
                 rules.Add(t);
             }
 
             return rules;
         }
 
-        RuleToken gr_rule_part()
+        RuleDefToken gr_rule_part()
         {
             if (Lookahead(TokenType.String))
-                return new RuleToken(Match(TokenType.String).Value, true);
+                return new RuleDefToken(Match(TokenType.String).Value, true);
             else
-                return new RuleToken(Match(TokenType.Identifier).Value, false);
+                return new RuleDefToken(Match(TokenType.Identifier).Value, false);
         }
 
         // Utils
