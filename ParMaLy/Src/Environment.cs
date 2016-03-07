@@ -78,6 +78,7 @@ namespace PML
                         if (!IsRuleUnique(rule))
                             _Logger.Log(LogLevel.Warning, "Exact same rule '" + grp.Name + "' already defined.");
 
+                        grp.Rules.Add(rule);
                         _Rules.Add(rule);
                     }
                 }

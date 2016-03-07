@@ -31,62 +31,64 @@ namespace PML
             }
 
             // Second rule (3)
-            Rule3(env, env.Rules, new Stack<RuleGroup>());
+            var stack = new Stack<KeyValuePair<Rule, Rule>>();
+            foreach (Rule r in env.Rules)
+            {
+                Rule3(env, r, stack);
+            }
         }
 
-        static void Rule3(Environment env, List<Rule> rules, Stack<RuleGroup> stack)
+        static void Rule3(Environment env, Rule rule, Stack<KeyValuePair<Rule, Rule>> stack)
         {
-            foreach (Rule r in rules)
+            if (rule.Group.FirstSet == null)
+                rule.Group.FirstSet = new List<string>();
+
+            bool empty = true;
+            foreach (RuleToken t in rule.Tokens)
             {
-                    if (r.Group.FirstSet == null)
-                        r.Group.FirstSet = new List<string>();
-
-                    bool empty = true;
-                foreach (RuleToken t in r.Tokens)
+                if (t.Type == RuleTokenType.Token)
                 {
-                    if (t.Type == RuleTokenType.Token)
-                    {
-                        if (!r.Group.FirstSet.Contains(t.String))
-                            r.Group.FirstSet.Add(t.String);
+                    if (!rule.Group.FirstSet.Contains(t.String))
+                        rule.Group.FirstSet.Add(t.String);
 
+                    empty = false;
+                    break;
+                }
+                else
+                {
+                    RuleGroup grp = env.GroupByName(t.String);
+
+                    foreach (Rule r in grp.Rules)
+                    {
+                        var pair = new KeyValuePair<Rule, Rule>(rule, r);
+
+                        if (stack.Contains(pair))
+                            continue;
+                        else
+                        {
+                            stack.Push(pair);
+                            Rule3(env, r, stack);
+                        }
+                    }
+                    
+                    foreach (string s in grp.FirstSet)
+                    {
+                        if (s != null && !rule.Group.FirstSet.Contains(s))
+                            rule.Group.FirstSet.Add(s);
+                    }
+
+                    if (!grp.FirstSet.Contains(null))
+                    {
                         empty = false;
                         break;
                     }
-                    else
-                    {
-                        RuleGroup grp = env.GroupByName(t.String);
-
-                        if(!stack.Contains(grp))
-                            Rule3(env, grp.Rules, stack);
-
-                        bool somethingNew = false;
-                        foreach (string s in grp.FirstSet)
-                        {
-                            if (s != null && !r.Group.FirstSet.Contains(s))
-                            {
-                                r.Group.FirstSet.Add(s);
-                                somethingNew = true;
-                            }
-                        }
-
-                        if (!somethingNew)
-                        {
-                            stack.Push(grp);
-                        }
-
-                        if (!grp.FirstSet.Contains(null))
-                        {
-                            empty = false;
-                            break;
-                        }
-                    }
                 }
+            }
 
-                if (empty)
-                {
-                    if (!r.Group.FirstSet.Contains(null))
-                        r.Group.FirstSet.Add(null);
-                }
+            if (empty)
+            {
+                if (!rule.Group.FirstSet.Contains(null))
+                    rule.Group.FirstSet.Add(null);
             }
         }
 
@@ -97,89 +99,44 @@ namespace PML
 
         public static List<string> Generate(Environment env, List<RuleToken> tokens)
         {
-            return Generate(env, tokens,
-                new Dictionary<RuleToken, List<string>>(),
-                new Stack<string>());
-        }
+            List<string> list = new List<string>();
 
-        public static List<string> Generate(Environment env, RuleToken token)
-        {
-            return Generate(env, token,
-                new Dictionary<RuleToken, List<string>>(),
-                new Stack<string>());
-        }
-
-        static List<string> Generate(Environment env, List<RuleToken> tokens,
-            Dictionary<RuleToken, List<string>> parsed, Stack<string> parents)
-        {
-            List<string> output = new List<string>();
             bool empty = true;
-
-            foreach(RuleToken token in tokens)
+            foreach (RuleToken t in tokens)
             {
-                if (parents.Contains(token.String))
-                    continue;
-
-                var other = Generate(env, token, parsed, parents);
-
-                foreach (string str in other)
+                if (t.Type == RuleTokenType.Token)
                 {
-                    if (str != null && !output.Contains(str))
-                        output.Add(str);
-                    else if (str == null)
-                        empty = false;
-                }
+                    if (!list.Contains(t.String))
+                        list.Add(t.String);
 
-                if (!empty)
-                {
+                    empty = false;
                     break;
+                }
+                else
+                {
+                    RuleGroup grp = env.GroupByName(t.String);
+
+                    foreach (string s in grp.FirstSet)
+                    {
+                        if (s != null && !list.Contains(s))
+                            list.Add(s);
+                    }
+
+                    if (!grp.FirstSet.Contains(null))
+                    {
+                        empty = false;
+                        break;
+                    }
                 }
             }
 
             if (empty)
-                output.Add(null);
-
-            return output;
-        }
-
-        static List<string> Generate(Environment env, RuleToken token,
-            Dictionary<RuleToken, List<string>> parsed, Stack<string> parents)
-        {
-            if (parsed.ContainsKey(token))
-                return parsed[token];
-
-            parents.Push(token.String);
-
-            List<string> output = new List<string>();
-            if (token.Type == RuleTokenType.Token)
             {
-                output.Add(token.String);
-            }
-            else
-            {
-                foreach(Rule r in env.GroupByName(token.String).Rules)
-                {
-                    if(r.IsEmpty)
-                    {
-                        if (!output.Contains(null))
-                            output.Add(null);
-                    }
-                    else
-                    {
-                        var other = Generate(env, r.Tokens, parsed, parents);
-
-                        foreach(string str in other)
-                        {
-                            if (!output.Contains(str))
-                                output.Add(str);
-                        }
-                    }
-                }
+                if (!list.Contains(null))
+                    list.Add(null);
             }
 
-            parsed[token] = output;
-            parents.Pop();
-            return output;
+            return list;
         }
     }
 }
