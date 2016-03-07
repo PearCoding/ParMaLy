@@ -1,2 +1,8 @@
 language: csharp
 solution: ParMaLy.sln
+install:
+  - nuget restore ParMaLy.sln
+  - nuget install NUnit.Runners -OutputDirectory testrunner
+script:
+  - xbuild /p:Configuration=Release ParMaLy.sln
+  - mono ./testrunner/NUnit.Runners.*/tools/nunit-console.exe ./Tests/bin/Release/Tests.dll
