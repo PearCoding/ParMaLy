@@ -1,0 +1,20 @@
+%token ID;
+%start A;
+
+A:	S B
+	;
+	
+B:	'+' S B
+	| /*EMPTY*/
+	;
+	
+S:	F T
+	;
+	
+T:	'*' F T
+	| /*EMPTY*/
+	;
+	
+F:	'(' A ')'
+	| ID
+	;

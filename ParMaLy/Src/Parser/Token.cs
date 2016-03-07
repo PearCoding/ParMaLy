@@ -35,6 +35,7 @@ namespace PML.Parser
         Identifier,
         String,
         Token,
+        Start,
         Colon,
         Semicolon,
         Bar,

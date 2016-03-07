@@ -49,6 +49,11 @@ namespace PML.Parser
             return gr_tr_unit();
         }
 
+        public List<RuleDefToken> ParseLine()
+        {
+            return gr_rule_list_line();
+        }
+
         // Internal
         SyntaxTree gr_tr_unit()
         {
@@ -72,6 +77,8 @@ namespace PML.Parser
         {
             if (Lookahead(TokenType.Token))
                 return gr_token_stmt();
+            else if (Lookahead(TokenType.Start))
+                return gr_start_stmt();
             else
                 return gr_rule_stmt();
         }
@@ -83,6 +90,15 @@ namespace PML.Parser
             Match(TokenType.Semicolon);
 
             return new TokenDefStatement(token.Value);
+        }
+
+        Statement gr_start_stmt()
+        {
+            Match(TokenType.Start);
+            Token token = Match(TokenType.Identifier);
+            Match(TokenType.Semicolon);
+
+            return new StartDefStatement(token.Value);
         }
 
         Statement gr_rule_stmt()
@@ -112,7 +128,20 @@ namespace PML.Parser
         {
             List<RuleDefToken> rules = new List<RuleDefToken>();
 
-            while(!Lookahead(TokenType.Bar) && !Lookahead(TokenType.Semicolon))
+            while(!Lookahead(TokenType.Bar) && !Lookahead(TokenType.Semicolon) && !IsEOF())
+            {
+                RuleDefToken t = gr_rule_part();
+                rules.Add(t);
+            }
+
+            return rules;
+        }
+
+        List<RuleDefToken> gr_rule_list_line()
+        {
+            List<RuleDefToken> rules = new List<RuleDefToken>();
+
+            while (!IsEOF())
             {
                 RuleDefToken t = gr_rule_part();
                 rules.Add(t);

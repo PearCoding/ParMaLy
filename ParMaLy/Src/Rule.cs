@@ -11,15 +11,23 @@ namespace PML
         int _ID;
         public int ID { get { return _ID; } }
 
-        string _Name;
-        public string Name { get { return _Name; } }
+        RuleGroup _Group;
+        public RuleGroup Group { get { return _Group; } }
 
         public List<RuleToken> Tokens = new List<RuleToken>();
 
-        public Rule(int id, string name)
+        public Rule(int id, RuleGroup grp)
         {
             _ID = id;
-            _Name = name;
+            _Group = grp;
+        }
+
+        public bool IsEmpty
+        {
+            get
+            {
+                return Tokens.Count == 0;
+            }
         }
     }
 }

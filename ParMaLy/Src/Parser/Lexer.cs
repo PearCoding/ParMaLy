@@ -123,10 +123,11 @@ namespace PML.Parser
                     ++_Column;
                 }
 
-                if(str == "token")
-                {
-                    return new Token(TokenType.Token, str);
-                }
+                if (str == "token")
+                    return new Token(TokenType.Token);
+                else if (str == "start")
+                    return new Token(TokenType.Start);
+
                 return Next();
             }
             else if (CurrentChar == '"' || CurrentChar == '\'')//String

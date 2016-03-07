@@ -36,22 +36,13 @@ namespace PML.Parser
     {
         Rule,
         TokenDef,
+        StartDef,
     }
 
     internal class Statement
     {
         protected StatementType _Type;
         public StatementType Type { get { return _Type; } }
-    }
-
-    internal class RuleStatement : Statement
-    {
-        public List<RuleDef> Rules = new List<RuleDef>();
-
-        public RuleStatement()
-        {
-            _Type = StatementType.Rule;
-        }
     }
 
     internal class TokenDefStatement : Statement
@@ -62,6 +53,27 @@ namespace PML.Parser
         {
             _Type = StatementType.TokenDef;
             Token = token;
+        }
+    }
+
+    internal class StartDefStatement : Statement
+    {
+        public string Token;
+
+        public StartDefStatement(string token)
+        {
+            _Type = StatementType.StartDef;
+            Token = token;
+        }
+    }
+
+    internal class RuleStatement : Statement
+    {
+        public List<RuleDef> Rules = new List<RuleDef>();
+
+        public RuleStatement()
+        {
+            _Type = StatementType.Rule;
         }
     }
     
