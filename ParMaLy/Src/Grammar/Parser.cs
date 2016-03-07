@@ -30,7 +30,7 @@
 
 using System.Collections.Generic;
 
-namespace PML.Parser
+namespace PML.Grammar
 {
     internal class Parser
     {

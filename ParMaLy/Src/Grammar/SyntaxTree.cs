@@ -28,33 +28,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
-namespace PML.Parser
+using System.Collections.Generic;
+
+namespace PML.Grammar
 {
-    internal enum TokenType
+    internal class SyntaxTree
     {
-        Identifier,
-        String,
-        Token,
-        Start,
-        Colon,
-        Semicolon,
-        Bar,
-        EOF
-    }
-
-    internal class Token
-    {
-        public TokenType Type;
-        public string Value;
-
-        public Token(TokenType type)
-        {
-            Type = type;
-        }
-        public Token(TokenType type, string val)
-        {
-            Type = type;
-            Value = val;
-        }
+        public List<Statement> Statements;
     }
 }

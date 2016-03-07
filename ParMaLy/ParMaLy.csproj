@@ -58,17 +58,20 @@
     <Compile Include="Src\Environment.cs" />
     <Compile Include="Src\Error.cs" />
     <Compile Include="Src\Logger.cs" />
-    <Compile Include="Src\Parser\Lexer.cs" />
-    <Compile Include="Src\Parser\Parser.cs" />
-    <Compile Include="Src\Parser\Statements.cs" />
-    <Compile Include="Src\Parser\SyntaxTree.cs" />
-    <Compile Include="Src\Parser\Token.cs" />
+    <Compile Include="Src\Grammar\Lexer.cs" />
+    <Compile Include="Src\Grammar\Parser.cs" />
+    <Compile Include="Src\Grammar\Statements.cs" />
+    <Compile Include="Src\Grammar\SyntaxTree.cs" />
+    <Compile Include="Src\Grammar\Token.cs" />
     <Compile Include="Src\Program.cs" />
     <Compile Include="Src\Sets\FollowSet.cs" />
     <Compile Include="Src\Sets\FirstSet.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Src\Parser\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

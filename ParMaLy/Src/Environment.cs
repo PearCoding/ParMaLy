@@ -53,15 +53,15 @@ namespace PML
 
         public void Parse(string source)
         {
-            Parser.Parser parser = new Parser.Parser(source, _Logger);
+            Grammar.Parser parser = new Grammar.Parser(source, _Logger);
             var tree = parser.Parse();
 
             //First pass tokens
-            foreach (Parser.Statement stmt in tree.Statements)
+            foreach (Grammar.Statement stmt in tree.Statements)
             {
-                if (stmt.Type == Parser.StatementType.TokenDef)
+                if (stmt.Type == Grammar.StatementType.TokenDef)
                 {
-                    Parser.TokenDefStatement tds = stmt as Parser.TokenDefStatement;
+                    Grammar.TokenDefStatement tds = stmt as Grammar.TokenDefStatement;
 
                     if (_Tokens.Contains(tds.Token))
                         _Logger.Log(LogLevel.Warning, "Token '" + tds.Token + "' already defined.");
@@ -71,13 +71,13 @@ namespace PML
             }
 
             //Second pass rules
-            foreach (Parser.Statement stmt in tree.Statements)
+            foreach (Grammar.Statement stmt in tree.Statements)
             {
-                if (stmt.Type == Parser.StatementType.Rule)
+                if (stmt.Type == Grammar.StatementType.Rule)
                 {
-                    Parser.RuleStatement rs = stmt as Parser.RuleStatement;
+                    Grammar.RuleStatement rs = stmt as Grammar.RuleStatement;
 
-                    foreach (Parser.RuleDef def in rs.Rules)
+                    foreach (Grammar.RuleDef def in rs.Rules)
                     {
                         RuleGroup grp = GroupByName(def.Name);
                         if (grp == null)
@@ -88,7 +88,7 @@ namespace PML
 
                         Rule rule = new Rule(_Rules.Count + 1, grp);
 
-                        foreach (Parser.RuleDefToken t in def.Tokens)
+                        foreach (Grammar.RuleDefToken t in def.Tokens)
                         {
                             if (t.WasString)
                             {
@@ -111,11 +111,11 @@ namespace PML
             }
 
             // Third pass start token
-            foreach (Parser.Statement stmt in tree.Statements)
+            foreach (Grammar.Statement stmt in tree.Statements)
             {
-                if (stmt.Type == Parser.StatementType.StartDef)
+                if (stmt.Type == Grammar.StatementType.StartDef)
                 {
-                    Parser.StartDefStatement sds = stmt as Parser.StartDefStatement;
+                    Grammar.StartDefStatement sds = stmt as Grammar.StartDefStatement;
 
                     if (_Start != null)
                         _Logger.Log(LogLevel.Warning, "Start rule '" + _Start.Name + "' already defined.");
@@ -132,11 +132,11 @@ namespace PML
 
         public List<RuleToken> ParseLine(string source)
         {
-            Parser.Parser parser = new Parser.Parser(source, _Logger);
+            Grammar.Parser parser = new Grammar.Parser(source, _Logger);
             var tokens = parser.ParseLine();
 
             List<RuleToken> rt = new List<RuleToken>();
-            foreach (Parser.RuleDefToken t in tokens)
+            foreach (Grammar.RuleDefToken t in tokens)
             {
                 if (t.WasString && !_Tokens.Contains(t.Name))
                 {
