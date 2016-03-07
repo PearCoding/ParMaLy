@@ -30,21 +30,73 @@
 
 using System;
 using System.IO;
+using System.Collections.Generic;
 
 namespace PML
 {
+    using NDesk.Options;
+
+    class Options
+    {
+        public string GroupDotFile;
+        public string BreakdownFile;
+
+        public bool ShowHelp = false;
+    }
+
     class Program
     {
+        static void ShowHelp(OptionSet p)
+        {
+            Console.WriteLine("Usage: ParMaLy grammar_file [OPTIONS]+");
+            Console.WriteLine();
+            Console.WriteLine("Options:");
+            p.WriteOptionDescriptions(Console.Out);
+        }
+
         static void Main(string[] args)
         {
-            if(args.Length != 1)
+            Options opts = new Options();
+
+            OptionSet p = new OptionSet()
             {
-                Console.Error.Write("Not enough arguments given.");
+                { "group-dot=",
+                    "Generate a dot file from the calculated group graph.",
+                    (string s) => opts.GroupDotFile = s },
+                { "breakdown=",
+                    "Generate a general breakdown text file.",
+                    (string s) => opts.BreakdownFile = s },
+                { "h|help",
+                    "Show this message and exit.",
+                    v => opts.ShowHelp = v != null }
+            };
+
+            List<string> input;
+            try
+            {
+                input = p.Parse(args);
+            }
+            catch (OptionException e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine("Try `ParMaLy --help' for more information.");
                 return;
             }
 
-            string file = args[0];
+            if(opts.ShowHelp)
+            {
+                ShowHelp(p);
+                return;
+            }
+            
+            if (input.Count != 1)
+            {
+                Console.WriteLine("No grammar file given.");
+                Console.WriteLine("Try `ParMaLy --help' for more information.");
+                return;
+            }
 
+            string file = input[0];
             Environment env = new Environment(new Logger());
             try
             {
@@ -62,9 +114,12 @@ namespace PML
                 Console.Error.Write(ex.Message);
                 return;
             }
-            
-            Output.SimpleBreakdown.Print(File.CreateText("out.txt"), env);
-            Output.DotGraph.PrintGroupGraph(File.CreateText("group.gv"), env);
+
+            if (!String.IsNullOrEmpty(opts.BreakdownFile))
+                Output.SimpleBreakdown.Print(File.CreateText(opts.BreakdownFile), env);
+
+            if (!String.IsNullOrEmpty(opts.GroupDotFile))
+                Output.DotGraph.PrintGroupGraph(File.CreateText(opts.GroupDotFile), env);
         }
     }
 }
