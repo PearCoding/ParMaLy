@@ -45,7 +45,7 @@ namespace PML
         public RuleTokenType Type { get { return _Type; } }
 
         string _String;
-        public string String { get { return _String; } }
+        public string Name { get { return _String; } }
 
         public RuleToken(Rule parent, RuleTokenType type, string str)
         {

@@ -1,0 +1,13 @@
+%token ID;
+%start A;
+
+A:	B
+	;
+	
+B:	B '+' C
+	| C
+	;
+	
+C:	'(' B ')'
+	| ID
+	;

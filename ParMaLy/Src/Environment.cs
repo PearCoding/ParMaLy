@@ -187,7 +187,7 @@ namespace PML
                         for(int i = 0; i < rule.Tokens.Count; ++i)
                         {
                             if(other.Tokens[i].Type != rule.Tokens[i].Type ||
-                                other.Tokens[i].String != rule.Tokens[i].String)
+                                other.Tokens[i].Name != rule.Tokens[i].Name)
                             {
                                 found = true;
                                 break;

@@ -1,11 +1,11 @@
 <NotepadPlus>
     <UserLang name="Grammar" ext="" udlVersion="2.1">
         <Settings>
-            <Global caseIgnored="no" allowFoldOfComments="no" foldCompact="no" forcePureLC="0" decimalSeparator="0" />
+            <Global caseIgnored="no" allowFoldOfComments="yes" foldCompact="no" forcePureLC="0" decimalSeparator="0" />
             <Prefix Keywords1="no" Keywords2="yes" Keywords3="no" Keywords4="no" Keywords5="no" Keywords6="no" Keywords7="no" Keywords8="no" />
         </Settings>
         <KeywordLists>
-            <Keywords name="Comments">00# 01 02 03/* 04*/</Keywords>
+            <Keywords name="Comments">00# 00// 01 02 03/* 04*/</Keywords>
             <Keywords name="Numbers, prefix1"></Keywords>
             <Keywords name="Numbers, prefix2"></Keywords>
             <Keywords name="Numbers, extras1"></Keywords>
@@ -14,9 +14,9 @@
             <Keywords name="Numbers, suffix2"></Keywords>
             <Keywords name="Numbers, range"></Keywords>
             <Keywords name="Operators1"></Keywords>
-            <Keywords name="Operators2">|</Keywords>
+            <Keywords name="Operators2"></Keywords>
             <Keywords name="Folders in code1, open">:</Keywords>
-            <Keywords name="Folders in code1, middle"></Keywords>
+            <Keywords name="Folders in code1, middle">|</Keywords>
             <Keywords name="Folders in code1, close">;</Keywords>
             <Keywords name="Folders in code2, open"></Keywords>
             <Keywords name="Folders in code2, middle"></Keywords>
@@ -24,7 +24,7 @@
             <Keywords name="Folders in comment, open"></Keywords>
             <Keywords name="Folders in comment, middle"></Keywords>
             <Keywords name="Folders in comment, close"></Keywords>
-            <Keywords name="Keywords1">IDENTIFIER&#x000D;&#x000A;FLOAT&#x000D;&#x000A;INTEGER&#x000D;&#x000A;STRING</Keywords>
+            <Keywords name="Keywords1">IDENTIFIER&#x000D;&#x000A;FLOAT&#x000D;&#x000A;INTEGER&#x000D;&#x000A;STRING&#x000D;&#x000A;TRUE&#x000D;&#x000A;FALSE</Keywords>
             <Keywords name="Keywords2">%</Keywords>
             <Keywords name="Keywords3"></Keywords>
             <Keywords name="Keywords4"></Keywords>

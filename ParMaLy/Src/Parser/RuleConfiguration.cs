@@ -28,50 +28,71 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
-using System.Collections.Generic;
+using System;
 
-namespace PML.Graph
+namespace PML.Parser
 {
-    public class GroupGraph
+    public class RuleConfiguration
     {
-        List<GroupNode> _Nodes = new List<GroupNode>();
-        public List<GroupNode> Nodes { get { return _Nodes; } }
+        Rule _Rule;
+        public Rule Rule { get { return _Rule; } }
 
-        public GroupNode NodeByGroup(RuleGroup grp)
+        int _Pos;
+        public int Pos { get { return _Pos; } }
+
+        public RuleConfiguration(Rule rule, int pos)
         {
-            foreach(GroupNode node in _Nodes)
-            {
-                if (grp == node.Group)
-                    return node;
-            }
-            return null;
+            _Rule = rule;
+            _Pos = pos;
         }
 
-        public void Generate(Environment env)
+        public bool IsFirst { get { return Pos == 0; } }
+
+        public bool IsLast { get { return Rule.Tokens.Count == Pos; } }
+
+        public RuleToken GetNext()
         {
-            _Nodes.Clear();
+            if (Rule.Tokens.Count == Pos)
+                return null;
 
-            foreach (RuleGroup grp in env.Groups)
-            {
-                _Nodes.Add(new GroupNode(grp));
-            }
+            return Rule.Tokens[Pos];
+        }
 
-            foreach (GroupNode node in _Nodes)
-            {
-                foreach(Rule r in node.Group.Rules)
-                {
-                    foreach(RuleToken t in r.Tokens)
-                    {
-                        if(t.Type == RuleTokenType.Rule)
-                        {
-                            GroupNode other = NodeByGroup(env.GroupByName(t.Name));
+        public override bool Equals(Object obj)
+        {
+            if (obj == null)
+                return false;
 
-                            if (!node.Connections.Contains(other))
-                                node.Connections.Add(other);
-                        }
-                    }
-                }
-            }
+            RuleConfiguration p = obj as RuleConfiguration;
+            return Equals(p);
+        }
+
+        public bool Equals(RuleConfiguration p)
+        {
+            if ((object)p == null)
+                return false;
+            
+            return (Rule == p.Rule) && (Pos == p.Pos);
+        }
+        public override int GetHashCode()
+        {
+            return _Rule.GetHashCode() ^ _Pos;
+        }
+
+        public static bool operator == (RuleConfiguration a, RuleConfiguration b)
+        {
+            if (Object.ReferenceEquals(a, b))
+                return true;
+            
+            if ((object)a == null)
+                return false;
+            
+            return a.Equals(b);
+        }
+
+        public static bool operator != (RuleConfiguration a, RuleConfiguration b)
+        {
+            return !(a == b);
         }
     }
 }

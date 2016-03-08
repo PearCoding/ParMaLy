@@ -43,6 +43,11 @@ namespace PML.Output
             if (env.Start != null)
                 writer.WriteLine("\t" + env.Start.Name + " [style=filled,fillcolor=\"#666666\",fontcolor=white]");
 
+            foreach(RuleGroup grp in env.Groups)
+            {
+                if(grp != env.Start)
+                    writer.WriteLine("\t" + grp.Name + " [style=filled,fillcolor=\"#ffe070\"]");
+            }
             foreach (var node in grpGraph.Nodes)
             {
                 foreach (var con in node.Connections)

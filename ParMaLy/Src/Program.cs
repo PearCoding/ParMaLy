@@ -41,6 +41,9 @@ namespace PML
         public string GroupDotFile;
         public string BreakdownFile;
 
+        public string Parser;
+        public string StateFile;
+
         public bool ShowHelp = false;
     }
 
@@ -57,9 +60,15 @@ namespace PML
         static void Main(string[] args)
         {
             Options opts = new Options();
-
+            
             OptionSet p = new OptionSet()
             {
+                { "parser=",
+                    "Choose underlying parser {PARSER}.",
+                    (string s) => opts.Parser = s },
+                { "states=",
+                    "Generate a state file based on the chosen parser.",
+                    (string s) => opts.StateFile = s },
                 { "group-dot=",
                     "Generate a dot file from the calculated group graph.",
                     (string s) => opts.GroupDotFile = s },
@@ -120,6 +129,31 @@ namespace PML
 
             if (!String.IsNullOrEmpty(opts.GroupDotFile))
                 Output.DotGraph.PrintGroupGraph(File.CreateText(opts.GroupDotFile), env);
+
+            if (!String.IsNullOrEmpty(opts.Parser))
+            {
+                int parser = 0;
+                if (opts.Parser.ToLower() == "lr0")
+                    parser = 1;
+                else
+                {
+                    Console.WriteLine("Unknown parser selected.");
+                    Console.WriteLine("Try `ParMaLy --help' for more information.");
+                    return;
+                }
+
+                if (!String.IsNullOrEmpty(opts.StateFile))
+                {
+                    switch(parser)
+                    {
+                        case 1:
+                            Parser.LR0 lr0 = new Parser.LR0();
+                            lr0.GenerateStates(env);
+                            Output.LR0.PrintStates(File.CreateText(opts.StateFile), lr0, env, false);
+                            break;
+                    }
+                }
+            }
         }
     }
 }

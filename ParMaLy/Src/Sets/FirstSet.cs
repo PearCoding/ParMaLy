@@ -51,8 +51,8 @@ namespace PML
                 else if (r.Tokens.Count == 1 && r.Tokens[0].Type == RuleTokenType.Token)
                 {
                     RuleToken t = r.Tokens[0];
-                    if (!r.Group.FirstSet.Contains(t.String))
-                        r.Group.FirstSet.Add(t.String);
+                    if (!r.Group.FirstSet.Contains(t.Name))
+                        r.Group.FirstSet.Add(t.Name);
                 }
             }
 
@@ -74,15 +74,15 @@ namespace PML
             {
                 if (t.Type == RuleTokenType.Token)
                 {
-                    if (!rule.Group.FirstSet.Contains(t.String))
-                        rule.Group.FirstSet.Add(t.String);
+                    if (!rule.Group.FirstSet.Contains(t.Name))
+                        rule.Group.FirstSet.Add(t.Name);
 
                     empty = false;
                     break;
                 }
                 else
                 {
-                    RuleGroup grp = env.GroupByName(t.String);
+                    RuleGroup grp = env.GroupByName(t.Name);
 
                     foreach (Rule r in grp.Rules)
                     {
@@ -132,15 +132,15 @@ namespace PML
             {
                 if (t.Type == RuleTokenType.Token)
                 {
-                    if (!list.Contains(t.String))
-                        list.Add(t.String);
+                    if (!list.Contains(t.Name))
+                        list.Add(t.Name);
 
                     empty = false;
                     break;
                 }
                 else
                 {
-                    RuleGroup grp = env.GroupByName(t.String);
+                    RuleGroup grp = env.GroupByName(t.Name);
 
                     foreach (string s in grp.FirstSet)
                     {

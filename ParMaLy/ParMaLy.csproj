@@ -53,8 +53,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Src\Graph\GroupGraph.cs" />
     <Compile Include="Src\Graph\GroupNode.cs" />
+    <Compile Include="Src\Output\LR0.cs" />
     <Compile Include="Src\Output\DotGraph.cs" />
     <Compile Include="Src\Output\SimpleBreakdown.cs" />
+    <Compile Include="Src\Parser\RuleState.cs" />
+    <Compile Include="Src\Parser\RuleConfiguration.cs" />
+    <Compile Include="Src\Parser\LR0.cs" />
     <Compile Include="Src\RuleGroup.cs" />
     <Compile Include="Src\RuleToken.cs" />
     <Compile Include="Src\Rule.cs" />
@@ -74,9 +78,7 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Src\Parser\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

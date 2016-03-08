@@ -1,0 +1,49 @@
+%token IDENTIFIER;
+%token FLOAT;
+%token INTEGER;
+%token STRING;
+%token TRUE;
+%token FALSE;
+
+%start translation_unit;
+
+translation_unit:	statement
+					| /*EMPTY*/
+					;
+					
+statement:			'(' IDENTIFIER data_list ')'
+					;
+
+data_list:			data data_list
+					| /*EMPTY*/
+					;
+
+data:				key value
+					| value
+					;
+
+key:				':' IDENTIFIER
+					;
+
+value:				statement
+					| INTEGER
+					| FLOAT
+					| STRING
+					| boolean
+					| array
+					| expression
+					;
+					
+boolean:			TRUE
+					| FALSE
+					;
+					
+array:				'[' array_list ']'
+					;
+					
+array_list:			value ',' array_list
+					| value
+					;
+
+expression:			'$(' IDENTIFIER data_list ')'
+					;

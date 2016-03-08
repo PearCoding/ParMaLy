@@ -54,9 +54,9 @@ namespace PML.Output
                     foreach (RuleToken t in r.Tokens)
                     {
                         if (t.Type == RuleTokenType.Rule)
-                            writer.Write("<" + t.String + "> ");
+                            writer.Write("<" + t.Name + "> ");
                         else
-                            writer.Write("'" + t.String + "' ");
+                            writer.Write("'" + t.Name + "' ");
                     }
                 }
                 writer.WriteLine();
