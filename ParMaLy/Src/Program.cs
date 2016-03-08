@@ -42,7 +42,14 @@ namespace PML
         public string BreakdownFile;
 
         public string Parser;
+        public bool Parse = false;
+
         public string StateFile;
+        public string StateDotFile;
+
+        public string ActionHtmlFile;
+        public string GotoHtmlFile;
+        public string TransitionHtmlFile;
 
         public bool ShowHelp = false;
     }
@@ -68,10 +75,22 @@ namespace PML
                     (string s) => opts.Parser = s },
                 { "states=",
                     "Generate a state file based on the chosen parser.",
-                    (string s) => opts.StateFile = s },
+                    (string s) => { opts.StateFile = s; opts.Parse = true; } },
                 { "group-dot=",
                     "Generate a dot file from the calculated group graph.",
                     (string s) => opts.GroupDotFile = s },
+                { "state-dot=",
+                    "Generate a dot file from the calculated state graph.",
+                    (string s) => { opts.StateDotFile = s; opts.Parse = true; } },
+                { "action-html=",
+                    "Generate a html file from the calculated ACTION table.",
+                    (string s) => { opts.ActionHtmlFile = s; opts.Parse = true; } },
+                { "goto-html=",
+                    "Generate a html file from the calculated GOTO table.",
+                    (string s) => { opts.GotoHtmlFile = s; opts.Parse = true; } },
+                { "transition-html=",
+                    "Generate a html file from the calculated ACTION and GOTO table.",
+                    (string s) => { opts.TransitionHtmlFile = s; opts.Parse = true; } },
                 { "breakdown=",
                     "Generate a general breakdown text file.",
                     (string s) => opts.BreakdownFile = s },
@@ -141,16 +160,55 @@ namespace PML
                     Console.WriteLine("Try `ParMaLy --help' for more information.");
                     return;
                 }
-
-                if (!String.IsNullOrEmpty(opts.StateFile))
+                
+                RuleState root = null;
+                List<RuleState> states = null;
+                ActionTable actionTable = null;
+                GotoTable gotoTable = null;
+                if (opts.Parse)
                 {
-                    switch(parser)
+                    switch (parser)
                     {
                         case 1:
                             Parser.LR0 lr0 = new Parser.LR0();
                             lr0.GenerateStates(env);
-                            Output.LR0.PrintStates(File.CreateText(opts.StateFile), lr0, env, false);
+                            lr0.GenerateActionTable(env, new Logger());
+                            lr0.GenerateGotoTable(env, new Logger());
+                            root = lr0.StartState;
+                            states = lr0.States;
+                            actionTable = lr0.ActionTable;
+                            gotoTable = lr0.GotoTable;
                             break;
+                    }
+
+                    if (!String.IsNullOrEmpty(opts.StateFile))
+                    {
+                        Output.StateFile.PrintStates(File.CreateText(opts.StateFile),
+                                    states, env, false);
+                    }
+
+                    if (!String.IsNullOrEmpty(opts.StateDotFile))
+                    {
+                        Output.DotGraph.PrintStateGraph(File.CreateText(opts.StateDotFile),
+                            env, root, Output.DotGraph.DetailLabelStyle.Auto, true);
+                    }
+
+                    if (!String.IsNullOrEmpty(opts.ActionHtmlFile))
+                    {
+                        Output.HtmlTable.PrintActionTable(File.CreateText(opts.ActionHtmlFile), states,
+                            actionTable, env);
+                    }
+
+                    if (!String.IsNullOrEmpty(opts.GotoHtmlFile))
+                    {
+                        Output.HtmlTable.PrintGotoTable(File.CreateText(opts.GotoHtmlFile), states,
+                            gotoTable, env, true);
+                    }
+
+                    if (!String.IsNullOrEmpty(opts.TransitionHtmlFile))
+                    {
+                        Output.HtmlTable.PrintTransitionTable(File.CreateText(opts.TransitionHtmlFile), states,
+                            actionTable, gotoTable, env, true);
                     }
                 }
             }

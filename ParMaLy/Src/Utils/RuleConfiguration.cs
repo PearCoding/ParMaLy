@@ -29,83 +29,70 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace PML.Parser
+namespace PML
 {
-    public class RuleState
+    public class RuleConfiguration
     {
-        List<RuleConfiguration> _Configurations = new List<RuleConfiguration>();
-        public List<RuleConfiguration> Configurations { get { return _Configurations; } }
+        Rule _Rule;
+        public Rule Rule { get { return _Rule; } }
 
-        public RuleState()
+        int _Pos;
+        public int Pos { get { return _Pos; } }
+
+        public RuleConfiguration(Rule rule, int pos)
         {
+            _Rule = rule;
+            _Pos = pos;
         }
 
-        public RuleConfiguration First { get { return _Configurations.First(); } }
+        public bool IsFirst { get { return Pos == 0; } }
+
+        public bool IsLast { get { return Rule.Tokens.Count == Pos; } }
+
+        public RuleToken GetNext()
+        {
+            if (Rule.Tokens.Count == Pos)
+                return null;
+
+            return Rule.Tokens[Pos];
+        }
 
         public override bool Equals(Object obj)
         {
             if (obj == null)
                 return false;
 
-            RuleState p = obj as RuleState;
+            RuleConfiguration p = obj as RuleConfiguration;
             return Equals(p);
         }
 
-        public bool Equals(RuleState p)
+        public bool Equals(RuleConfiguration p)
         {
             if ((object)p == null)
                 return false;
-
-            return ScrambledEquals(_Configurations, p.Configurations);
+            
+            return (Rule == p.Rule) && (Pos == p.Pos);
         }
         public override int GetHashCode()
         {
-            return _Configurations.GetHashCode() ^ 42;
+            return _Rule.GetHashCode() ^ _Pos;
         }
 
-        public static bool operator == (RuleState a, RuleState b)
+        public static bool operator == (RuleConfiguration a, RuleConfiguration b)
         {
             if (Object.ReferenceEquals(a, b))
                 return true;
-
+            
             if ((object)a == null)
                 return false;
-
+            
             return a.Equals(b);
         }
 
-        public static bool operator != (RuleState a, RuleState b)
+        public static bool operator != (RuleConfiguration a, RuleConfiguration b)
         {
             return !(a == b);
-        }
-
-        public static bool ScrambledEquals<T>(IEnumerable<T> list1, IEnumerable<T> list2)
-        {
-            var cnt = new Dictionary<T, int>();
-            foreach (T s in list1)
-            {
-                if (cnt.ContainsKey(s))
-                {
-                    cnt[s]++;
-                }
-                else {
-                    cnt.Add(s, 1);
-                }
-            }
-            foreach (T s in list2)
-            {
-                if (cnt.ContainsKey(s))
-                {
-                    cnt[s]--;
-                }
-                else {
-                    return false;
-                }
-            }
-            return cnt.Values.All(c => c == 0);
         }
     }
 }

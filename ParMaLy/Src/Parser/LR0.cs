@@ -35,7 +35,17 @@ namespace PML.Parser
     public class LR0
     {
         List<RuleState> _States = new List<RuleState>();
+        RuleState _StartState;
+        ActionTable _ActionTable = new ActionTable();
+        GotoTable _GotoTable = new GotoTable();
+
         public List<RuleState> States { get { return _States; } }
+
+        public RuleState StartState { get { return _StartState; } }
+
+        public ActionTable ActionTable { get { return _ActionTable; } }
+
+        public GotoTable GotoTable { get { return _GotoTable; } }
 
         public LR0()
         {
@@ -54,7 +64,7 @@ namespace PML.Parser
             {
                 l.Add(new RuleConfiguration(r, -1));
             }
-            StepState(env, l);
+            StepState(env, l, null, null);
         }
 
         void GenerateState(Environment env, Rule r, RuleState state, int p)
@@ -91,9 +101,9 @@ namespace PML.Parser
             }
         }
 
-        void StepState(Environment env, List<RuleConfiguration> confs)
+        void StepState(Environment env, List<RuleConfiguration> confs, RuleState parent, RuleConfiguration producer)
         {
-            RuleState state = new RuleState();
+            RuleState state = new RuleState(_States.Count);
 
             foreach (RuleConfiguration c in confs)
             {
@@ -105,6 +115,28 @@ namespace PML.Parser
 
             if (!_States.Contains(state))
             {
+                if (parent != null)
+                {
+                    bool found = false;
+                    foreach (var c in parent.Production)
+                    {
+                        if (c.State == state)
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found)
+                    {
+                        RuleState.Connection c = new RuleState.Connection();
+                        c.State = state;
+                        c.Token = producer.GetNext();
+                        parent.Production.Add(c);
+                    }
+                }
+                else
+                    _StartState = state;
+
                 _States.Add(state);
 
                 foreach (RuleConfiguration conf in state.Configurations)
@@ -120,7 +152,84 @@ namespace PML.Parser
                                 next.Add(c);
                         }
 
-                        StepState(env, next);
+                        StepState(env, next, state, conf);
+                    }
+                }
+            }
+            else if (parent != null)
+            {
+                RuleState s2 = _States[_States.IndexOf(state)];
+                bool found = false;
+                foreach(var c in parent.Production)
+                {
+                    if (c.State == s2)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    RuleState.Connection c = new RuleState.Connection();
+                    c.State = s2;
+                    c.Token = producer.GetNext();
+                    parent.Production.Add(c);
+                }
+            }
+        }
+
+        public void GenerateActionTable(Environment env, Logger logger)
+        {
+            _ActionTable.Clear();
+
+            foreach(RuleState state in _States)
+            {
+                foreach(RuleConfiguration conf in state.Configurations)
+                {
+                    if(conf.Rule.Group == env.Start && conf.IsLast)
+                    {
+                        _ActionTable.Set(state, null, ActionTable.Action.Accept, null);
+                    }
+                    else if(conf.IsLast)
+                    {
+                        foreach(string t in env.Tokens)
+                        {
+                            _ActionTable.Set(state, t, ActionTable.Action.Reduce, state);
+                        }
+                        _ActionTable.Set(state, null, ActionTable.Action.Reduce, state);
+                    }
+                    else if(conf.GetNext().Type == RuleTokenType.Token)
+                    {
+                        RuleToken next = conf.GetNext();
+                        RuleState found = null;
+                        foreach(RuleState.Connection c in state.Production)
+                        {
+                            if(c.Token == next)
+                            {
+                                if (found != null)//Reduce Reduce Conflict
+                                    logger.Log(LogLevel.Warning, "ReduceReduceConflict in state " + state.ID);
+                                else
+                                    found = c.State;
+                            }
+                        }
+
+                        _ActionTable.Set(state, next.Name, ActionTable.Action.Shift, found);
+                    }
+                }
+            }
+        }
+
+        public void GenerateGotoTable(Environment env, Logger logger)
+        {
+            _GotoTable.Clear();
+
+            foreach (RuleState state in _States)
+            {
+                foreach (var c in state.Production)
+                {
+                    if(c.Token.Type == RuleTokenType.Rule)
+                    {
+                        _GotoTable.Set(state, env.GroupByName(c.Token.Name), c.State);
                     }
                 }
             }

@@ -29,19 +29,19 @@
  */
 
 using System.IO;
+using System.Collections.Generic;
 
 namespace PML.Output
 {
-    public static class LR0
+    public static class StateFile
     {
-        public static void PrintStates(TextWriter writer, Parser.LR0 lr0, Environment env, bool idOnly = false)
+        public static void PrintStates(TextWriter writer, List<RuleState> states, Environment env, bool idOnly = false)
         {
             writer.WriteLine("LR(0) States:");
-            int i = 1;
-            foreach(Parser.RuleState state in lr0.States)
+            foreach(RuleState state in states)
             {
-                writer.WriteLine("[" + i + "]");
-                foreach(Parser.RuleConfiguration conf in state.Configurations)
+                writer.WriteLine("[" + state.ID + "]");
+                foreach(RuleConfiguration conf in state.Configurations)
                 {
                     if (idOnly)
                         writer.Write("  (" + conf.Rule.Group.ID + "|" + conf.Rule.ID + ") ");
@@ -84,7 +84,6 @@ namespace PML.Output
                     }
                     writer.WriteLine();
                 }
-                i++;
             }
 
             writer.Flush();

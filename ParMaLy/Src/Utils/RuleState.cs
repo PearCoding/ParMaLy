@@ -29,70 +29,96 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace PML.Parser
+namespace PML
 {
-    public class RuleConfiguration
+    public class RuleState
     {
-        Rule _Rule;
-        public Rule Rule { get { return _Rule; } }
+        int _ID;
+        public int ID { get { return _ID; } }
 
-        int _Pos;
-        public int Pos { get { return _Pos; } }
+        List<RuleConfiguration> _Configurations = new List<RuleConfiguration>();
+        public List<RuleConfiguration> Configurations { get { return _Configurations; } }
 
-        public RuleConfiguration(Rule rule, int pos)
+        public class Connection
         {
-            _Rule = rule;
-            _Pos = pos;
+            public RuleState State;
+            public RuleToken Token;
         }
 
-        public bool IsFirst { get { return Pos == 0; } }
+        List<Connection> _Production = new List<Connection>();
+        public List<Connection> Production { get { return _Production; } }
 
-        public bool IsLast { get { return Rule.Tokens.Count == Pos; } }
-
-        public RuleToken GetNext()
+        public RuleState(int id)
         {
-            if (Rule.Tokens.Count == Pos)
-                return null;
-
-            return Rule.Tokens[Pos];
+            _ID = id;
         }
+
+        public RuleConfiguration First { get { return _Configurations.First(); } }
 
         public override bool Equals(Object obj)
         {
             if (obj == null)
                 return false;
 
-            RuleConfiguration p = obj as RuleConfiguration;
+            RuleState p = obj as RuleState;
             return Equals(p);
         }
 
-        public bool Equals(RuleConfiguration p)
+        public bool Equals(RuleState p)
         {
             if ((object)p == null)
                 return false;
-            
-            return (Rule == p.Rule) && (Pos == p.Pos);
+
+            return ScrambledEquals(_Configurations, p.Configurations);
         }
         public override int GetHashCode()
         {
-            return _Rule.GetHashCode() ^ _Pos;
+            return _Configurations.GetHashCode() ^ 42;
         }
 
-        public static bool operator == (RuleConfiguration a, RuleConfiguration b)
+        public static bool operator == (RuleState a, RuleState b)
         {
             if (Object.ReferenceEquals(a, b))
                 return true;
-            
+
             if ((object)a == null)
                 return false;
-            
+
             return a.Equals(b);
         }
 
-        public static bool operator != (RuleConfiguration a, RuleConfiguration b)
+        public static bool operator != (RuleState a, RuleState b)
         {
             return !(a == b);
+        }
+
+        public static bool ScrambledEquals<T>(IEnumerable<T> list1, IEnumerable<T> list2)
+        {
+            var cnt = new Dictionary<T, int>();
+            foreach (T s in list1)
+            {
+                if (cnt.ContainsKey(s))
+                {
+                    cnt[s]++;
+                }
+                else {
+                    cnt.Add(s, 1);
+                }
+            }
+            foreach (T s in list2)
+            {
+                if (cnt.ContainsKey(s))
+                {
+                    cnt[s]--;
+                }
+                else {
+                    return false;
+                }
+            }
+            return cnt.Values.All(c => c == 0);
         }
     }
 }
