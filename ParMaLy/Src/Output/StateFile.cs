@@ -83,7 +83,8 @@ namespace PML.Output
                             writer.Write("# ");
 
                         if (conf.Lookaheads.Count != 0)
-                            writer.Write("[" + string.Join(", ", conf.Lookaheads.Select(v => v.Join("/")).ToArray()) + "]");
+                            writer.Write("[" + string.Join(", ",
+                                conf.Lookaheads.Select(v => v.Join("/", (s => (s == null ? "$" : "'" + s + "'")))).ToArray()) + "]");
                     }
                     writer.WriteLine();
                 }

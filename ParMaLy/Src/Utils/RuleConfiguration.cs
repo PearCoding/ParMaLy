@@ -81,7 +81,8 @@ namespace PML
                 return true;
 
             return (Rule == p.Rule) && (Pos == p.Pos) &&
-                (Lookaheads.Count == p.Lookaheads.Count) && (Lookaheads.SequenceEqual(p.Lookaheads))/*(RuleState.ScrambledEquals(Lookaheads, p.Lookaheads))*/;
+                (Lookaheads.Count == p.Lookaheads.Count) &&
+                (Lookaheads.SequenceEqual(p.Lookaheads))/*(RuleState.ScrambledEquals(Lookaheads, p.Lookaheads))*/;
         }
 
         public override int GetHashCode()

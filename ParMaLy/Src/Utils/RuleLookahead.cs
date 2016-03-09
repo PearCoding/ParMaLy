@@ -35,6 +35,11 @@ namespace PML
             return String.Join(delim, _Tokens);
         }
 
+        public string Join(string delim, Func<string, string> selector) 
+        {
+            return String.Join(delim, _Tokens.Select(selector).ToArray());
+        }
+
         public override bool Equals(Object obj)
         {
             if (obj == null)
