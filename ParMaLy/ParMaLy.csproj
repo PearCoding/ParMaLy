@@ -57,7 +57,10 @@
     <Compile Include="Src\Output\StateFile.cs" />
     <Compile Include="Src\Output\DotGraph.cs" />
     <Compile Include="Src\Output\SimpleBreakdown.cs" />
+    <Compile Include="Src\Parser\BTParser.cs" />
+    <Compile Include="Src\Parser\LR1.cs" />
     <Compile Include="Src\Parser\SLR1.cs" />
+    <Compile Include="Src\Utils\RuleLookahead.cs" />
     <Compile Include="Src\Utils\GotoTable.cs" />
     <Compile Include="Src\Utils\ActionTable.cs" />
     <Compile Include="Src\Utils\RuleState.cs" />

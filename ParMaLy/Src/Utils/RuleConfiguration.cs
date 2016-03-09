@@ -40,10 +40,19 @@ namespace PML
         int _Pos;
         public int Pos { get { return _Pos; } }
 
+        RuleLookahead _Lookahead;
+        public RuleLookahead Lookahead { get { return _Lookahead; } }
+
         public RuleConfiguration(Rule rule, int pos)
         {
             _Rule = rule;
             _Pos = pos;
+        }
+        public RuleConfiguration(Rule rule, int pos, int lookaheads)
+        {
+            _Rule = rule;
+            _Pos = pos;
+            _Lookahead = new RuleLookahead(lookaheads);
         }
 
         public bool IsFirst { get { return Pos == 0; } }

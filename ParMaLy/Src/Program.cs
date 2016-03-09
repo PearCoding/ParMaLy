@@ -66,6 +66,8 @@ namespace PML
 
         static void Main(string[] args)
         {
+            Logger logger = new Logger();
+
             Options opts = new Options();
             
             OptionSet p = new OptionSet()
@@ -125,7 +127,7 @@ namespace PML
             }
 
             string file = input[0];
-            Environment env = new Environment(new Logger());
+            Environment env = new Environment(logger);
             try
             {
                 string source = File.ReadAllText(file);
@@ -151,76 +153,54 @@ namespace PML
 
             if (!String.IsNullOrEmpty(opts.Parser))
             {
-                int parser = 0;
+                Parser.BTParser parser;
                 if (opts.Parser.ToLower() == "lr0")
-                    parser = 1;
+                    parser = new Parser.LR0();
                 else if (opts.Parser.ToLower() == "slr1")
-                    parser = 2;
+                    parser = new Parser.SLR1();
+                else if (opts.Parser.ToLower() == "lr1")
+                    parser = new Parser.LR1();
                 else
                 {
                     Console.WriteLine("Unknown parser selected.");
                     Console.WriteLine("Try `ParMaLy --help' for more information.");
                     return;
                 }
-                
-                RuleState root = null;
-                List<RuleState> states = null;
-                ActionTable actionTable = null;
-                GotoTable gotoTable = null;
-                if (opts.Parse)
+
+                if (opts.Parse && parser != null)
                 {
-                    switch (parser)
-                    {
-                        case 1:
-                            Parser.LR0 lr0 = new Parser.LR0();
-                            lr0.GenerateStates(env);
-                            lr0.GenerateActionTable(env, new Logger());
-                            lr0.GenerateGotoTable(env, new Logger());
-                            root = lr0.StartState;
-                            states = lr0.States;
-                            actionTable = lr0.ActionTable;
-                            gotoTable = lr0.GotoTable;
-                            break;
-                        case 2:
-                            var slr1 = new Parser.SLR1();
-                            slr1.GenerateStates(env);
-                            slr1.GenerateActionTable(env, new Logger());
-                            slr1.GenerateGotoTable(env, new Logger());
-                            root = slr1.StartState;
-                            states = slr1.States;
-                            actionTable = slr1.ActionTable;
-                            gotoTable = slr1.GotoTable;
-                            break;
-                    }
+                    parser.GenerateStates(env, logger);
+                    parser.GenerateActionTable(env, logger);
+                    parser.GenerateGotoTable(env, logger);
 
                     if (!String.IsNullOrEmpty(opts.StateFile))
                     {
                         Output.StateFile.PrintStates(File.CreateText(opts.StateFile),
-                                    states, env, false);
+                                    parser.States, env, false);
                     }
 
                     if (!String.IsNullOrEmpty(opts.StateDotFile))
                     {
                         Output.DotGraph.PrintStateGraph(File.CreateText(opts.StateDotFile),
-                            env, root, Output.DotGraph.DetailLabelStyle.Auto, true);
+                            env, parser.StartState, Output.DotGraph.DetailLabelStyle.Auto, true);
                     }
 
                     if (!String.IsNullOrEmpty(opts.ActionHtmlFile))
                     {
-                        Output.HtmlTable.PrintActionTable(File.CreateText(opts.ActionHtmlFile), states,
-                            actionTable, env);
+                        Output.HtmlTable.PrintActionTable(File.CreateText(opts.ActionHtmlFile), parser.States,
+                            parser.ActionTable, env);
                     }
 
                     if (!String.IsNullOrEmpty(opts.GotoHtmlFile))
                     {
-                        Output.HtmlTable.PrintGotoTable(File.CreateText(opts.GotoHtmlFile), states,
-                            gotoTable, env, true);
+                        Output.HtmlTable.PrintGotoTable(File.CreateText(opts.GotoHtmlFile), parser.States,
+                            parser.GotoTable, env, true);
                     }
 
                     if (!String.IsNullOrEmpty(opts.TransitionHtmlFile))
                     {
-                        Output.HtmlTable.PrintTransitionTable(File.CreateText(opts.TransitionHtmlFile), states,
-                            actionTable, gotoTable, env, true);
+                        Output.HtmlTable.PrintTransitionTable(File.CreateText(opts.TransitionHtmlFile), parser.States,
+                            parser.ActionTable, parser.GotoTable, env, true);
                     }
                 }
             }

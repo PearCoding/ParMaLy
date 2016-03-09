@@ -32,7 +32,7 @@ using System.Collections.Generic;
 
 namespace PML.Parser
 {
-    public class LR0
+    public class LR0 : BTParser
     {
         List<RuleState> _States = new List<RuleState>();
         RuleState _StartState;
@@ -51,7 +51,7 @@ namespace PML.Parser
         {
         }
 
-        public void GenerateStates(Environment env)
+        public void GenerateStates(Environment env, Logger logger)
         {
             _States.Clear();
 

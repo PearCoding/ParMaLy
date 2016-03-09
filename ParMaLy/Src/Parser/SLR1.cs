@@ -32,7 +32,7 @@ using System.Collections.Generic;
 
 namespace PML.Parser
 {
-    public class SLR1
+    public class SLR1 : BTParser
     {
         LR0 _LR0 = new Parser.LR0();
         ActionTable _ActionTable = new ActionTable();
@@ -49,9 +49,9 @@ namespace PML.Parser
         {
         }
 
-        public void GenerateStates(Environment env)
+        public void GenerateStates(Environment env, Logger logger)
         {
-            _LR0.GenerateStates(env);
+            _LR0.GenerateStates(env, logger);
         }
         
         public void GenerateActionTable(Environment env, Logger logger)

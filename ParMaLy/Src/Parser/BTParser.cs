@@ -28,62 +28,25 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
-using System;
-using System.IO;
+using System.Collections.Generic;
 
-namespace PML
+namespace PML.Parser
 {
-    public enum LogLevel
+    //Represents a Bottom Top Parser
+    public interface BTParser
     {
-        Debug,
-        Info,
-        Warning,
-        Error,
-        Fatal
-    }
+        List<RuleState> States { get; }
 
-    public class Logger
-    {
-        int _WarningCount = 0;
-        public int WarningCount { get { return _WarningCount; } }
+        RuleState StartState { get; }
 
-        int _ErrorCount = 0;
-        public int ErrorCount { get { return _ErrorCount; } }
+        ActionTable ActionTable { get; }
 
-        TextWriter _Writer;
+        GotoTable GotoTable { get; }
 
-        public Logger()
-        {
-            _Writer = File.CreateText("pml_" + DateTime.Now.ToString("yyyyMMddHHmmssffff") + ".log");
-        }
+        void GenerateStates(Environment env, Logger logger);
 
-        public Logger(string log)
-        {
-            _Writer = File.CreateText(log);
-        }
+        void GenerateActionTable(Environment env, Logger logger);
 
-        public void Log(int line, int column, LogLevel level, string str)
-        {
-            System.Console.WriteLine("[{0}]({1}) " + level.ToString() + ": " + str, line, column);
-            _Writer.WriteLine("[{0}]({1}) " + level.ToString() + ": " + str, line, column);
-            _Writer.Flush();
-
-            if (level == LogLevel.Warning)
-                _WarningCount++;
-            else if (level == LogLevel.Error || level == LogLevel.Fatal)
-                _ErrorCount++;
-        }
-
-        public void Log(LogLevel level, string str)
-        {
-            Console.WriteLine(level.ToString() + ": " + str);
-            _Writer.WriteLine(level.ToString() + ": " + str);
-            _Writer.Flush();
-
-            if (level == LogLevel.Warning)
-                _WarningCount++;
-            else if (level == LogLevel.Error || level == LogLevel.Fatal)
-                _ErrorCount++;
-        }
+        void GenerateGotoTable(Environment env, Logger logger);
     }
 }

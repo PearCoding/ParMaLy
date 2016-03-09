@@ -44,9 +44,9 @@ namespace PML.Output
                 foreach(RuleConfiguration conf in state.Configurations)
                 {
                     if (idOnly)
-                        writer.Write("  (" + conf.Rule.Group.ID + "|" + conf.Rule.ID + ") ");
+                        writer.Write("  " + conf.Rule.Group.ID + "|" + conf.Rule.ID + " -> ");
                     else
-                        writer.Write("  (" + conf.Rule.Group.Name + ") ");
+                        writer.Write("  " + conf.Rule.Group.Name + " -> ");
 
                     if (conf.Rule.IsEmpty)
                     {
@@ -80,7 +80,10 @@ namespace PML.Output
                         }
 
                         if(conf.IsLast)
-                            writer.Write("#");
+                            writer.Write("# ");
+
+                        if (conf.Lookahead != null)
+                            writer.Write(conf.Lookahead.Join("/"));
                     }
                     writer.WriteLine();
                 }
