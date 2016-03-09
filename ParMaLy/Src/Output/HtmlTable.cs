@@ -44,7 +44,7 @@ namespace PML.Output
                             special = "background-color:#FFFF66;";
                     }
 
-                    writer.Write("<td style='" + style + special +"'>");
+                    writer.Write("<td align=\"center\" style='" + style + special +"'>");
 
                     if (e != null)
                     {
@@ -153,7 +153,7 @@ namespace PML.Output
                             special = "background-color:#FFFF66;";
                     }
 
-                    writer.Write("<td style='" + style + special + "'>");
+                    writer.Write("<td align=\"center\" style='" + style + special + "'>");
 
                     if (e != null)
                     {
@@ -177,7 +177,7 @@ namespace PML.Output
                         special = "background-color:#ccc;";
                     }
 
-                    writer.Write("<td style='" + style + special + "'>");
+                    writer.Write("<td align=\"center\" style='" + style + special + "'>");
 
                     if (e != null)
                     {

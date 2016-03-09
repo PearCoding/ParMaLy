@@ -154,6 +154,8 @@ namespace PML
                 int parser = 0;
                 if (opts.Parser.ToLower() == "lr0")
                     parser = 1;
+                else if (opts.Parser.ToLower() == "slr1")
+                    parser = 2;
                 else
                 {
                     Console.WriteLine("Unknown parser selected.");
@@ -178,6 +180,16 @@ namespace PML
                             states = lr0.States;
                             actionTable = lr0.ActionTable;
                             gotoTable = lr0.GotoTable;
+                            break;
+                        case 2:
+                            var slr1 = new Parser.SLR1();
+                            slr1.GenerateStates(env);
+                            slr1.GenerateActionTable(env, new Logger());
+                            slr1.GenerateGotoTable(env, new Logger());
+                            root = slr1.StartState;
+                            states = slr1.States;
+                            actionTable = slr1.ActionTable;
+                            gotoTable = slr1.GotoTable;
                             break;
                     }
 

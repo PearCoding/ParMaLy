@@ -112,7 +112,7 @@ namespace PML.Output
             }
 
             string color = "\"#fff090\"";
-            if (node.First.Rule.Group == env.Start)
+            if (node.First.Rule.Group == env.Start && node.First.Pos == 0)
                 color = "\"#cc6030\"";
 
             writer.WriteLine(node.ID
