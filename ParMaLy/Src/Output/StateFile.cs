@@ -30,6 +30,7 @@
 
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PML.Output
 {
@@ -37,7 +38,6 @@ namespace PML.Output
     {
         public static void PrintStates(TextWriter writer, List<RuleState> states, Environment env, bool idOnly = false)
         {
-            writer.WriteLine("LR(0) States:");
             foreach(RuleState state in states)
             {
                 writer.WriteLine("[" + state.ID + "]");
@@ -82,8 +82,8 @@ namespace PML.Output
                         if(conf.IsLast)
                             writer.Write("# ");
 
-                        if (conf.Lookahead != null)
-                            writer.Write(conf.Lookahead.Join("/"));
+                        if (conf.Lookaheads.Count != 0)
+                            writer.Write("[" + string.Join(", ", conf.Lookaheads.Select(v => v.Join("/")).ToArray()) + "]");
                     }
                     writer.WriteLine();
                 }

@@ -62,7 +62,9 @@ namespace PML.Parser
             var l = new List<RuleConfiguration>();
             foreach (Rule r in env.Start.Rules)
             {
-                l.Add(new RuleConfiguration(r, -1));
+                var conf = new RuleConfiguration(r, -1);
+                conf.Lookaheads.Add(new RuleLookahead((string)null));//EOF
+                l.Add(conf);
             }
             StepState(env, l, null, null);
         }
@@ -70,6 +72,7 @@ namespace PML.Parser
         void GenerateState(Environment env, Rule r, RuleState state, int p)
         {
             RuleConfiguration conf = new RuleConfiguration(r, p);
+            conf.Lookaheads.Add(new RuleLookahead("?"));
             state.Configurations.Add(conf);
             
             if(!conf.IsLast)

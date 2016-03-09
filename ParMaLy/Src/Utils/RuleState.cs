@@ -34,7 +34,7 @@ using System.Linq;
 
 namespace PML
 {
-    public class RuleState
+    public class RuleState : IEquatable<RuleState>
     {
         int _ID;
         public int ID { get { return _ID; } }
@@ -72,14 +72,17 @@ namespace PML
             if ((object)p == null)
                 return false;
 
+            if (ReferenceEquals(this, p))
+                return true;
+
             return ScrambledEquals(_Configurations, p.Configurations);
         }
         public override int GetHashCode()
         {
-            return _Configurations.GetHashCode() ^ 42;
+            return (_Configurations.GetHashCode() ^ 42).GetHashCode();
         }
 
-        public static bool operator == (RuleState a, RuleState b)
+        public static bool operator ==(RuleState a, RuleState b)
         {
             if (Object.ReferenceEquals(a, b))
                 return true;
@@ -90,14 +93,19 @@ namespace PML
             return a.Equals(b);
         }
 
-        public static bool operator != (RuleState a, RuleState b)
+        public static bool operator !=(RuleState a, RuleState b)
         {
             return !(a == b);
         }
 
         public static bool ScrambledEquals<T>(IEnumerable<T> list1, IEnumerable<T> list2)
         {
-            var cnt = new Dictionary<T, int>();
+            return ScrambledEquals(list1, list2, EqualityComparer<T>.Default);
+        }
+
+        public static bool ScrambledEquals<T>(IEnumerable<T> list1, IEnumerable<T> list2, IEqualityComparer<T> comparer)
+        {
+            var cnt = new Dictionary<T, int>(comparer);
             foreach (T s in list1)
             {
                 if (cnt.ContainsKey(s))
@@ -108,6 +116,7 @@ namespace PML
                     cnt.Add(s, 1);
                 }
             }
+
             foreach (T s in list2)
             {
                 if (cnt.ContainsKey(s))

@@ -29,10 +29,12 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PML
 {
-    public class RuleConfiguration
+    public class RuleConfiguration : IEquatable<RuleConfiguration>
     {
         Rule _Rule;
         public Rule Rule { get { return _Rule; } }
@@ -40,19 +42,13 @@ namespace PML
         int _Pos;
         public int Pos { get { return _Pos; } }
 
-        RuleLookahead _Lookahead;
-        public RuleLookahead Lookahead { get { return _Lookahead; } }
+        List<RuleLookahead> _Lookaheads = new List<RuleLookahead>();
+        public List<RuleLookahead> Lookaheads { get { return _Lookaheads; } }
 
         public RuleConfiguration(Rule rule, int pos)
         {
             _Rule = rule;
             _Pos = pos;
-        }
-        public RuleConfiguration(Rule rule, int pos, int lookaheads)
-        {
-            _Rule = rule;
-            _Pos = pos;
-            _Lookahead = new RuleLookahead(lookaheads);
         }
 
         public bool IsFirst { get { return Pos == 0; } }
@@ -75,14 +71,19 @@ namespace PML
             RuleConfiguration p = obj as RuleConfiguration;
             return Equals(p);
         }
-
+        
         public bool Equals(RuleConfiguration p)
         {
             if ((object)p == null)
                 return false;
-            
-            return (Rule == p.Rule) && (Pos == p.Pos);
+
+            if (ReferenceEquals(this, p))
+                return true;
+
+            return (Rule == p.Rule) && (Pos == p.Pos) &&
+                (Lookaheads.Count == p.Lookaheads.Count) && (Lookaheads.SequenceEqual(p.Lookaheads))/*(RuleState.ScrambledEquals(Lookaheads, p.Lookaheads))*/;
         }
+
         public override int GetHashCode()
         {
             return _Rule.GetHashCode() ^ _Pos;
