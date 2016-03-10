@@ -54,131 +54,86 @@ namespace PML.Parser
         public void GenerateStates(Environment env, Logger logger)
         {
             _States.Clear();
+            _StartState = null;
 
             // We can not start without a 'Start' token.
             if (env.Start == null || env.Start.Rules.Count == 0)
                 return;
 
-            var l = new List<RuleConfiguration>();
-            foreach (Rule r in env.Start.Rules)
-            {
-                var conf = new RuleConfiguration(r, -1);
-                conf.Lookaheads.Add(new RuleLookahead((string)null));//EOF
-                l.Add(conf);
-            }
-            StepState(env, l, null, null);
+            LR0 lr0 = new LR0();
+            lr0.GenerateStates(env, logger);
+            List<RuleState> lr0States = lr0.States;
+
+            ExtractState(lr0.StartState, logger);           
         }
 
-        void GenerateState(Environment env, Rule r, RuleState state, int p)
+        void ExtractState(RuleState lr0State, Logger logger)
         {
-            RuleConfiguration conf = new RuleConfiguration(r, p);
-            conf.Lookaheads.Add(new RuleLookahead("?"));
-            state.Configurations.Add(conf);
-            
-            if(!conf.IsLast)
+            var dict = BigFollowSet(lr0State);
+            RuleState lr1State = new RuleState(0);
+            _StartState = lr1State;
+
+            foreach (var conf0 in lr0State.Configurations)
             {
-                RuleToken t = conf.GetNext();
-
-                if (t.Type != RuleTokenType.Token)
+                if (dict.ContainsKey(conf0.Rule.Group))
                 {
-                    RuleGroup g = env.GroupByName(t.Name);
+                    var l = dict[conf0.Rule.Group];
 
-                    foreach (Rule r2 in g.Rules)
+                    foreach (var s in l)
                     {
-                        bool found = false;
-                        foreach (RuleConfiguration c in state.Configurations)
-                        {
-                            if(c.Rule == r2 && c.Pos == 0)
-                            {
-                                found = true;
-                                break;
-                            }
-                        }
-
-                        if(!found)
-                        {
-                            GenerateState(env, r2, state, 0);
-                        }
-                    }
-                }
-            }
-        }
-
-        void StepState(Environment env, List<RuleConfiguration> confs, RuleState parent, RuleConfiguration producer)
-        {
-            RuleState state = new RuleState(_States.Count);
-
-            foreach (RuleConfiguration c in confs)
-            {
-                if (!c.IsLast)
-                {
-                    GenerateState(env, c.Rule, state, c.Pos + 1);
-                }
-            }
-
-            if (!_States.Contains(state))
-            {
-                if (parent != null)
-                {
-                    bool found = false;
-                    foreach (var c in parent.Production)
-                    {
-                        if (c.State == state)
-                        {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found)
-                    {
-                        RuleState.Connection c = new RuleState.Connection();
-                        c.State = state;
-                        c.Token = producer.GetNext();
-                        parent.Production.Add(c);
+                        var conf = new RuleConfiguration(conf0.Rule, conf0.Pos, new RuleLookahead(s));
+                        lr1State.Configurations.Add(conf);
                     }
                 }
                 else
-                    _StartState = state;
-
-                _States.Add(state);
-
-                foreach (RuleConfiguration conf in state.Configurations)
                 {
-                    if (!conf.IsLast)
-                    {
-                        RuleToken t = conf.GetNext();
-
-                        List<RuleConfiguration> next = new List<RuleConfiguration>();
-                        foreach (RuleConfiguration c in state.Configurations)
-                        {
-                            if (!c.IsLast && c.GetNext().Type == t.Type && c.GetNext().Name == t.Name)
-                                next.Add(c);
-                        }
-
-                        StepState(env, next, state, conf);
-                    }
+                    logger.Log(LogLevel.Error, "Configuration rule group should be in (big) follow set, but isn't.");
                 }
             }
-            else if (parent != null)
+            _States.Add(lr1State);
+
+            StepState(lr1State, logger);
+        }
+
+        void GenerateClosure(RuleState state, Logger logger)
+        {
+
+        }
+
+        void StepState(RuleState state, Logger logger)
+        {
+
+        }
+
+        Dictionary<RuleGroup, List<string>> BigFollowSet(RuleState state)
+        {
+            Dictionary<RuleGroup, List<string>> sets = new Dictionary<RuleGroup, List<string>>();
+
+            foreach(var conf in state.Configurations)
             {
-                RuleState s2 = _States[_States.IndexOf(state)];
-                bool found = false;
-                foreach(var c in parent.Production)
+                if (!sets.ContainsKey(conf.Rule.Group))
                 {
-                    if (c.State == s2)
+                    var list = new List<string>();
+                    
+                    foreach (var conf2 in state.Configurations)
                     {
-                        found = true;
-                        break;
+                        if (!conf2.IsLast &&
+                            conf2.GetNext().Type == RuleTokenType.Rule &&
+                            conf2.GetNext().Name == conf.Rule.Group.Name)
+                        {
+                            foreach (var s in conf2.Rule.Group.FollowSet)
+                            {
+                                if(!list.Contains(s))
+                                    list.Add(s);
+                            }
+                        }
                     }
-                }
-                if (!found)
-                {
-                    RuleState.Connection c = new RuleState.Connection();
-                    c.State = s2;
-                    c.Token = producer.GetNext();
-                    parent.Production.Add(c);
+
+                    sets[conf.Rule.Group] = list;
                 }
             }
+
+            return sets;
         }
 
         public void GenerateActionTable(Environment env, Logger logger)

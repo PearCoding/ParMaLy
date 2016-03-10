@@ -50,9 +50,9 @@ namespace PML.Output
                     {
                         if (e.Action == ActionTable.Action.Accept)
                             writer.Write("Accept");
-                        else if (e.Action == ActionTable.Action.Reduce)
+                        else if (e.Action == ActionTable.Action.Reduce && e.State != null)
                             writer.Write("r" + e.State.ID);
-                        else if (e.Action == ActionTable.Action.Shift)
+                        else if (e.Action == ActionTable.Action.Shift && e.State != null)
                             writer.Write("s" + e.State.ID);
                     }
 
@@ -159,9 +159,9 @@ namespace PML.Output
                     {
                         if (e.Action == ActionTable.Action.Accept)
                             writer.Write("Accept");
-                        else if (e.Action == ActionTable.Action.Reduce)
+                        else if (e.Action == ActionTable.Action.Reduce && e.State != null)
                             writer.Write("r" + e.State.ID);
-                        else if (e.Action == ActionTable.Action.Shift)
+                        else if (e.Action == ActionTable.Action.Shift && e.State != null)
                             writer.Write("s" + e.State.ID);
                     }
 

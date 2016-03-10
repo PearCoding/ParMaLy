@@ -42,13 +42,20 @@ namespace PML
         int _Pos;
         public int Pos { get { return _Pos; } }
 
-        List<RuleLookahead> _Lookaheads = new List<RuleLookahead>();
-        public List<RuleLookahead> Lookaheads { get { return _Lookaheads; } }
+        RuleLookahead _Lookahead;
+        public RuleLookahead Lookahead { get { return _Lookahead; } }
 
         public RuleConfiguration(Rule rule, int pos)
         {
             _Rule = rule;
             _Pos = pos;
+        }
+
+        public RuleConfiguration(Rule rule, int pos, RuleLookahead lookahead)
+        {
+            _Rule = rule;
+            _Pos = pos;
+            _Lookahead = lookahead;
         }
 
         public bool IsFirst { get { return Pos == 0; } }
@@ -80,9 +87,7 @@ namespace PML
             if (ReferenceEquals(this, p))
                 return true;
 
-            return (Rule == p.Rule) && (Pos == p.Pos) &&
-                (Lookaheads.Count == p.Lookaheads.Count) &&
-                (Lookaheads.SequenceEqual(p.Lookaheads))/*(RuleState.ScrambledEquals(Lookaheads, p.Lookaheads))*/;
+            return (Rule == p.Rule) && (Pos == p.Pos) && _Lookahead == p._Lookahead;
         }
 
         public override int GetHashCode()

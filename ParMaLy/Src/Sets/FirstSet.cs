@@ -37,6 +37,32 @@ namespace PML
         // null is Empty!
         public static void Setup(Environment env)
         {
+            //foreach(RuleGroup grp in env.Groups)
+            //{
+            //    if (grp.FirstSet == null)
+            //        grp.FirstSet = new List<string>();
+
+            //    //Rule (2)
+            //    foreach (Rule r in grp.Rules)
+            //    {
+            //        if(r.IsEmpty)
+            //        {
+            //            if(!grp.FirstSet.Contains(null))
+            //            {
+            //                grp.FirstSet.Add(null);
+            //            }
+            //        }
+
+            //        if(r.Tokens.Count >= 1 && r.Tokens[0].Type == RuleTokenType.Token)
+            //        {
+            //            var token = r.Tokens[0].Name;
+            //            if(grp.FirstSet.Contains(token))
+            //            {
+            //                grp.FirstSet.Add(token);
+            //            }
+            //        }
+            //    }
+            //}
             // First rule (2)
             foreach (Rule r in env.Rules)
             {
