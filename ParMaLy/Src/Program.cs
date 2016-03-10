@@ -38,6 +38,8 @@ namespace PML
 
     class Options
     {
+        public string StyleFile;
+
         public string GroupDotFile;
         public string BreakdownFile;
 
@@ -67,9 +69,7 @@ namespace PML
         static void Main(string[] args)
         {
             Logger logger = new Logger();
-
             Options opts = new Options();
-            
             OptionSet p = new OptionSet()
             {
                 { "parser=",
@@ -96,6 +96,9 @@ namespace PML
                 { "breakdown=",
                     "Generate a general breakdown text file.",
                     (string s) => opts.BreakdownFile = s },
+                { "style=",
+                    "The underlying style file.",
+                    (string s) => opts.StyleFile = s },
                 { "h|help",
                     "Show this message and exit.",
                     v => opts.ShowHelp = v != null }
@@ -132,7 +135,6 @@ namespace PML
             {
                 string source = File.ReadAllText(file);
                 env.Parse(source);
-
             }
             catch(Error err)
             {
@@ -145,11 +147,17 @@ namespace PML
                 return;
             }
 
+            Style.Style style = null;
+            if (opts.StyleFile == null)
+                style = new Style.Style();
+            else
+                style = /*TODO*/ null;
+
             if (!String.IsNullOrEmpty(opts.BreakdownFile))
                 Output.SimpleBreakdown.Print(File.CreateText(opts.BreakdownFile), env);
 
             if (!String.IsNullOrEmpty(opts.GroupDotFile))
-                Output.DotGraph.PrintGroupGraph(File.CreateText(opts.GroupDotFile), env);
+                Output.DotGraph.PrintGroupGraph(File.CreateText(opts.GroupDotFile), env, style.GroupDot);
 
             if (!String.IsNullOrEmpty(opts.Parser))
             {
@@ -182,7 +190,7 @@ namespace PML
                     if (!String.IsNullOrEmpty(opts.StateDotFile))
                     {
                         Output.DotGraph.PrintStateGraph(File.CreateText(opts.StateDotFile),
-                            env, parser.StartState, Output.DotGraph.DetailLabelStyle.Auto, true);
+                            env, parser.StartState, style.StateDot);
                     }
 
                     if (!String.IsNullOrEmpty(opts.ActionHtmlFile))

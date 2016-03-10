@@ -10,7 +10,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj
 		{94BADB9E-9C5A-4463-8E6E-C5508D409719} = {94BADB9E-9C5A-4463-8E6E-C5508D409719}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Library", "ParMaLy\Src\DataLisp\Library.csproj", "{0362048A-7482-4552-BD1D-41AE85AB20B0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DL-Library", "ParMaLy\Src\DataLisp\DL-Library.csproj", "{0362048A-7482-4552-BD1D-41AE85AB20B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

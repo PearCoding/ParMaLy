@@ -60,6 +60,7 @@
     <Compile Include="Src\Parser\BTParser.cs" />
     <Compile Include="Src\Parser\LR1.cs" />
     <Compile Include="Src\Parser\SLR1.cs" />
+    <Compile Include="Src\Style\Style.cs" />
     <Compile Include="Src\Utils\RuleLookahead.cs" />
     <Compile Include="Src\Utils\GotoTable.cs" />
     <Compile Include="Src\Utils\ActionTable.cs" />
@@ -86,9 +87,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Src\DataLisp\Library.csproj">
+    <ProjectReference Include="Src\DataLisp\DL-Library.csproj">
       <Project>{0362048a-7482-4552-bd1d-41ae85ab20b0}</Project>
-      <Name>Library</Name>
+      <Name>DL-Library</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -35,19 +35,25 @@ namespace PML.Output
 {
     class DotGraph
     {
-        public static void PrintGroupGraph(TextWriter writer, Environment env)
+        public static void PrintGroupGraph(TextWriter writer, Environment env, Style.DotStyle style)
         {
             Graph.GroupGraph grpGraph = new Graph.GroupGraph();
             grpGraph.Generate(env);
 
             writer.WriteLine("digraph G {");
+            if(!string.IsNullOrEmpty(style.Graph))
+                writer.WriteLine("graph[" + style.Graph + "];");
+            if (!string.IsNullOrEmpty(style.Node))
+                writer.WriteLine("node[" + style.Node + "];");
+            if (!string.IsNullOrEmpty(style.Edge))
+                writer.WriteLine("edge[" + style.Edge + "];");
             if (env.Start != null)
-                writer.WriteLine("\t" + env.Start.Name + " [style=filled,fillcolor=\"#666666\",fontcolor=white]");
+                writer.WriteLine("\t" + env.Start.Name + " [" + style.StartNode + "]");
 
             foreach(RuleGroup grp in env.Groups)
             {
                 if(grp != env.Start)
-                    writer.WriteLine("\t" + grp.Name + " [style=filled,fillcolor=\"#ffe070\"]");
+                    writer.WriteLine("\t" + grp.Name + " [" + style.InnerNode + "]");
             }
             foreach (var node in grpGraph.Nodes)
             {
@@ -66,23 +72,26 @@ namespace PML.Output
             Full
         }
 
-        public static void PrintStateGraph(TextWriter writer, Environment env, RuleState root, DetailLabelStyle dlstyle, bool idOnly)
+        public static void PrintStateGraph(TextWriter writer, Environment env, RuleState root, Style.DotStyle style)
         {
             writer.WriteLine("digraph G {");
-            writer.WriteLine("graph[splines=true,overlap=false,fontname=\"arial\"];");
-            writer.WriteLine("node[fontname=\"arial\"];");
-            writer.WriteLine("edge[fontname=\"arial\"];");
-            PrintStateGraphNode(writer, env, root, new Stack<RuleState>(), dlstyle, idOnly);
+            if (!string.IsNullOrEmpty(style.Graph))
+                writer.WriteLine("graph[" + style.Graph + "];");
+            if (!string.IsNullOrEmpty(style.Node))
+                writer.WriteLine("node[" + style.Node + "];");
+            if (!string.IsNullOrEmpty(style.Edge))
+                writer.WriteLine("edge[" + style.Edge + "];");
+            PrintStateGraphNode(writer, env, root, new Stack<RuleState>(), style);
             writer.WriteLine("}");
             writer.Flush();
         }
 
         static void PrintStateGraphNode(TextWriter writer, Environment env, RuleState node,
-            Stack<RuleState> stack, DetailLabelStyle dlstyle, bool idOnly)
+            Stack<RuleState> stack, Style.DotStyle style)
         {
             stack.Push(node);
             string confLabel = "";
-            if (dlstyle != DetailLabelStyle.None)
+            if (style.UseNodeLabel)
             {
                 foreach (RuleConfiguration conf in node.Configurations)
                 {
@@ -90,57 +99,62 @@ namespace PML.Output
                     foreach (var t in conf.Rule.Tokens)
                     {
                         if (p == conf.Pos)
-                            confLabel += "\u2022 ";
+                            confLabel += style.PosIdentificator + " ";
 
                         if (t.Type == RuleTokenType.Token)
-                            confLabel += "'" + t.Name + "' ";
+                            confLabel += style.TokenNamePrefix + t.Name + style.TokenNameSuffix + " ";
                         else
-                            confLabel += (idOnly ? ("<" + env.GroupByName(t.Name).ID + ">") : t.Name) + " ";
+                            confLabel += (!style.UseRuleName ?
+                                (style.RuleNamePrefix + env.GroupByName(t.Name).ID + style.RuleNameSuffix) : t.Name) + " ";
                         p++;
                     }
 
                     if (p == conf.Pos)
-                        confLabel += "\u2022 ";
+                        confLabel += style.PosIdentificator + " ";
 
-                    confLabel += "\\l";
+                    confLabel += style.NodeLabelJustification;
                 }
 
-                if (dlstyle == DetailLabelStyle.Auto && confLabel.Length > 100)
+                if (style.MaxNodeLabelLength > 0 && confLabel.Length > style.MaxNodeLabelLength)
                 {
-                    confLabel = confLabel.Substring(0, 100) + "...\\l";
+                    confLabel = confLabel.Substring(0, style.MaxNodeLabelLength) + "..." + style.NodeLabelJustification;
                 }
             }
 
-            string color = "\"#fff090\"";
+            string nodestyle = style.InnerNode;
             if (node.First.Rule.Group == env.Start && node.First.Pos == 0)
-                color = "\"#cc6030\"";
+                nodestyle = style.StartNode;
 
             writer.WriteLine(node.ID
-                + " [shape=box,style=\"rounded,filled\",fillcolor=" + color + ",xlabel=\"I" + node.ID + "\","
-                + (dlstyle == DetailLabelStyle.None ? "" : "label=\"" + confLabel + "\"") + "];");
+                + " [" + nodestyle 
+                + (style.UseNodeXLabel ? "" : ",xlabel=\"" + style.NodeXLabelPrefix + (node.ID + style.StateIDOffset) + "\"")
+                + (style.UseNodeLabel ? "" : ",label=\"" + confLabel + "\"") 
+                + "];");
+
             foreach(var c in node.Production)
             {
                 string label = "";
-                if(idOnly && c.Token.Type == RuleTokenType.Rule)
+                if(!style.UseRuleName && c.Token.Type == RuleTokenType.Rule)
                 {
-                    label = "<" + env.GroupByName(c.Token.Name).ID + ">";
+                    label = style.RuleNamePrefix + env.GroupByName(c.Token.Name).ID + style.RuleNameSuffix;
                 }
                 else if(c.Token.Type == RuleTokenType.Token)
                 {
-                    label = "'" + c.Token.Name + "'";
+                    label = style.TokenNamePrefix + c.Token.Name + style.TokenNameSuffix;
                 }
                 else
                 {
                     label = c.Token.Name;
                 }
 
-                writer.WriteLine(node.ID + " -> " + c.State.ID + " [label=\"" + label + "\"];");
+                writer.WriteLine(node.ID + " -> " + c.State.ID +
+                    (style.UseEdgeLabel ? "" : " [label=\"" + style.EdgeLabelPrefix + label + "\"") + "];");
             }
 
             foreach (var c in node.Production)
             {
                 if (!stack.Contains(c.State))
-                    PrintStateGraphNode(writer, env, c.State, stack, dlstyle, idOnly);
+                    PrintStateGraphNode(writer, env, c.State, stack, style);
             }
         }
     }
