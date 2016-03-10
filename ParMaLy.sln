@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj
 		{94BADB9E-9C5A-4463-8E6E-C5508D409719} = {94BADB9E-9C5A-4463-8E6E-C5508D409719}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Library", "ParMaLy\Src\DataLisp\Library.csproj", "{0362048A-7482-4552-BD1D-41AE85AB20B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,6 +26,10 @@ Global
 		{067456C0-086C-46A8-B37F-1405717B7BFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{067456C0-086C-46A8-B37F-1405717B7BFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{067456C0-086C-46A8-B37F-1405717B7BFC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0362048A-7482-4552-BD1D-41AE85AB20B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0362048A-7482-4552-BD1D-41AE85AB20B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0362048A-7482-4552-BD1D-41AE85AB20B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0362048A-7482-4552-BD1D-41AE85AB20B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
