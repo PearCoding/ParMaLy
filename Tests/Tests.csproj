@@ -51,6 +51,10 @@
       <Project>{94badb9e-9c5a-4463-8e6e-c5508d409719}</Project>
       <Name>ParMaLy</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ParMaLy\Src\DataLisp\DL-Library.csproj">
+      <Project>{0362048a-7482-4552-bd1d-41ae85ab20b0}</Project>
+      <Name>DL-Library</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

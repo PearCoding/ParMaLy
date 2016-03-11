@@ -53,9 +53,10 @@ namespace PML
 
         TextWriter _Writer;
 
-        public Logger()
+        public Logger(bool logToFile = true)
         {
-            _Writer = File.CreateText("pml_" + DateTime.Now.ToString("yyyyMMddHHmmssffff") + ".log");
+            if(logToFile)
+                _Writer = File.CreateText("pml_" + DateTime.Now.ToString("yyyyMMddHHmmssffff") + ".log");
         }
 
         public Logger(string log)
@@ -71,8 +72,12 @@ namespace PML
         public void Log(int line, int column, LogLevel level, string str)
         {
             System.Console.WriteLine("[{0}]({1}) " + level.ToString() + ": " + str, line, column);
-            _Writer.WriteLine("[{0}]({1}) " + level.ToString() + ": " + str, line, column);
-            _Writer.Flush();
+
+            if (_Writer != null)
+            {
+                _Writer.WriteLine("[{0}]({1}) " + level.ToString() + ": " + str, line, column);
+                _Writer.Flush();
+            }
 
             if (level == LogLevel.Warning)
                 _WarningCount++;
@@ -84,11 +89,16 @@ namespace PML
         {
             Log((LogLevel)level, str);
         }
+
         public void Log(LogLevel level, string str)
         {
             Console.WriteLine(level.ToString() + ": " + str);
-            _Writer.WriteLine(level.ToString() + ": " + str);
-            _Writer.Flush();
+
+            if (_Writer != null)
+            {
+                _Writer.WriteLine(level.ToString() + ": " + str);
+                _Writer.Flush();
+            }
 
             if (level == LogLevel.Warning)
                 _WarningCount++;

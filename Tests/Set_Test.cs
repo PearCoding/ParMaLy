@@ -19,7 +19,7 @@ namespace PML.Tests
         [Test]
         public void First()
         {
-            Environment env = new Environment(new Logger());
+            Environment env = new Environment(new Logger(false));
             env.Parse(Test_Source);
             FirstSet.Setup(env);
 
@@ -66,7 +66,7 @@ namespace PML.Tests
         [Test]
         public void Follow()
         {
-            Environment env = new Environment(new Logger());
+            Environment env = new Environment(new Logger(false));
             env.Parse(Test_Source);
             FirstSet.Setup(env);
             FollowSet.Setup(env);
