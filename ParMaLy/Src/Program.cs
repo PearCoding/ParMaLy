@@ -151,7 +151,7 @@ namespace PML
             if (opts.StyleFile == null)
                 style = new Style.Style();
             else
-                style = /*TODO*/ null;
+                style = Style.StyleParser.Parse(File.ReadAllText(opts.StyleFile), logger);
 
             if (!String.IsNullOrEmpty(opts.BreakdownFile))
                 Output.SimpleBreakdown.Print(File.CreateText(opts.BreakdownFile), env);

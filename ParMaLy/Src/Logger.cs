@@ -30,6 +30,7 @@
 
 using System;
 using System.IO;
+using DataLisp;
 
 namespace PML
 {
@@ -42,7 +43,7 @@ namespace PML
         Fatal
     }
 
-    public class Logger
+    public class Logger : DataLisp.Logger
     {
         int _WarningCount = 0;
         public int WarningCount { get { return _WarningCount; } }
@@ -62,6 +63,11 @@ namespace PML
             _Writer = File.CreateText(log);
         }
 
+        public override void Log(int line, int column, DataLisp.LogLevel level, string str)
+        {
+            Log(line, column, (LogLevel)level, str);
+        }
+
         public void Log(int line, int column, LogLevel level, string str)
         {
             System.Console.WriteLine("[{0}]({1}) " + level.ToString() + ": " + str, line, column);
@@ -74,6 +80,10 @@ namespace PML
                 _ErrorCount++;
         }
 
+        public override void Log(DataLisp.LogLevel level, string str)
+        {
+            Log((LogLevel)level, str);
+        }
         public void Log(LogLevel level, string str)
         {
             Console.WriteLine(level.ToString() + ": " + str);

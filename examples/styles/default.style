@@ -1,0 +1,30 @@
+(pml_style
+	:state_dot (dot_style
+		:start_node	"style=filled,fillcolor=\"#666666\",fontcolor=white"
+		:inner_node	"style=filled,fillcolor=\"#ffe070\""
+		
+		:graph		"splines=true,overlap=false,fontname=\"arial\""
+		:edge		"fontname=\"arial\""
+		:node		"fontname=\"arial\""
+		:pos_identificator	"\u2022"
+		
+		:state_id_offset	0
+		
+		:use_node_xlabel	true
+		:node_xlabel_prefix	"I"
+		
+		:use_node_label				true
+		:max_node_label_length		0; 0 = Off
+		:node_label_prefix			""
+		:node_label_justification	"\\l"
+		
+		:use_edge_label		true
+		:edge_label_prefix	""
+		
+		:use_rule_name		true
+		:rule_name_prefix	"<"
+		:rule_name_suffix	">"
+		:token_name_prefix	"'"
+		:token_name_suffix	"'"
+	)
+)

@@ -60,6 +60,7 @@
     <Compile Include="Src\Parser\BTParser.cs" />
     <Compile Include="Src\Parser\LR1.cs" />
     <Compile Include="Src\Parser\SLR1.cs" />
+    <Compile Include="Src\Style\StyleParser.cs" />
     <Compile Include="Src\Style\Style.cs" />
     <Compile Include="Src\Utils\RuleLookahead.cs" />
     <Compile Include="Src\Utils\GotoTable.cs" />

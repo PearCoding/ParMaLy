@@ -55,6 +55,7 @@ namespace PML.Output
                 if(grp != env.Start)
                     writer.WriteLine("\t" + grp.Name + " [" + style.InnerNode + "]");
             }
+
             foreach (var node in grpGraph.Nodes)
             {
                 foreach (var con in node.Connections)
@@ -127,8 +128,8 @@ namespace PML.Output
 
             writer.WriteLine(node.ID
                 + " [" + nodestyle 
-                + (style.UseNodeXLabel ? "" : ",xlabel=\"" + style.NodeXLabelPrefix + (node.ID + style.StateIDOffset) + "\"")
-                + (style.UseNodeLabel ? "" : ",label=\"" + confLabel + "\"") 
+                + (!style.UseNodeXLabel ? "" : ",xlabel=\"" + style.NodeXLabelPrefix + (node.ID + style.StateIDOffset) + "\"")
+                + (!style.UseNodeLabel ? "" : ",label=\"" + confLabel + "\"") 
                 + "];");
 
             foreach(var c in node.Production)
@@ -148,7 +149,7 @@ namespace PML.Output
                 }
 
                 writer.WriteLine(node.ID + " -> " + c.State.ID +
-                    (style.UseEdgeLabel ? "" : " [label=\"" + style.EdgeLabelPrefix + label + "\"") + "];");
+                    (!style.UseEdgeLabel ? "" : " [label=\"" + style.EdgeLabelPrefix + label + "\"") + "];");
             }
 
             foreach (var c in node.Production)
