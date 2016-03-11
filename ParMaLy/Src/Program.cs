@@ -66,7 +66,7 @@ namespace PML
             p.WriteOptionDescriptions(Console.Out);
         }
 
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             Logger logger = new Logger();
             Options opts = new Options();
@@ -113,20 +113,20 @@ namespace PML
             {
                 Console.WriteLine(e.Message);
                 Console.WriteLine("Try `ParMaLy --help' for more information.");
-                return;
+                return -4;
             }
 
             if(opts.ShowHelp)
             {
                 ShowHelp(p);
-                return;
+                return 0;
             }
             
             if (input.Count != 1)
             {
                 Console.WriteLine("No grammar file given.");
                 Console.WriteLine("Try `ParMaLy --help' for more information.");
-                return;
+                return -3;
             }
 
             string file = input[0];
@@ -139,13 +139,16 @@ namespace PML
             catch(Error err)
             {
                 Console.Error.Write(err.Type.ToString());
-                return;
+                return 2;
             }
             catch(FileNotFoundException ex)
             {
                 Console.Error.Write(ex.Message);
-                return;
+                return -2;
             }
+
+            FirstSet.Setup(env);
+            FollowSet.Setup(env);
 
             Style.Style style = null;
             if (opts.StyleFile == null)
@@ -172,7 +175,7 @@ namespace PML
                 {
                     Console.WriteLine("Unknown parser selected.");
                     Console.WriteLine("Try `ParMaLy --help' for more information.");
-                    return;
+                    return -1;
                 }
 
                 if (opts.Parse && parser != null)
@@ -212,6 +215,8 @@ namespace PML
                     }
                 }
             }
+
+            return logger.ErrorCount != 0 ? 1 : 0;
         }
     }
 }

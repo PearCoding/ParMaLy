@@ -60,80 +60,116 @@ namespace PML.Parser
             if (env.Start == null || env.Start.Rules.Count == 0)
                 return;
 
-            LR0 lr0 = new LR0();
-            lr0.GenerateStates(env, logger);
-            List<RuleState> lr0States = lr0.States;
-
-            ExtractState(lr0.StartState, logger);           
-        }
-
-        void ExtractState(RuleState lr0State, Logger logger)
-        {
-            var dict = BigFollowSet(lr0State);
-            RuleState lr1State = new RuleState(0);
-            _StartState = lr1State;
-
-            foreach (var conf0 in lr0State.Configurations)
+            RuleState state = new RuleState(_States.Count);
+            foreach (Rule r in env.Start.Rules)
             {
-                if (dict.ContainsKey(conf0.Rule.Group))
-                {
-                    var l = dict[conf0.Rule.Group];
-
-                    foreach (var s in l)
-                    {
-                        var conf = new RuleConfiguration(conf0.Rule, conf0.Pos, new RuleLookahead(s));
-                        lr1State.Configurations.Add(conf);
-                    }
-                }
-                else
-                {
-                    logger.Log(LogLevel.Error, "Configuration rule group should be in (big) follow set, but isn't.");
-                }
+                state.Configurations.Add(new RuleConfiguration(r, 0, new RuleLookahead((string)null)));
             }
-            _States.Add(lr1State);
-
-            StepState(lr1State, logger);
+            _StartState = state;
+            _States.Add(state);
+            GenerateClosure(state, env, logger);
+            StepState(state, env, logger);
         }
 
-        void GenerateClosure(RuleState state, Logger logger)
+        void GenerateClosure(RuleState state, Environment env, Logger logger)
         {
-
-        }
-
-        void StepState(RuleState state, Logger logger)
-        {
-
-        }
-
-        Dictionary<RuleGroup, List<string>> BigFollowSet(RuleState state)
-        {
-            Dictionary<RuleGroup, List<string>> sets = new Dictionary<RuleGroup, List<string>>();
-
-            foreach(var conf in state.Configurations)
+            for (int i = 0; i < state.Configurations.Count; ++i)
             {
-                if (!sets.ContainsKey(conf.Rule.Group))
+                var c = state.Configurations[i];
+                if(!c.IsLast)
                 {
-                    var list = new List<string>();
-                    
-                    foreach (var conf2 in state.Configurations)
+                    var t = c.GetNext();
+
+                    if(t.Type == RuleTokenType.Rule)
                     {
-                        if (!conf2.IsLast &&
-                            conf2.GetNext().Type == RuleTokenType.Rule &&
-                            conf2.GetNext().Name == conf.Rule.Group.Name)
+                        var grp = env.GroupByName(t.Name);
+
+                        if(grp == null)
                         {
-                            foreach (var s in conf2.Rule.Group.FollowSet)
+                            logger.Log(LogLevel.Error, "Unknown rule '" + t.Name + "' in state " + state.ID);
+                        }
+                        else
+                        {
+                            List<RuleToken> tmp;
+                            int newp = c.Pos + 1;
+                            if (c.Rule.Tokens.Count > newp)
+                                tmp = c.Rule.Tokens.GetRange(newp, c.Rule.Tokens.Count - newp);
+                            else
+                                tmp = new List<RuleToken>();
+
+                            List<string> delta = new List<string>();
+                            foreach (var look in c.Lookaheads.Lookaheads)
                             {
-                                if(!list.Contains(s))
-                                    list.Add(s);
+                                var tmpL = new List<RuleToken>(tmp);
+                                tmpL.Add(new RuleToken(c.Rule, RuleTokenType.Token, look[0]));//This is the point why we have LR(1) not LR(k)
+                                var l = FirstSet.Generate(env, tmpL);
+                                foreach(var s in l)//Really union?
+                                {
+                                    if (!delta.Contains(s))
+                                        delta.Add(s);
+                                }
+                            }
+                            
+                            foreach (var r in grp.Rules)
+                            {
+                                RuleLookaheadSet set = new RuleLookaheadSet(delta.ToArray());
+
+                                RuleConfiguration conf2 = new RuleConfiguration(r, 0, set);
+                                if (!state.Configurations.Contains(conf2))
+                                {
+                                    state.Configurations.Add(conf2);
+                                }
                             }
                         }
                     }
-
-                    sets[conf.Rule.Group] = list;
                 }
             }
+        }
 
-            return sets;
+        void StepState(RuleState state, Environment env, Logger logger)
+        {
+            foreach (var c in state.Configurations)
+            {
+                if (!c.IsLast)
+                {
+                    RuleState newState = new RuleState(_States.Count);
+                    newState.Configurations.Add(new RuleConfiguration(c.Rule, c.Pos + 1, c.Lookaheads));
+
+                    var t = c.GetNext();
+                    foreach (var c2 in state.Configurations)
+                    {
+                        if (!c2.IsLast && c2.GetNext().Type == t.Type && c2.GetNext().Name == t.Name &&
+                            c.Lookaheads == c2.Lookaheads)
+                        {
+                            var n = new RuleConfiguration(c2.Rule, c2.Pos + 1, c2.Lookaheads);
+                            if (!newState.Configurations.Contains(n))
+                                newState.Configurations.Add(n);
+                        }
+                    }
+
+                    GenerateClosure(newState, env, logger);
+
+                    if (!_States.Contains(newState))
+                    {
+                        _States.Add(newState);
+
+                        var con = new RuleState.Connection();
+                        con.State = newState;
+                        con.Token = t;
+                        state.Production.Add(con);
+
+                        StepState(newState, env, logger);
+                    }
+                    else
+                    {
+                        var oldState = _States[_States.IndexOf(newState)];
+                        var con = new RuleState.Connection();
+                        con.State = oldState;
+                        con.Token = t;
+                        state.Production.Add(con);
+                    }
+                }
+            }
         }
 
         public void GenerateActionTable(Environment env, Logger logger)
@@ -160,7 +196,7 @@ namespace PML.Parser
                     {
                         RuleToken next = conf.GetNext();
                         RuleState found = null;
-                        foreach(RuleState.Connection c in state.Production)
+                        foreach(RuleState.Connection c in state.Production)//TODO
                         {
                             if(c.Token == next)
                             {

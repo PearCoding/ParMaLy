@@ -29,8 +29,6 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace PML
 {
@@ -42,8 +40,8 @@ namespace PML
         int _Pos;
         public int Pos { get { return _Pos; } }
 
-        RuleLookahead _Lookahead;
-        public RuleLookahead Lookahead { get { return _Lookahead; } }
+        RuleLookaheadSet _Lookaheads = new RuleLookaheadSet();
+        public RuleLookaheadSet Lookaheads { get { return _Lookaheads; } }
 
         public RuleConfiguration(Rule rule, int pos)
         {
@@ -51,11 +49,19 @@ namespace PML
             _Pos = pos;
         }
 
+        public RuleConfiguration(Rule rule, int pos, RuleLookaheadSet set)
+        {
+            _Rule = rule;
+            _Pos = pos;
+            _Lookaheads = set;
+        }
+
         public RuleConfiguration(Rule rule, int pos, RuleLookahead lookahead)
         {
             _Rule = rule;
             _Pos = pos;
-            _Lookahead = lookahead;
+
+            _Lookaheads.Add(lookahead);
         }
 
         public bool IsFirst { get { return Pos == 0; } }
@@ -87,7 +93,7 @@ namespace PML
             if (ReferenceEquals(this, p))
                 return true;
 
-            return (Rule == p.Rule) && (Pos == p.Pos) && _Lookahead == p._Lookahead;
+            return (Rule == p.Rule) && (Pos == p.Pos) && _Lookaheads.Equals(p._Lookaheads);
         }
 
         public override int GetHashCode()

@@ -29,42 +29,50 @@
  */
 
 using System;
+using System.Collections.Generic;
 
 namespace PML
 {
-    public enum RuleTokenType
+    public class RuleLookaheadSet : IEquatable<RuleLookaheadSet>
     {
-        Token,
-        Rule,
-    }
+        List<RuleLookahead> _Lookaheads = new List<RuleLookahead>();
 
-    public class RuleToken : System.IEquatable<RuleToken>
-    {
-        Rule _Parent;
-        public Rule Parent { get { return _Parent; } }
+        public List<RuleLookahead> Lookaheads { get { return _Lookaheads; } }
 
-        RuleTokenType _Type;
-        public RuleTokenType Type { get { return _Type; } }
-
-        string _String;
-        public string Name { get { return _String; } }
-
-        public RuleToken(Rule parent, RuleTokenType type, string str)
+        public RuleLookahead this [int index]
         {
-            _Parent = parent;
-            _Type = type;
-            _String = str;
+            get { return _Lookaheads[index]; }
+        } 
+
+        public RuleLookaheadSet()
+        {
         }
 
-        public bool Equals(RuleToken other)
+        public RuleLookaheadSet(string[] tokens)
         {
-            if ((object)other == null)
+            foreach(var s in tokens)
+                _Lookaheads.Add(new RuleLookahead(tokens));
+        }
+
+        public void Add(RuleLookahead lookahead)
+        {
+            _Lookaheads.Add(lookahead);
+        }
+
+        public bool Empty { get { return _Lookaheads.Count == 0; } }
+
+        public bool Equals(RuleLookaheadSet p)
+        {
+            if ((object)p == null)
                 return false;
 
-            if (ReferenceEquals(this, other))
+            if (ReferenceEquals(this, p))
                 return true;
 
-            return _Parent == other._Parent && _Type == other._Type && _String == other._String;
+            if (_Lookaheads.Count != p._Lookaheads.Count)
+                return false;
+
+            return RuleState.ScrambledEquals(_Lookaheads, p._Lookaheads);
         }
     }
 }

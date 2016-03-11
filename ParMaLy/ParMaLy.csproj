@@ -62,6 +62,7 @@
     <Compile Include="Src\Parser\SLR1.cs" />
     <Compile Include="Src\Style\StyleParser.cs" />
     <Compile Include="Src\Style\Style.cs" />
+    <Compile Include="Src\Utils\RuleLookaheadSet.cs" />
     <Compile Include="Src\Utils\RuleLookahead.cs" />
     <Compile Include="Src\Utils\GotoTable.cs" />
     <Compile Include="Src\Utils\ActionTable.cs" />

@@ -75,7 +75,6 @@ namespace PML.Output
             }
 
             writer.WriteLine("First Sets:");
-            FirstSet.Setup(env);
             foreach (RuleGroup grp in env.Groups)
             {
                 writer.WriteLine("  " + grp.Name + ": { " 
@@ -84,7 +83,6 @@ namespace PML.Output
             }
 
             writer.WriteLine("Follow Sets:");
-            FollowSet.Setup(env);
             foreach (RuleGroup grp in env.Groups)
             {
                 writer.WriteLine("  " + grp.Name + ": { "
