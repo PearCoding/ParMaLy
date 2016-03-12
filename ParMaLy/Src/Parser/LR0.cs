@@ -188,14 +188,43 @@ namespace PML.Parser
                 {
                     if(conf.Rule.Group == env.Start && conf.IsLast)
                     {
+                        var a = _ActionTable.Get(state, null);
+                        if (a != null && a.Action == ActionTable.Action.Accept)
+                        {
+                            logger.Log(LogLevel.Warning, "AcceptConflict (AC) in state " + state.ID);
+                        }
+
                         _ActionTable.Set(state, null, ActionTable.Action.Accept, null);
                     }
                     else if(conf.IsLast)
                     {
                         foreach(string t in env.Tokens)
                         {
+                            var a = _ActionTable.Get(state, t);
+                            if (a != null && a.Action == ActionTable.Action.Shift && a.State != state)
+                            {
+                                if (a.Action != ActionTable.Action.Shift)
+                                    logger.Log(LogLevel.Warning, "ReduceReduceConflict (RRC) in state " + state.ID
+                                        + " with lookahead token " + (t == null ? "EOF" : "'" + t + "'"));
+                                else
+                                    logger.Log(LogLevel.Warning, "ShiftReduceConflict (SRC) in state " + state.ID
+                                        + " with lookahead token " + (t == null ? "EOF" : "'" + t + "'"));
+                            }
+
                             _ActionTable.Set(state, t, ActionTable.Action.Reduce, state);
                         }
+
+                        var a2 = _ActionTable.Get(state, null);
+                        if (a2 != null && a2.Action == ActionTable.Action.Shift && a2.State != state)
+                        {
+                            if (a2.Action != ActionTable.Action.Shift)
+                                logger.Log(LogLevel.Warning, "ReduceReduceConflict (RRC) in state " + state.ID
+                                    + " with lookahead token EOF");
+                            else
+                                logger.Log(LogLevel.Warning, "ShiftReduceConflict (SRC) in state " + state.ID
+                                    + " with lookahead token EOF");
+                        }
+
                         _ActionTable.Set(state, null, ActionTable.Action.Reduce, state);
                     }
                     else if(conf.GetNext().Type == RuleTokenType.Token)
@@ -207,10 +236,22 @@ namespace PML.Parser
                             if(c.Token == next)
                             {
                                 if (found != null)//Reduce Reduce Conflict
-                                    logger.Log(LogLevel.Warning, "ReduceReduceConflict in state " + state.ID);
+                                    logger.Log(LogLevel.Warning, "StateItemConflict (SIC) in state " + state.ID
+                                    + " with next token '" + next.Name + "'");
                                 else
                                     found = c.State;
                             }
+                        }
+
+                        var a = _ActionTable.Get(state, next.Name);
+                        if (a != null && a.Action != ActionTable.Action.Shift && a.State != found)
+                        {
+                            if (a.Action != ActionTable.Action.Shift)
+                                logger.Log(LogLevel.Warning, "ShiftReduceConflict (SRC) in state " + state.ID
+                                    + " with next token '" + next.Name + "'");
+                            else
+                                logger.Log(LogLevel.Warning, "ShiftShiftConflict (SSC) in state " + state.ID
+                                    + " with next token '" + next.Name + "'. Constructs RRC.");
                         }
 
                         _ActionTable.Set(state, next.Name, ActionTable.Action.Shift, found);

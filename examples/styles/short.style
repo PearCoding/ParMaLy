@@ -1,0 +1,9 @@
+(pml_style
+	:state_dot (dot_style
+		:start_node	"style=filled,fillcolor=\"#666666\",fontcolor=white"
+		:inner_node	"style=filled,fillcolor=\"#ffe070\""
+		:node		"shape=box,style=\"filled,rounded\",fontname=\"arial\""				
+		:max_node_label_length	100
+		:use_rule_name			false
+	)
+)

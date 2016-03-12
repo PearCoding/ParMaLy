@@ -64,6 +64,17 @@ namespace PML
             Console.WriteLine();
             Console.WriteLine("Options:");
             p.WriteOptionDescriptions(Console.Out);
+            Console.WriteLine();
+            Console.WriteLine("PARSER=");
+            Console.WriteLine("\tlr0\t\t[LR(0)]");
+            Console.WriteLine("\tslr1\t\t[SLR(1)]");
+            Console.WriteLine("\tlalr1\t\t[LALR(1)]");
+            Console.WriteLine("\tlr1\t\t[LR(1)]");
+            Console.WriteLine("\tlr2, lr3...\t[LR(k)]");
+            Console.WriteLine("\tll0\t\t[LL(0)]");
+            Console.WriteLine("\tll1\t\t[LL(1)]");
+            Console.WriteLine("\tll2, ll3...\t[LL(k)]");
+            Console.WriteLine("\trd\t\t[Recursive-Descent]");
         }
 
         static int Main(string[] args)
@@ -73,31 +84,31 @@ namespace PML
             OptionSet p = new OptionSet()
             {
                 { "parser=",
-                    "Choose underlying parser {PARSER}.",
+                    "Choose underlying {PARSER}.",
                     (string s) => opts.Parser = s },
                 { "states=",
-                    "Generate a state file based on the chosen parser.",
+                    "Generate a state {FILE} based on the chosen parser.",
                     (string s) => { opts.StateFile = s; opts.Parse = true; } },
                 { "group-dot=",
-                    "Generate a dot file from the calculated group graph.",
+                    "Generate a dot {FILE} from the calculated group graph.",
                     (string s) => opts.GroupDotFile = s },
                 { "state-dot=",
-                    "Generate a dot file from the calculated state graph.",
+                    "Generate a dot {FILE} from the calculated state graph.",
                     (string s) => { opts.StateDotFile = s; opts.Parse = true; } },
                 { "action-html=",
-                    "Generate a html file from the calculated ACTION table.",
+                    "Generate a html {FILE} from the calculated ACTION table.",
                     (string s) => { opts.ActionHtmlFile = s; opts.Parse = true; } },
                 { "goto-html=",
-                    "Generate a html file from the calculated GOTO table.",
+                    "Generate a html {FILE} from the calculated GOTO table.",
                     (string s) => { opts.GotoHtmlFile = s; opts.Parse = true; } },
                 { "transition-html=",
-                    "Generate a html file from the calculated ACTION and GOTO table.",
+                    "Generate a html {FILE} from the calculated ACTION and GOTO table.",
                     (string s) => { opts.TransitionHtmlFile = s; opts.Parse = true; } },
                 { "breakdown=",
-                    "Generate a general breakdown text file.",
+                    "Generate a general breakdown text {FILE}.",
                     (string s) => opts.BreakdownFile = s },
                 { "style=",
-                    "The underlying style file.",
+                    "The underlying style {FILE}.",
                     (string s) => opts.StyleFile = s },
                 { "h|help",
                     "Show this message and exit.",
@@ -112,7 +123,7 @@ namespace PML
             catch (OptionException e)
             {
                 Console.WriteLine(e.Message);
-                Console.WriteLine("Try `ParMaLy --help' for more information.");
+                Console.WriteLine("Try 'ParMaLy --help' for more information.");
                 return -4;
             }
 
@@ -125,7 +136,7 @@ namespace PML
             if (input.Count != 1)
             {
                 Console.WriteLine("No grammar file given.");
-                Console.WriteLine("Try `ParMaLy --help' for more information.");
+                Console.WriteLine("Try 'ParMaLy --help' for more information.");
                 return -3;
             }
 
@@ -174,7 +185,7 @@ namespace PML
                 else
                 {
                     Console.WriteLine("Unknown parser selected.");
-                    Console.WriteLine("Try `ParMaLy --help' for more information.");
+                    Console.WriteLine("Try 'ParMaLy --help' for more information.");
                     return -1;
                 }
 

@@ -64,6 +64,12 @@ namespace PML.Parser
                 {
                     if(conf.Rule.Group == env.Start && conf.IsLast)
                     {
+                        var a = _ActionTable.Get(state, null);
+                        if (a != null && a.Action == ActionTable.Action.Accept)
+                        {
+                            logger.Log(LogLevel.Warning, "AcceptConflict (AC) in state " + state.ID);
+                        }
+
                         _ActionTable.Set(state, null, ActionTable.Action.Accept, null);
                     }
                     else if(conf.IsLast)//The only difference to LR0 is here!
@@ -71,6 +77,17 @@ namespace PML.Parser
                         var follow = conf.Rule.Group.FollowSet;
                         foreach(string t in follow)
                         {
+                            var a = _ActionTable.Get(state, t);
+                            if (a != null && a.Action == ActionTable.Action.Shift && a.State != state)
+                            {
+                                if (a.Action != ActionTable.Action.Shift)
+                                    logger.Log(LogLevel.Warning, "ReduceReduceConflict (RRC) in state " + state.ID
+                                        + " with lookahead token " + (t == null ? "EOF" : "'" + t + "'"));
+                                else
+                                    logger.Log(LogLevel.Warning, "ShiftReduceConflict (SRC) in state " + state.ID
+                                        + " with lookahead token " + (t == null ? "EOF" : "'" + t + "'"));
+                            }
+
                             _ActionTable.Set(state, t, ActionTable.Action.Reduce, state);
                         }
                     }
@@ -87,6 +104,17 @@ namespace PML.Parser
                                 else
                                     found = c.State;
                             }
+                        }
+
+                        var a = _ActionTable.Get(state, next.Name);
+                        if (a != null && a.Action != ActionTable.Action.Shift && a.State != found)
+                        {
+                            if (a.Action != ActionTable.Action.Shift)
+                                logger.Log(LogLevel.Warning, "ShiftReduceConflict (SRC) in state " + state.ID
+                                    + " with next token '" + next.Name + "'");
+                            else
+                                logger.Log(LogLevel.Warning, "ShiftShiftConflict (SSC) in state " + state.ID
+                                    + " with next token '" + next.Name + "'. Constructs RRC.");
                         }
 
                         _ActionTable.Set(state, next.Name, ActionTable.Action.Shift, found);
