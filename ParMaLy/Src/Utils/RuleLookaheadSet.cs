@@ -59,6 +59,22 @@ namespace PML
             _Lookaheads.Add(lookahead);
         }
 
+        public bool Contains(RuleLookahead lookahead)
+        {
+            return _Lookaheads.Contains(lookahead);
+        }
+
+        public bool Contains(string str)
+        {
+            foreach(var l in _Lookaheads)
+            {
+                if (l[0] == str)
+                    return true;
+            }
+
+            return false;
+        }
+
         public bool Empty { get { return _Lookaheads.Count == 0; } }
 
         public bool Equals(RuleLookaheadSet p)

@@ -82,11 +82,14 @@ namespace PML.Output
                         if(conf.IsLast)
                             writer.Write("# ");
 
-                        if (!conf.Lookaheads.Empty)
-                            writer.Write("[" +
-                                string.Join(",", conf.Lookaheads.Lookaheads.Select(
-                                    v => v.Join("/", (s => (s == null ? "$" : "'" + s + "'")))).ToArray()) 
-                                + "]");
+                        //if (!conf.Lookaheads.Empty)
+                        //    writer.Write("[" +
+                        //        string.Join(",", conf.Lookaheads.Lookaheads.Select(
+                        //            v => v.Join("/", (s => (s == null ? "$" : "'" + s + "'")))).ToArray()) 
+                        //        + "]");
+
+                        if(conf.Lookahead != null)
+                            writer.Write("[" + conf.Lookahead.Join("/", (s => (s == null ? "$" : "'" + s + "'"))) + "]");
                     }
                     writer.WriteLine();
                 }
