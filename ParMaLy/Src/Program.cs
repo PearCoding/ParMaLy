@@ -210,19 +210,19 @@ namespace PML
                     if (!String.IsNullOrEmpty(opts.ActionHtmlFile))
                     {
                         Output.HtmlTable.PrintActionTable(File.CreateText(opts.ActionHtmlFile), parser.States,
-                            parser.ActionTable, env);
+                            parser.ActionTable, env, style.ActionTableHtml);
                     }
 
                     if (!String.IsNullOrEmpty(opts.GotoHtmlFile))
                     {
                         Output.HtmlTable.PrintGotoTable(File.CreateText(opts.GotoHtmlFile), parser.States,
-                            parser.GotoTable, env, true);
+                            parser.GotoTable, env, style.GotoTableHtml);
                     }
 
                     if (!String.IsNullOrEmpty(opts.TransitionHtmlFile))
                     {
                         Output.HtmlTable.PrintTransitionTable(File.CreateText(opts.TransitionHtmlFile), parser.States,
-                            parser.ActionTable, parser.GotoTable, env, true);
+                            parser.ActionTable, parser.GotoTable, env, style.TransitionTableHtml);
                     }
                 }
             }

@@ -34,6 +34,10 @@ namespace PML.Style
     {
         public DotStyle GroupDot = new DotStyle();
         public DotStyle StateDot = new DotStyle();
+
+        public HtmlStyle ActionTableHtml = new HtmlStyle();
+        public HtmlStyle GotoTableHtml = new HtmlStyle();
+        public HtmlStyle TransitionTableHtml = new HtmlStyle();
     }
 
     public class DotStyle
@@ -60,6 +64,48 @@ namespace PML.Style
         public bool UseEdgeLabel = true;
         public string EdgeLabelPrefix = "";
 
+        public bool UseRuleName = true;
+        public string RuleNamePrefix = "<";
+        public string RuleNameSuffix = ">";
+        public string TokenNamePrefix = "'";
+        public string TokenNameSuffix = "'";
+    }
+
+    public class HtmlStyle
+    {
+        public string CSS = "style.css";
+        public string Table_ID = "pml_table";
+        public string Table_Class = "pml_table";
+
+        public string TableAction_Class = "action_table";
+        public string TableGoto_Class = "goto_table";
+        public string TableTransition_Class = "transition_table";
+
+        public string TableTr_ID_Prefix = "row_";
+        public string TableTh_ID_Prefix = "header_";
+        public string TableTd_ID_Prefix = "item_";
+
+        public string TableTr_Class = "";
+        public string TableTh_Class = "";
+        public string TableTd_Class = "";
+
+        public string TableActionShift_Class = "act_shift";
+        public string TableActionReduce_Class = "act_reduce";
+        public string TableActionAccept_Class = "act_accept";
+        public string TableActionEmpty_Class = "act_empty";
+
+        public string TableGotoState_Class = "goto_state";
+        public string TableGotoEmpty_Class = "goto_empty";
+
+        public string TableActionShift_Prefix = "s";
+        public string TableActionReduce_Prefix = "r";
+        public string TableActionAccept_Content = "Accept";
+        public string TableActionEmpty_Content = "";
+
+        public string TableGotoState_Prefix = "";
+        public string TableGotoEmpty_Content = "";
+
+        public string EOF_Identificator = "$";
         public bool UseRuleName = true;
         public string RuleNamePrefix = "<";
         public string RuleNameSuffix = ">";
