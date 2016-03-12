@@ -4,6 +4,9 @@
 
 The "Parser gramMar anaLyzer", short ParMaLy, is an analyzer and generator tool for LR(0), SLR(1), LARL(1) and LR(1) grammars. It can generate the needed tables to write your own parser or validate and help you understand the theory behind those parsers. LR(k) will follow in the future. 
 
+More information can you find in the [Wiki](https://github.com/PearCoding/ParMaLy/wiki/Home)
+or to get started [here](https://github.com/PearCoding/ParMaLy/wiki/Getting-Started).
+
 ### License
 
 Copyright (c) 2016, Ömercan Yazici <omercan AT pearcoding.eu>
