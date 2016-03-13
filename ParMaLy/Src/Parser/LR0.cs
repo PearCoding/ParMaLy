@@ -87,8 +87,8 @@ namespace PML.Parser
                 System.Console.WriteLine("State ID: " + s.ID + " Queue: " + queue.Count + " left. Full state count: " + _States.Count);
 
                 watch.Start();
-                GenerateClosure(s, env, logger);
-                StepState(s, queue, env, logger);
+                GenerateClosure(s, logger);
+                StepState(s, queue, logger);
                 watch.Stop();
 
                 process.TimeElapsed = watch.ElapsedMilliseconds;
@@ -97,7 +97,7 @@ namespace PML.Parser
             }
         }
 
-        void GenerateClosure(RuleState state, Environment env, Logger logger)
+        void GenerateClosure(RuleState state, Logger logger)
         {
             for (int i = 0; i < state.Count; ++i)
             {
@@ -108,27 +108,18 @@ namespace PML.Parser
 
                     if (t.Type == RuleTokenType.Rule)
                     {
-                        var grp = env.GroupByName(t.Name);
-
-                        if (grp == null)
+                        foreach (var r in t.Group.Rules)
                         {
-                            logger.Log(LogLevel.Error, "Unknown rule '" + t.Name + "' in state " + state.ID);
-                        }
-                        else
-                        {
-                            foreach (var r in grp.Rules)
-                            {
-                                RuleConfiguration conf2 = new RuleConfiguration(r, 0);
-                                if (!state.Closure.Contains(conf2))
-                                    state.Closure.Add(conf2);
-                            }
+                            RuleConfiguration conf2 = new RuleConfiguration(r, 0);
+                            if (!state.Closure.Contains(conf2))
+                                state.Closure.Add(conf2);
                         }
                     }
                 }
             }
         }
 
-        void StepState(RuleState state, Queue<RuleState> queue, Environment env, Logger logger)
+        void StepState(RuleState state, Queue<RuleState> queue, Logger logger)
         {
             foreach (var c in state.All)
             {
@@ -281,7 +272,7 @@ namespace PML.Parser
                 {
                     if(c.Token.Type == RuleTokenType.Rule)
                     {
-                        _GotoTable.Set(state, env.GroupByName(c.Token.Name), c.State);
+                        _GotoTable.Set(state, c.Token.Group, c.State);
                     }
                 }
             }

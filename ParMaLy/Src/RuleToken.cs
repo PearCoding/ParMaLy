@@ -49,6 +49,8 @@ namespace PML
         string _String;
         public string Name { get { return _String; } }
 
+        public RuleGroup Group;
+
         public RuleToken(Rule parent, RuleTokenType type, string str)
         {
             _Parent = parent;

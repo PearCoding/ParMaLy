@@ -76,6 +76,31 @@ namespace PML
 
         public RuleConfiguration First { get { return _Header.First(); } }
 
+        class SemiComparar : IEqualityComparer<RuleConfiguration>
+        {
+            public bool Equals(RuleConfiguration x, RuleConfiguration y)
+            {
+                return x.SemiEquals(y);
+            }
+
+            public int GetHashCode(RuleConfiguration obj)
+            {
+                return obj.SemiHashCode;
+            }
+        }
+
+        static SemiComparar _SemiComparar = new SemiComparar();
+        public bool SemiEquals(RuleState p)
+        {
+            if ((object)p == null)
+                return false;
+
+            if (ReferenceEquals(this, p))
+                return true;
+
+            return EnumeratorUtils.ScrambledEquals(_Header, p._Header, _SemiComparar);
+        }
+
         public override bool Equals(Object obj)
         {
             if (obj == null)

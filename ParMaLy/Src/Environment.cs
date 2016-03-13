@@ -128,6 +128,26 @@ namespace PML
                         _Start = grp;
                 }
             }
+
+            // Fourth pass: Set groups in tokens
+            foreach(var r in _Rules)
+            {
+                foreach(var t in r.Tokens)
+                {
+                    if(t.Type == RuleTokenType.Rule)
+                    {
+                        RuleGroup grp = GroupByName(t.Name);
+                        if(grp != null)
+                        {
+                            t.Group = grp;
+                        }
+                        else
+                        {
+                            _Logger.Log(LogLevel.Warning, "Unknown rule '" + t.Name + "' in rule " + r.Group.Name);
+                        }
+                    }
+                }
+            }
         }
 
         public List<RuleToken> ParseLine(string source)

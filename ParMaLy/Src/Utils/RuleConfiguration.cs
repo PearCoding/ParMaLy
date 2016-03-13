@@ -91,6 +91,8 @@ namespace PML
             return (Rule == other.Rule) && (Pos == other.Pos);
         }
 
+        public int SemiHashCode { get { return _Rule.GetHashCode() ^ _Pos.GetHashCode(); } }
+
         public override bool Equals(Object obj)
         {
             if (obj == null)
@@ -107,7 +109,7 @@ namespace PML
 
         public override int GetHashCode()
         {
-            return _Rule.GetHashCode() ^ _Pos.GetHashCode() ^ _Lookaheads.GetHashCode();
+            return SemiHashCode ^ _Lookaheads.GetHashCode();
         }
 
         public static bool operator == (RuleConfiguration a, RuleConfiguration b)

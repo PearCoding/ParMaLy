@@ -146,10 +146,10 @@ namespace PML
 
         public static List<string> Generate(Environment env, string source)
         {
-            return Generate(env, env.ParseLine(source));
+            return Generate(env.ParseLine(source));
         }
 
-        public static List<string> Generate(Environment env, List<RuleToken> tokens)
+        public static List<string> Generate(IEnumerable<RuleToken> tokens)
         {
             List<string> list = new List<string>();
 
@@ -166,7 +166,7 @@ namespace PML
                 }
                 else
                 {
-                    RuleGroup grp = env.GroupByName(t.Name);
+                    RuleGroup grp = t.Group;
 
                     foreach (string s in grp.FirstSet)
                     {

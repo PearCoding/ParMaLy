@@ -35,7 +35,7 @@ namespace PML.Parser
 {
     using Statistics;
     using System.Diagnostics;
-    public class LR1 : IBTParser
+    public class LALR1 : IBTParser
     {
         List<RuleState> _States = new List<RuleState>();
         RuleState _StartState;
@@ -53,7 +53,7 @@ namespace PML.Parser
 
         public BTStatistics Statistics { get { return _Statistics; } }
 
-        public LR1()
+        public LALR1()
         {
         }
 
@@ -97,7 +97,7 @@ namespace PML.Parser
             }
         }
 
-        void GenerateClosure(RuleState state, Logger logger)
+        void GenerateClosure(RuleState state, Logger logger)//Same as LR1
         {
             for (int i = 0; i < state.Count; ++i)
             {
@@ -168,7 +168,18 @@ namespace PML.Parser
                         }
                     }
 
-                    if (!_States.Contains(newState))//Check only header!
+                    // The merge state, which is different to LR(1)
+                    RuleState mergeState = null;
+                    foreach (var s in _States)
+                    {
+                        if (s.SemiEquals(newState))
+                        {
+                            mergeState = s;
+                            break;
+                        }
+                    }
+
+                    if (mergeState == null)//Didn't found anything... Add new
                     {
                         _States.Add(newState);
 
@@ -194,12 +205,26 @@ namespace PML.Parser
                     }
                     else
                     {
-                        var oldState = _States[_States.IndexOf(newState)];
+                        GenerateClosure(newState, logger);
+                        foreach (var c2 in newState.All)
+                        {
+                            foreach(var c3 in mergeState.All)
+                            {
+                                if(c2.SemiEquals(c3))
+                                {
+                                    foreach(var l in c2.Lookaheads)
+                                    {
+                                        if (!c3.Lookaheads.Contains(l))
+                                            c3.Lookaheads.Add(l);
+                                    }
+                                }
+                            }
+                        }
 
                         RuleState.Connection con = null;
                         foreach (var con2 in state.Production)
                         {
-                            if (con2.State == oldState && con2.Token == t)
+                            if (con2.State == mergeState && con2.Token == t)
                             {
                                 con = con2;
                                 break;
@@ -209,7 +234,7 @@ namespace PML.Parser
                         if (con == null)
                         {
                             con = new RuleState.Connection();
-                            con.State = oldState;
+                            con.State = mergeState;
                             con.Token = t;
                             state.Production.Add(con);
                         }

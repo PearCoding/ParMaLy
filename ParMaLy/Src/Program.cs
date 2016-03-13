@@ -182,6 +182,8 @@ namespace PML
                     parser = new Parser.LR0();
                 else if (opts.Parser.ToLower() == "slr1")
                     parser = new Parser.SLR1();
+                else if (opts.Parser.ToLower() == "lalr1")
+                    parser = new Parser.LALR1();
                 else if (opts.Parser.ToLower() == "lr1")
                     parser = new Parser.LR1();
                 else

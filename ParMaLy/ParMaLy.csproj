@@ -59,6 +59,7 @@
     <Compile Include="Src\Output\DotGraph.cs" />
     <Compile Include="Src\Output\SimpleBreakdown.cs" />
     <Compile Include="Src\Parser\BTParser.cs" />
+    <Compile Include="Src\Parser\LARL1.cs" />
     <Compile Include="Src\Parser\LR1.cs" />
     <Compile Include="Src\Parser\SLR1.cs" />
     <Compile Include="Src\Statistics\BTStatistics.cs" />

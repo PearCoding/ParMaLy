@@ -57,11 +57,11 @@ namespace PML
                     RuleToken t = r.Tokens[i];
                     if (t.Type == RuleTokenType.Rule)
                     {
-                        RuleGroup grp = env.GroupByName(t.Name);
+                        RuleGroup grp = t.Group;
                         if (grp.FollowSet == null)
                             grp.FollowSet = new List<string>();
 
-                        var l = FirstSet.Generate(env, r.Tokens.GetRange(i + 1, r.Tokens.Count - i - 1));
+                        var l = FirstSet.Generate(r.Tokens.GetRange(i + 1, r.Tokens.Count - i - 1));
 
                         foreach (string str in l)
                         {
@@ -80,7 +80,7 @@ namespace PML
                     RuleToken t = r.Tokens[i];
                     if (t.Type == RuleTokenType.Rule)
                     {
-                        RuleGroup grp = env.GroupByName(t.Name);
+                        RuleGroup grp = t.Group;
                         if (i == r.Tokens.Count - 1)
                         {
                             foreach (string str in r.Group.FollowSet)
@@ -91,7 +91,7 @@ namespace PML
                         }
                         else
                         {
-                            var l = FirstSet.Generate(env, r.Tokens.GetRange(i + 1, r.Tokens.Count - i - 1));
+                            var l = FirstSet.Generate(r.Tokens.GetRange(i + 1, r.Tokens.Count - i - 1));
 
                             if (l.Contains(null))
                             {
