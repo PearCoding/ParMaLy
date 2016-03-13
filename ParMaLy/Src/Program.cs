@@ -53,6 +53,8 @@ namespace PML
         public string GotoHtmlFile;
         public string TransitionHtmlFile;
 
+        public string ProceedingCSVFile;
+
         public bool ShowHelp = false;
     }
 
@@ -104,6 +106,9 @@ namespace PML
                 { "transition-html=",
                     "Generate a html {FILE} from the calculated ACTION and GOTO table.",
                     (string s) => { opts.TransitionHtmlFile = s; opts.Parse = true; } },
+                { "proceeding-csv=",
+                    "Generate a csv {FILE} from generation process.",
+                    (string s) => { opts.ProceedingCSVFile = s; opts.Parse = true; } },
                 { "breakdown=",
                     "Generate a general breakdown text {FILE}.",
                     (string s) => opts.BreakdownFile = s },
@@ -220,6 +225,12 @@ namespace PML
                     {
                         Output.HtmlTable.PrintTransitionTable(File.CreateText(opts.TransitionHtmlFile), parser.States,
                             parser.ActionTable, parser.GotoTable, env, style.TransitionTableHtml);
+                    }
+
+                    if(!String.IsNullOrEmpty(opts.ProceedingCSVFile))
+                    {
+                        Output.CSV.PrintProceedings(File.CreateText(opts.ProceedingCSVFile), parser.Statistics.Proceedings,
+                            style.ProceedingCSV);
                     }
                 }
             }

@@ -33,7 +33,7 @@ using System.Collections.Generic;
 
 namespace PML.Output
 {
-    class DotGraph
+    public static class DotGraph
     {
         public static void PrintGroupGraph(TextWriter writer, Environment env, Style.DotStyle style)
         {

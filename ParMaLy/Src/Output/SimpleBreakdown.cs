@@ -91,11 +91,19 @@ namespace PML.Output
 
             if (parser != null)
             {
+                writer.WriteLine("Statistics:");
                 var statistics = parser.Statistics;
+                writer.WriteLine("  Elapsed: " + statistics.TimeElapsed + "ms");
+
+                var process = statistics.Proceedings.Aggregate((l, r) => l.TimeElapsed > r.TimeElapsed ? l : r);
+                if(process != null)
+                    writer.WriteLine("  Longest process: State " + process.Job.ID + " with " + process.TimeElapsed + "ms");
+
+                writer.WriteLine("  Conflict count: " + statistics.Conflicts.Count);
+
                 if (statistics.Conflicts.Count != 0)
                 {
-                    writer.WriteLine("Statistics:");
-
+                    writer.WriteLine("  Conflicts:");
                     foreach (var e in statistics.Conflicts)
                     {
                         string special = "";
@@ -122,7 +130,7 @@ namespace PML.Output
                                 break;
                         }
 
-                        writer.WriteLine("\t[" + special + "] State (" + e.State.ID + ")" + token);
+                        writer.WriteLine("    [" + special + "] State (" + e.State.ID + ")" + token);
                     }
                 }
             }

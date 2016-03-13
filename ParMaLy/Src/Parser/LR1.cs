@@ -34,7 +34,7 @@ using System.Linq;
 namespace PML.Parser
 {
     using Statistics;
-
+    using System.Diagnostics;
     public class LR1 : IBTParser
     {
         List<RuleState> _States = new List<RuleState>();
@@ -78,13 +78,20 @@ namespace PML.Parser
             Queue<RuleState> queue = new Queue<RuleState>();
             queue.Enqueue(state);
 
+            Stopwatch watch = new Stopwatch();
             while (queue.Count != 0)
             {
                 var s = queue.Dequeue();
+                BTStatistics.ProcessEntry process = new BTStatistics.ProcessEntry(s, _States.Count, queue.Count);
+
                 System.Console.WriteLine("State ID: " + s.ID + " Queue: " + queue.Count + " left. Full state count: " + _States.Count);
 
                 GenerateClosure(s, env, logger);
                 StepState(s, queue,  env, logger);
+
+                process.TimeElapsed = watch.ElapsedMilliseconds;
+                _Statistics.TimeElapsed += process.TimeElapsed;
+                _Statistics.Proceedings.Add(process);
             }
         }
 

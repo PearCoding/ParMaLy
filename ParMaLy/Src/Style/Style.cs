@@ -38,6 +38,8 @@ namespace PML.Style
         public HtmlStyle ActionTableHtml = new HtmlStyle();
         public HtmlStyle GotoTableHtml = new HtmlStyle();
         public HtmlStyle TransitionTableHtml = new HtmlStyle();
+
+        public CSVStyle ProceedingCSV = new CSVStyle();
     }
 
     public class DotStyle
@@ -111,5 +113,10 @@ namespace PML.Style
         public string RuleNameSuffix = ">";
         public string TokenNamePrefix = "'";
         public string TokenNameSuffix = "'";
+    }
+
+    public class CSVStyle
+    {
+        public string Seperator = ";";
     }
 }
