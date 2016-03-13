@@ -36,9 +36,8 @@ namespace PML.Output
 {
     public static class SimpleBreakdown
     {
-        public static void Print(TextWriter writer, Environment env)
+        public static void Print(TextWriter writer, Environment env, Parser.IBTParser parser)
         {
-            writer.WriteLine("Simple Breakdown>>");
             writer.WriteLine("Tokens: " + String.Join(", ", env.Tokens.Select(s => "'" + s + "'").ToArray()));
             writer.WriteLine("Groups: " + String.Join(", ", env.Groups.Select(s => s.Name).ToArray()));
             writer.WriteLine("Start: " + (env.Start == null ? "NOT SET!" : env.Start.Name));
@@ -88,6 +87,44 @@ namespace PML.Output
                 writer.WriteLine("  " + grp.Name + ": { "
                     + String.Join(", ", grp.FollowSet.Select(s => (s == null ? "/*EOF*/" : "'" + s + "'")).ToArray())
                     + " }");
+            }
+
+            if (parser != null)
+            {
+                var statistics = parser.Statistics;
+                if (statistics.Conflicts.Count != 0)
+                {
+                    writer.WriteLine("Statistics:");
+
+                    foreach (var e in statistics.Conflicts)
+                    {
+                        string special = "";
+                        string token = "";
+                        switch (e.Type)
+                        {
+                            case Statistics.BTStatistics.ConflictType.ShiftReduce:
+                                special = "SRC";
+                                token = " " + e.Token != null ? e.Token : "$";
+                                break;
+                            case Statistics.BTStatistics.ConflictType.ReduceReduce:
+                                special = "RRC";
+                                token = " " + e.Token != null ? e.Token : "$";
+                                break;
+                            case Statistics.BTStatistics.ConflictType.ShiftShift:
+                                special = "SSC";
+                                token = " " + e.Token != null ? e.Token : "$";
+                                break;
+                            case Statistics.BTStatistics.ConflictType.Accept:
+                                special = "AC";
+                                break;
+                            case Statistics.BTStatistics.ConflictType.Internal:
+                                special = "Int";
+                                break;
+                        }
+
+                        writer.WriteLine("\t[" + special + "] State (" + e.State.ID + ")" + token);
+                    }
+                }
             }
 
             writer.Flush();

@@ -160,6 +160,7 @@ namespace PML
 
             FirstSet.Setup(env);
             FollowSet.Setup(env);
+            Parser.IBTParser parser = null;
 
             Style.Style style = null;
             if (opts.StyleFile == null)
@@ -167,15 +168,11 @@ namespace PML
             else
                 style = Style.StyleParser.Parse(File.ReadAllText(opts.StyleFile), logger);
 
-            if (!String.IsNullOrEmpty(opts.BreakdownFile))
-                Output.SimpleBreakdown.Print(File.CreateText(opts.BreakdownFile), env);
-
             if (!String.IsNullOrEmpty(opts.GroupDotFile))
                 Output.DotGraph.PrintGroupGraph(File.CreateText(opts.GroupDotFile), env, style.GroupDot);
 
             if (!String.IsNullOrEmpty(opts.Parser))
             {
-                Parser.IBTParser parser;
                 if (opts.Parser.ToLower() == "lr0")
                     parser = new Parser.LR0();
                 else if (opts.Parser.ToLower() == "slr1")
@@ -226,6 +223,9 @@ namespace PML
                     }
                 }
             }
+
+            if (!String.IsNullOrEmpty(opts.BreakdownFile))
+                Output.SimpleBreakdown.Print(File.CreateText(opts.BreakdownFile), env, parser);
 
             return logger.ErrorCount != 0 ? 1 : 0;
         }

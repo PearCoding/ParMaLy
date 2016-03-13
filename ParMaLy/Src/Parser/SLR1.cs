@@ -32,10 +32,13 @@ using System.Collections.Generic;
 
 namespace PML.Parser
 {
+    using Statistics;
+
     public class SLR1 : IBTParser
     {
         LR0 _LR0 = new Parser.LR0();
         ActionTable _ActionTable = new ActionTable();
+        BTStatistics _Statistics;
 
         public List<RuleState> States { get { return _LR0.States; } }
 
@@ -45,6 +48,8 @@ namespace PML.Parser
 
         public GotoTable GotoTable { get { return _LR0.GotoTable; } }
 
+        public BTStatistics Statistics { get { return _Statistics; } }
+
         public SLR1()
         {
         }
@@ -52,6 +57,7 @@ namespace PML.Parser
         public void GenerateStates(Environment env, Logger logger)
         {
             _LR0.GenerateStates(env, logger);
+            _Statistics = _LR0.Statistics;
         }
         
         public void GenerateActionTable(Environment env, Logger logger)
@@ -66,9 +72,7 @@ namespace PML.Parser
                     {
                         var a = _ActionTable.Get(state, null);
                         if (a != null && a.Action == ActionTable.Action.Accept)
-                        {
-                            logger.Log(LogLevel.Warning, "AcceptConflict (AC) in state " + state.ID);
-                        }
+                            Statistics.Conflicts.Add(new BTStatistics.ConflictEntry(BTStatistics.ConflictType.Accept, state));
 
                         _ActionTable.Set(state, null, ActionTable.Action.Accept, null);
                     }
@@ -81,11 +85,9 @@ namespace PML.Parser
                             if (a != null && a.Action == ActionTable.Action.Shift && a.State != state)
                             {
                                 if (a.Action != ActionTable.Action.Shift)
-                                    logger.Log(LogLevel.Warning, "ReduceReduceConflict (RRC) in state " + state.ID
-                                        + " with lookahead token " + (t == null ? "EOF" : "'" + t + "'"));
+                                    Statistics.Conflicts.Add(new BTStatistics.ConflictEntry(BTStatistics.ConflictType.ReduceReduce, state, t));
                                 else
-                                    logger.Log(LogLevel.Warning, "ShiftReduceConflict (SRC) in state " + state.ID
-                                        + " with lookahead token " + (t == null ? "EOF" : "'" + t + "'"));
+                                    Statistics.Conflicts.Add(new BTStatistics.ConflictEntry(BTStatistics.ConflictType.ShiftReduce, state, t));
                             }
 
                             _ActionTable.Set(state, t, ActionTable.Action.Reduce, state);
@@ -99,8 +101,8 @@ namespace PML.Parser
                         {
                             if(c.Token == next)
                             {
-                                if (found != null)//Reduce Reduce Conflict
-                                    logger.Log(LogLevel.Warning, "ReduceReduceConflict in state " + state.ID);
+                                if (found != null)
+                                    Statistics.Conflicts.Add(new BTStatistics.ConflictEntry(BTStatistics.ConflictType.Internal, state, next.Name));
                                 else
                                     found = c.State;
                             }
@@ -110,11 +112,9 @@ namespace PML.Parser
                         if (a != null && a.Action != ActionTable.Action.Shift && a.State != found)
                         {
                             if (a.Action != ActionTable.Action.Shift)
-                                logger.Log(LogLevel.Warning, "ShiftReduceConflict (SRC) in state " + state.ID
-                                    + " with next token '" + next.Name + "'");
+                                Statistics.Conflicts.Add(new BTStatistics.ConflictEntry(BTStatistics.ConflictType.ShiftReduce, state, next.Name));
                             else
-                                logger.Log(LogLevel.Warning, "ShiftShiftConflict (SSC) in state " + state.ID
-                                    + " with next token '" + next.Name + "'. Constructs RRC.");
+                                Statistics.Conflicts.Add(new BTStatistics.ConflictEntry(BTStatistics.ConflictType.ShiftShift, state, next.Name));
                         }
 
                         _ActionTable.Set(state, next.Name, ActionTable.Action.Shift, found);

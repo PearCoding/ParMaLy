@@ -43,6 +43,8 @@ namespace PML.Parser
 
         GotoTable GotoTable { get; }
 
+        Statistics.BTStatistics Statistics { get; }
+
         void GenerateStates(Environment env, Logger logger);
 
         void GenerateActionTable(Environment env, Logger logger);

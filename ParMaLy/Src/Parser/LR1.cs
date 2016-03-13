@@ -33,12 +33,15 @@ using System.Linq;
 
 namespace PML.Parser
 {
+    using Statistics;
+
     public class LR1 : IBTParser
     {
         List<RuleState> _States = new List<RuleState>();
         RuleState _StartState;
         ActionTable _ActionTable = new ActionTable();
         GotoTable _GotoTable = new GotoTable();
+        BTStatistics _Statistics;
 
         public List<RuleState> States { get { return _States; } }
 
@@ -48,6 +51,8 @@ namespace PML.Parser
 
         public GotoTable GotoTable { get { return _GotoTable; } }
 
+        public BTStatistics Statistics { get { return _Statistics; } }
+
         public LR1()
         {
         }
@@ -56,6 +61,7 @@ namespace PML.Parser
         {
             _States.Clear();
             _StartState = null;
+            _Statistics = new BTStatistics();
 
             // We can not start without a 'Start' token.
             if (env.Start == null || env.Start.Rules.Count == 0)
@@ -222,13 +228,11 @@ namespace PML.Parser
                 {
                     if(conf.Rule.Group == env.Start &&
                         conf.IsLast &&
-                        /*conf.Lookahead[0] == null*/ conf.Lookaheads.Contains((string)null))
+                        conf.Lookaheads.Contains((string)null))
                     {
                         var a = _ActionTable.Get(state, null);
                         if (a != null && a.Action == ActionTable.Action.Accept)
-                        {
-                            logger.Log(LogLevel.Error, "AcceptConflict (AC) in state " + state.ID);
-                        }
+                            Statistics.Conflicts.Add(new BTStatistics.ConflictEntry(BTStatistics.ConflictType.Accept, state));
 
                         _ActionTable.Set(state, null, ActionTable.Action.Accept, null);
                     }
@@ -240,15 +244,11 @@ namespace PML.Parser
                             if (a != null && a.Action == ActionTable.Action.Shift && a.State != state)
                             {
                                 if (a.Action != ActionTable.Action.Shift)
-                                    logger.Log(LogLevel.Error, "ReduceReduceConflict (RRC) in state " + state.ID
-                                        + " with lookahead token '" + l[0] + "'");
+                                    Statistics.Conflicts.Add(new BTStatistics.ConflictEntry(BTStatistics.ConflictType.ReduceReduce, state, l[0]));
                                 else
-                                    logger.Log(LogLevel.Error, "ShiftReduceConflict (SRC) in state " + state.ID
-                                        + " with lookahead token '" + l[0] + "'");
+                                    Statistics.Conflicts.Add(new BTStatistics.ConflictEntry(BTStatistics.ConflictType.ShiftReduce, state, l[0]));
                             }
 
-                            //_ActionTable.Set(state, conf.Lookahead[0], ActionTable.Action.Reduce, state);
-                        
                             _ActionTable.Set(state, l[0], ActionTable.Action.Reduce, state);
                         }
                     }
@@ -260,9 +260,8 @@ namespace PML.Parser
                         {
                             if(c.Token == next)
                             {
-                                if (found != null)//State Item Conflict... Not a grammar failure.
-                                    logger.Log(LogLevel.Error, "StateItemConflict (SIC) in state " + state.ID
-                                    + " with next token '" + next.Name + "'");
+                                if (found != null)
+                                    Statistics.Conflicts.Add(new BTStatistics.ConflictEntry(BTStatistics.ConflictType.Internal, state, next.Name));
                                 else
                                     found = c.State;
                             }
@@ -271,12 +270,10 @@ namespace PML.Parser
                         var a = _ActionTable.Get(state, next.Name);
                         if (a != null && a.Action != ActionTable.Action.Shift && a.State != found)
                         {
-                            if(a.Action != ActionTable.Action.Shift)
-                                logger.Log(LogLevel.Error, "ShiftReduceConflict (SRC) in state " + state.ID 
-                                    + " with next token '" + next.Name + "'");
+                            if (a.Action != ActionTable.Action.Shift)
+                                Statistics.Conflicts.Add(new BTStatistics.ConflictEntry(BTStatistics.ConflictType.ShiftReduce, state, next.Name));
                             else
-                                logger.Log(LogLevel.Error, "ShiftShiftConflict (SSC) in state " + state.ID
-                                    + " with next token '" + next.Name + "'. Constructs RRC.");
+                                Statistics.Conflicts.Add(new BTStatistics.ConflictEntry(BTStatistics.ConflictType.ShiftShift, state, next.Name));
                         }
 
                         _ActionTable.Set(state, next.Name, ActionTable.Action.Shift, found);
