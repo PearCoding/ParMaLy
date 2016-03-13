@@ -56,6 +56,15 @@ namespace PML
             _String = str;
         }
 
+        public override bool Equals(Object obj)
+        {
+            if (obj == null)
+                return false;
+
+            RuleToken p = obj as RuleToken;
+            return Equals(p);
+        }
+
         public bool Equals(RuleToken other)
         {
             if ((object)other == null)
@@ -65,6 +74,27 @@ namespace PML
                 return true;
 
             return _Parent == other._Parent && _Type == other._Type && _String == other._String;
+        }
+
+        public override int GetHashCode()
+        {
+            return _Parent.GetHashCode() ^ _Type.GetHashCode() ^ _String.GetHashCode();
+        }
+
+        public static bool operator ==(RuleToken a, RuleToken b)
+        {
+            if (Object.ReferenceEquals(a, b))
+                return true;
+
+            if ((object)a == null)
+                return false;
+
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(RuleToken a, RuleToken b)
+        {
+            return !(a == b);
         }
     }
 }

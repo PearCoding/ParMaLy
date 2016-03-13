@@ -175,7 +175,7 @@ namespace PML
 
             if (!String.IsNullOrEmpty(opts.Parser))
             {
-                Parser.BTParser parser;
+                Parser.IBTParser parser;
                 if (opts.Parser.ToLower() == "lr0")
                     parser = new Parser.LR0();
                 else if (opts.Parser.ToLower() == "slr1")

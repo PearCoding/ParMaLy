@@ -94,7 +94,7 @@ namespace PML.Output
             string confLabel = "";
             if (style.UseNodeLabel)
             {
-                foreach (RuleConfiguration conf in node.Configurations)
+                foreach (RuleConfiguration conf in node.All)
                 {
                     int p = 0;
                     foreach (var t in conf.Rule.Tokens)
@@ -123,7 +123,7 @@ namespace PML.Output
             }
 
             string nodestyle = style.InnerNode;
-            if (node.First.Rule.Group == env.Start && node.First.Pos == 0)
+            if (node.Count != 0 && node.First.Rule.Group == env.Start && node.First.Pos == 0)
                 nodestyle = style.StartNode;
 
             writer.WriteLine(node.ID

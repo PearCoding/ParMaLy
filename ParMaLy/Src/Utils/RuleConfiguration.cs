@@ -40,11 +40,11 @@ namespace PML
         int _Pos;
         public int Pos { get { return _Pos; } }
 
-        //RuleLookaheadSet _Lookaheads = new RuleLookaheadSet();
-        //public RuleLookaheadSet Lookaheads { get { return _Lookaheads; } }
+        RuleLookaheadSet _Lookaheads = new RuleLookaheadSet();
+        public RuleLookaheadSet Lookaheads { get { return _Lookaheads; } }
 
-        RuleLookahead _Lookahead;
-        public RuleLookahead Lookahead { get { return _Lookahead; } }
+        //RuleLookahead _Lookahead;
+        //public RuleLookahead Lookahead { get { return _Lookahead; } }
 
         public RuleConfiguration(Rule rule, int pos)
         {
@@ -52,20 +52,20 @@ namespace PML
             _Pos = pos;
         }
 
-        //public RuleConfiguration(Rule rule, int pos, RuleLookaheadSet set)
-        //{
-        //    _Rule = rule;
-        //    _Pos = pos;
-        //    _Lookaheads = set;
-        //}
+        public RuleConfiguration(Rule rule, int pos, RuleLookaheadSet set)
+        {
+            _Rule = rule;
+            _Pos = pos;
+            _Lookaheads = set;
+        }
 
         public RuleConfiguration(Rule rule, int pos, RuleLookahead lookahead)
         {
             _Rule = rule;
             _Pos = pos;
 
-            //_Lookaheads.Add(lookahead);
-            _Lookahead = lookahead;
+            _Lookaheads.Add(lookahead);
+            //_Lookahead = lookahead;
         }
 
         public bool IsFirst { get { return Pos == 0; } }
@@ -80,6 +80,17 @@ namespace PML
             return Rule.Tokens[Pos];
         }
 
+        public bool SemiEquals(RuleConfiguration other)
+        {
+            if ((object)other == null)
+                return false;
+
+            if (ReferenceEquals(this, other))
+                return true;
+
+            return (Rule == other.Rule) && (Pos == other.Pos);
+        }
+
         public override bool Equals(Object obj)
         {
             if (obj == null)
@@ -91,18 +102,12 @@ namespace PML
         
         public bool Equals(RuleConfiguration p)
         {
-            if ((object)p == null)
-                return false;
-
-            if (ReferenceEquals(this, p))
-                return true;
-
-            return (Rule == p.Rule) && (Pos == p.Pos) && _Lookahead == p._Lookahead; // _Lookaheads.Equals(p._Lookaheads);
+            return SemiEquals(p) && _Lookaheads.Equals(p._Lookaheads); // _Lookaheads.Equals(p._Lookaheads);
         }
 
         public override int GetHashCode()
         {
-            return _Rule.GetHashCode() ^ _Pos;
+            return _Rule.GetHashCode() ^ _Pos.GetHashCode() ^ _Lookaheads.GetHashCode();
         }
 
         public static bool operator == (RuleConfiguration a, RuleConfiguration b)

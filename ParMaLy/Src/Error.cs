@@ -29,6 +29,8 @@
  */
 
 using System;
+using System.Runtime.Serialization;
+using System.Security.Permissions;
 
 namespace PML
 {
@@ -43,7 +45,8 @@ namespace PML
         Internal_LookParamLessOne,
     }
 
-    public class Error : Exception
+    [Serializable()]
+    public class Error : Exception, ISerializable
     {
         private ErrorType _Type;
         private Object[] _Values;
@@ -88,6 +91,24 @@ namespace PML
         public Object Value(int i)
         {
             return _Values[i];
+        }
+
+        protected Error(SerializationInfo info, StreamingContext context) :
+             base( info, context )
+        {
+            _Type = (ErrorType)info.GetInt32("ERR_Type");
+            _Values = info.GetValue("ERR_Values", _Values.GetType()) as object[];
+        }
+
+        [SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null)
+                throw new System.ArgumentNullException("info");
+            info.AddValue("ERR_Type", (int)_Type);
+            info.AddValue("ERR_Values", _Values);
+
+            base.GetObjectData(info, context);
         }
     }
 }

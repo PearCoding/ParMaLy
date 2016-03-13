@@ -28,11 +28,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
+using System;
 using System.Collections.Generic;
 
 namespace PML
 {
-    public class RuleGroup
+    public class RuleGroup : IEquatable<RuleGroup>
     {
         int _ID;
         public int ID { get { return _ID; } }
@@ -49,6 +50,47 @@ namespace PML
         {
             _ID = id;
             _Name = name;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+
+            RuleGroup p = obj as RuleGroup;
+            return Equals(p);
+        }
+
+        public bool Equals(RuleGroup other)
+        {
+            if ((object)other == null)
+                return false;
+
+            if (ReferenceEquals(this, other))
+                return true;
+
+            return _ID == other._ID;//We assume ID is unique.
+        }
+
+        public override int GetHashCode()
+        {
+            return _ID.GetHashCode();
+        }
+
+        public static bool operator ==(RuleGroup a, RuleGroup b)
+        {
+            if (object.ReferenceEquals(a, b))
+                return true;
+
+            if ((object)a == null)
+                return false;
+
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(RuleGroup a, RuleGroup b)
+        {
+            return !(a == b);
         }
     }
 }

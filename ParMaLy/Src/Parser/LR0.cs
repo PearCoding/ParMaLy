@@ -32,7 +32,7 @@ using System.Collections.Generic;
 
 namespace PML.Parser
 {
-    public class LR0 : BTParser
+    public class LR0 : IBTParser
     {
         List<RuleState> _States = new List<RuleState>();
         RuleState _StartState;
@@ -54,126 +54,130 @@ namespace PML.Parser
         public void GenerateStates(Environment env, Logger logger)
         {
             _States.Clear();
+            _StartState = null;
 
             // We can not start without a 'Start' token.
             if (env.Start == null || env.Start.Rules.Count == 0)
                 return;
 
-            var l = new List<RuleConfiguration>();
+            RuleState state = new RuleState(_States.Count);
             foreach (Rule r in env.Start.Rules)
             {
-                l.Add(new RuleConfiguration(r, -1));
+                state.Header.Add(new RuleConfiguration(r, 0));
             }
-            StepState(env, l, null, null);
+            _StartState = state;
+            _States.Add(state);
+
+            Queue<RuleState> queue = new Queue<RuleState>();
+            queue.Enqueue(state);
+
+            while (queue.Count != 0)
+            {
+                var s = queue.Dequeue();
+                System.Console.WriteLine("State ID: " + s.ID + " Queue: " + queue.Count + " left. Full state count: " + _States.Count);
+
+                GenerateClosure(s, env, logger);
+                StepState(s, queue, env, logger);
+            }
         }
 
-        void GenerateState(Environment env, Rule r, RuleState state, int p)
+        void GenerateClosure(RuleState state, Environment env, Logger logger)
         {
-            RuleConfiguration conf = new RuleConfiguration(r, p);
-            state.Configurations.Add(conf);
-            
-            if(!conf.IsLast)
+            for (int i = 0; i < state.Count; ++i)
             {
-                RuleToken t = conf.GetNext();
-
-                if (t.Type != RuleTokenType.Token)
+                var c = state[i];
+                if (!c.IsLast)
                 {
-                    RuleGroup g = env.GroupByName(t.Name);
+                    var t = c.GetNext();
 
-                    foreach (Rule r2 in g.Rules)
+                    if (t.Type == RuleTokenType.Rule)
                     {
-                        bool found = false;
-                        foreach (RuleConfiguration c in state.Configurations)
+                        var grp = env.GroupByName(t.Name);
+
+                        if (grp == null)
                         {
-                            if(c.Rule == r2 && c.Pos == 0)
+                            logger.Log(LogLevel.Error, "Unknown rule '" + t.Name + "' in state " + state.ID);
+                        }
+                        else
+                        {
+                            foreach (var r in grp.Rules)
                             {
-                                found = true;
+                                RuleConfiguration conf2 = new RuleConfiguration(r, 0);
+                                if (!state.Closure.Contains(conf2))
+                                    state.Closure.Add(conf2);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        void StepState(RuleState state, Queue<RuleState> queue, Environment env, Logger logger)
+        {
+            foreach (var c in state.All)
+            {
+                if (!c.IsLast)
+                {
+                    RuleState newState = new RuleState(_States.Count);
+                    newState.Header.Add(new RuleConfiguration(c.Rule, c.Pos + 1));//c.Lookaheads
+
+                    var t = c.GetNext();
+                    foreach (var c2 in state.All)
+                    {
+                        if (!c2.IsLast && c2.GetNext().Type == t.Type && c2.GetNext().Name == t.Name)
+                        {
+                            var n = new RuleConfiguration(c2.Rule, c2.Pos + 1);
+                            if (!newState.Header.Contains(n))
+                                newState.Header.Add(n);
+                        }
+                    }
+
+                    if (!_States.Contains(newState))//Check only header!
+                    {
+                        _States.Add(newState);
+
+                        RuleState.Connection con = null;
+                        foreach (var con2 in state.Production)
+                        {
+                            if (con2.State == newState && con2.Token == t)
+                            {
+                                con = con2;
                                 break;
                             }
                         }
 
-                        if(!found)
+                        if (con == null)
                         {
-                            GenerateState(env, r2, state, 0);
-                        }
-                    }
-                }
-            }
-        }
-
-        void StepState(Environment env, List<RuleConfiguration> confs, RuleState parent, RuleConfiguration producer)
-        {
-            RuleState state = new RuleState(_States.Count);
-
-            foreach (RuleConfiguration c in confs)
-            {
-                if (!c.IsLast)
-                {
-                    GenerateState(env, c.Rule, state, c.Pos + 1);
-                }
-            }
-
-            if (!_States.Contains(state))
-            {
-                if (parent != null)
-                {
-                    bool found = false;
-                    foreach (var c in parent.Production)
-                    {
-                        if (c.State == state)
-                        {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found)
-                    {
-                        RuleState.Connection c = new RuleState.Connection();
-                        c.State = state;
-                        c.Token = producer.GetNext();
-                        parent.Production.Add(c);
-                    }
-                }
-                else
-                    _StartState = state;
-
-                _States.Add(state);
-
-                foreach (RuleConfiguration conf in state.Configurations)
-                {
-                    if (!conf.IsLast)
-                    {
-                        RuleToken t = conf.GetNext();
-
-                        List<RuleConfiguration> next = new List<RuleConfiguration>();
-                        foreach (RuleConfiguration c in state.Configurations)
-                        {
-                            if (!c.IsLast && c.GetNext().Type == t.Type && c.GetNext().Name == t.Name)
-                                next.Add(c);
+                            con = new RuleState.Connection();
+                            con.State = newState;
+                            con.Token = t;
+                            state.Production.Add(con);
                         }
 
-                        StepState(env, next, state, conf);
+                        queue.Enqueue(newState);
                     }
-                }
-            }
-            else if (parent != null)
-            {
-                RuleState s2 = _States[_States.IndexOf(state)];
-                bool found = false;
-                foreach(var c in parent.Production)
-                {
-                    if (c.State == s2)
+                    else
                     {
-                        found = true;
-                        break;
+                        var oldState = _States[_States.IndexOf(newState)];
+
+                        RuleState.Connection con = null;
+                        foreach (var con2 in state.Production)
+                        {
+                            if (con2.State == oldState && con2.Token == t)
+                            {
+                                con = con2;
+                                break;
+                            }
+                        }
+
+                        if (con == null)
+                        {
+                            con = new RuleState.Connection();
+                            con.State = oldState;
+                            con.Token = t;
+                            state.Production.Add(con);
+                        }
                     }
-                }
-                if (!found)
-                {
-                    RuleState.Connection c = new RuleState.Connection();
-                    c.State = s2;
-                    c.Token = producer.GetNext();
-                    parent.Production.Add(c);
                 }
             }
         }
@@ -184,7 +188,7 @@ namespace PML.Parser
 
             foreach(RuleState state in _States)
             {
-                foreach(RuleConfiguration conf in state.Configurations)
+                foreach(RuleConfiguration conf in state.All)
                 {
                     if(conf.Rule.Group == env.Start && conf.IsLast)
                     {

@@ -32,7 +32,7 @@ using System.Collections.Generic;
 
 namespace PML.Parser
 {
-    public class SLR1 : BTParser
+    public class SLR1 : IBTParser
     {
         LR0 _LR0 = new Parser.LR0();
         ActionTable _ActionTable = new ActionTable();
@@ -60,7 +60,7 @@ namespace PML.Parser
 
             foreach(RuleState state in States)
             {
-                foreach(RuleConfiguration conf in state.Configurations)
+                foreach(RuleConfiguration conf in state.All)
                 {
                     if(conf.Rule.Group == env.Start && conf.IsLast)
                     {

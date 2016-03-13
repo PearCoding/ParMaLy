@@ -39,8 +39,26 @@ namespace PML
         int _ID;
         public int ID { get { return _ID; } }
 
-        List<RuleConfiguration> _Configurations = new List<RuleConfiguration>();
-        public List<RuleConfiguration> Configurations { get { return _Configurations; } }
+        List<RuleConfiguration> _Closure = new List<RuleConfiguration>();
+        public List<RuleConfiguration> Closure { get { return _Closure; } }
+
+        List<RuleConfiguration> _Header = new List<RuleConfiguration>();
+        public List<RuleConfiguration> Header { get { return _Header; } }
+
+        public IEnumerable<RuleConfiguration> All { get { return Enumerable.Concat(_Header, _Closure); } }
+
+        public int Count { get { return _Header.Count + _Closure.Count; } }
+
+        public RuleConfiguration this[int index]
+        {
+            get
+            {
+                if (index < _Header.Count)
+                    return _Header[index];
+                else
+                    return _Closure[index - _Header.Count];
+            }
+        }
 
         public class Connection
         {
@@ -56,7 +74,7 @@ namespace PML
             _ID = id;
         }
 
-        public RuleConfiguration First { get { return _Configurations.First(); } }
+        public RuleConfiguration First { get { return _Header.First(); } }
 
         public override bool Equals(Object obj)
         {
@@ -75,11 +93,12 @@ namespace PML
             if (ReferenceEquals(this, p))
                 return true;
 
-            return ScrambledEquals(_Configurations, p.Configurations);
+            return EnumeratorUtils.ScrambledEquals(_Header, p._Header);
         }
+
         public override int GetHashCode()
         {
-            return (_Configurations.GetHashCode() ^ 42).GetHashCode();
+            return EnumeratorUtils.GetOrderIndependentHashCode(_Header);
         }
 
         public static bool operator ==(RuleState a, RuleState b)
@@ -93,41 +112,9 @@ namespace PML
             return a.Equals(b);
         }
 
-        public static bool operator !=(RuleState a, RuleState b)
+        public static bool operator != (RuleState a, RuleState b)
         {
             return !(a == b);
-        }
-
-        public static bool ScrambledEquals<T>(IEnumerable<T> list1, IEnumerable<T> list2)
-        {
-            return ScrambledEquals(list1, list2, EqualityComparer<T>.Default);
-        }
-
-        public static bool ScrambledEquals<T>(IEnumerable<T> list1, IEnumerable<T> list2, IEqualityComparer<T> comparer)
-        {
-            var cnt = new Dictionary<T, int>(comparer);
-            foreach (T s in list1)
-            {
-                if (cnt.ContainsKey(s))
-                {
-                    cnt[s]++;
-                }
-                else {
-                    cnt.Add(s, 1);
-                }
-            }
-
-            foreach (T s in list2)
-            {
-                if (cnt.ContainsKey(s))
-                {
-                    cnt[s]--;
-                }
-                else {
-                    return false;
-                }
-            }
-            return cnt.Values.All(c => c == 0);
         }
     }
 }

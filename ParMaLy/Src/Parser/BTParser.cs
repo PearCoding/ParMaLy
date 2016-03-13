@@ -33,7 +33,7 @@ using System.Collections.Generic;
 namespace PML.Parser
 {
     //Represents a Bottom Top Parser
-    public interface BTParser
+    public interface IBTParser
     {
         List<RuleState> States { get; }
 

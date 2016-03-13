@@ -29,10 +29,11 @@
  */
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PML.Parser
 {
-    public class LR1 : BTParser
+    public class LR1 : IBTParser
     {
         List<RuleState> _States = new List<RuleState>();
         RuleState _StartState;
@@ -63,19 +64,29 @@ namespace PML.Parser
             RuleState state = new RuleState(_States.Count);
             foreach (Rule r in env.Start.Rules)
             {
-                state.Configurations.Add(new RuleConfiguration(r, 0, new RuleLookahead((string)null)));
+                state.Header.Add(new RuleConfiguration(r, 0, new RuleLookahead((string)null)));
             }
             _StartState = state;
             _States.Add(state);
-            GenerateClosure(state, env, logger);
-            StepState(state, env, logger);
+
+            Queue<RuleState> queue = new Queue<RuleState>();
+            queue.Enqueue(state);
+
+            while (queue.Count != 0)
+            {
+                var s = queue.Dequeue();
+                System.Console.WriteLine("State ID: " + s.ID + " Queue: " + queue.Count + " left. Full state count: " + _States.Count);
+
+                GenerateClosure(s, env, logger);
+                StepState(s, queue,  env, logger);
+            }
         }
 
         void GenerateClosure(RuleState state, Environment env, Logger logger)
         {
-            for (int i = 0; i < state.Configurations.Count; ++i)
+            for (int i = 0; i < state.Count; ++i)
             {
-                var c = state.Configurations[i];
+                var c = state[i];
                 if(!c.IsLast)
                 {
                     var t = c.GetNext();
@@ -96,36 +107,32 @@ namespace PML.Parser
                                 tmp = c.Rule.Tokens.GetRange(newp, c.Rule.Tokens.Count - newp);
                             else
                                 tmp = new List<RuleToken>();
-
-                            tmp.Add(new RuleToken(c.Rule, RuleTokenType.Token, c.Lookahead[0]));
-                            var delta = FirstSet.Generate(env, tmp);
-
-                            //List<string> delta = new List<string>();
-                            //foreach (var look in c.Lookaheads.Lookaheads)
-                            //{
-                            //    var tmpL = new List<RuleToken>(tmp);
-                            //    tmpL.Add(new RuleToken(c.Rule, RuleTokenType.Token, look[0]));//This is the point why we have LR(1) not LR(k)
-                            //    var l = FirstSet.Generate(env, tmpL);
-                            //    foreach(var s in l)//Really union?
-                            //    {
-                            //        if (!delta.Contains(s))
-                            //            delta.Add(s);
-                            //    }
-                            //}
                             
-                            foreach (var r in grp.Rules)
+                            foreach (var look in c.Lookaheads.Lookaheads)
                             {
-                                //RuleLookaheadSet set = new RuleLookaheadSet(delta.ToArray());
-
-                                //RuleConfiguration conf2 = new RuleConfiguration(r, 0, set);
-
-                                foreach (var s in delta)
+                                var tmpL = new List<RuleToken>(tmp);
+                                tmpL.Add(new RuleToken(c.Rule, RuleTokenType.Token, look[0]));//This is the point why we have LR(1) not LR(k)
+                                var delta = FirstSet.Generate(env, tmpL);
+                                                            
+                                foreach (var r in grp.Rules)
                                 {
-                                    RuleConfiguration conf2 = new RuleConfiguration(r, 0, new RuleLookahead(s));
-                                    if (!state.Configurations.Contains(conf2))
+                                    RuleLookaheadSet set = new RuleLookaheadSet(delta);
+                                    RuleConfiguration conf2 = new RuleConfiguration(r, 0, set);
+
+                                    RuleConfiguration other = null;
+                                    foreach(var c2 in state.All)
                                     {
-                                        state.Configurations.Add(conf2);
+                                        if(c2.Rule == r && c2.Pos == 0 && !object.ReferenceEquals(c2, c))
+                                        {
+                                            other = c2;
+                                            break;
+                                        }
                                     }
+
+                                    if ((object)other != null)
+                                        other.Lookaheads.AddUnique(set);
+                                    else
+                                        state.Closure.Add(conf2);
                                 }
                             }
                         }
@@ -134,30 +141,28 @@ namespace PML.Parser
             }
         }
 
-        void StepState(RuleState state, Environment env, Logger logger)
+        void StepState(RuleState state, Queue<RuleState> queue, Environment env, Logger logger)
         {
-            foreach (var c in state.Configurations)
+            foreach (var c in state.All)
             {
                 if (!c.IsLast)
                 {
                     RuleState newState = new RuleState(_States.Count);
-                    newState.Configurations.Add(new RuleConfiguration(c.Rule, c.Pos + 1, c.Lookahead));//c.Lookaheads
+                    newState.Header.Add(new RuleConfiguration(c.Rule, c.Pos + 1, c.Lookaheads));//c.Lookaheads
 
                     var t = c.GetNext();
-                    foreach (var c2 in state.Configurations)
+                    foreach (var c2 in state.All)
                     {
                         if (!c2.IsLast && c2.GetNext().Type == t.Type && c2.GetNext().Name == t.Name /*&&
                             c.Lookahead == c2.Lookahead*/ /*c.Lookaheads == c2.Lookaheads*/)
                         {
-                            var n = new RuleConfiguration(c2.Rule, c2.Pos + 1, c2.Lookahead);//c. Lookaheads
-                            if (!newState.Configurations.Contains(n))
-                                newState.Configurations.Add(n);
+                            var n = new RuleConfiguration(c2.Rule, c2.Pos + 1, c2.Lookaheads);//c. Lookaheads
+                            if (!newState.Header.Contains(n))
+                                newState.Header.Add(n);
                         }
                     }
 
-                    GenerateClosure(newState, env, logger);
-
-                    if (!_States.Contains(newState))
+                    if (!_States.Contains(newState))//Check only header!
                     {
                         _States.Add(newState);
 
@@ -179,7 +184,7 @@ namespace PML.Parser
                             state.Production.Add(con);
                         }
 
-                        StepState(newState, env, logger);
+                        queue.Enqueue(newState);
                     }
                     else
                     {
@@ -213,45 +218,45 @@ namespace PML.Parser
 
             foreach(RuleState state in _States)
             {
-                foreach(RuleConfiguration conf in state.Configurations)
+                foreach(RuleConfiguration conf in state.All)
                 {
                     if(conf.Rule.Group == env.Start &&
                         conf.IsLast &&
-                        conf.Lookahead[0] == null /*conf.Lookaheads.Contains((string)null)*/)
+                        /*conf.Lookahead[0] == null*/ conf.Lookaheads.Contains((string)null))
                     {
                         var a = _ActionTable.Get(state, null);
                         if (a != null && a.Action == ActionTable.Action.Accept)
                         {
-                            logger.Log(LogLevel.Error, "AcceptConflict (AC) in state " + state.ID
-                                    + " with lookahead token '" + conf.Lookahead[0] + "'");
+                            logger.Log(LogLevel.Error, "AcceptConflict (AC) in state " + state.ID);
                         }
 
                         _ActionTable.Set(state, null, ActionTable.Action.Accept, null);
                     }
                     else if(conf.IsLast)
                     {
-                        var a = _ActionTable.Get(state, conf.Lookahead[0]);
-                        if (a != null && a.Action == ActionTable.Action.Shift && a.State != state)
+                        foreach (var l in conf.Lookaheads.Lookaheads)
                         {
-                            if (a.Action != ActionTable.Action.Shift)
-                                logger.Log(LogLevel.Error, "ReduceReduceConflict (RRC) in state " + state.ID
-                                    + " with lookahead token '" + conf.Lookahead[0] + "'");
-                            else
-                                logger.Log(LogLevel.Error, "ShiftReduceConflict (SRC) in state " + state.ID
-                                    + " with lookahead token '" + conf.Lookahead[0] + "'");
-                        }
+                            var a = _ActionTable.Get(state, l[0]);
+                            if (a != null && a.Action == ActionTable.Action.Shift && a.State != state)
+                            {
+                                if (a.Action != ActionTable.Action.Shift)
+                                    logger.Log(LogLevel.Error, "ReduceReduceConflict (RRC) in state " + state.ID
+                                        + " with lookahead token '" + l[0] + "'");
+                                else
+                                    logger.Log(LogLevel.Error, "ShiftReduceConflict (SRC) in state " + state.ID
+                                        + " with lookahead token '" + l[0] + "'");
+                            }
 
-                        _ActionTable.Set(state, conf.Lookahead[0], ActionTable.Action.Reduce, state);
-                        //foreach(var l in conf.Lookaheads.Lookaheads)
-                        //{
-                        //    _ActionTable.Set(state, l[0], ActionTable.Action.Reduce, state);
-                        //}
+                            //_ActionTable.Set(state, conf.Lookahead[0], ActionTable.Action.Reduce, state);
+                        
+                            _ActionTable.Set(state, l[0], ActionTable.Action.Reduce, state);
+                        }
                     }
                     else if(conf.GetNext().Type == RuleTokenType.Token)
                     {
                         RuleToken next = conf.GetNext();
                         RuleState found = null;
-                        foreach(RuleState.Connection c in state.Production)//TODO
+                        foreach(RuleState.Connection c in state.Production)
                         {
                             if(c.Token == next)
                             {

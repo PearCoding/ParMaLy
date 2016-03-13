@@ -30,10 +30,12 @@
 
 using System;
 using System.Linq;
+using System.Collections.Generic;
+using System.Collections;
 
 namespace PML
 {
-    public class RuleLookahead : IEquatable<RuleLookahead>
+    public class RuleLookahead : IEquatable<RuleLookahead>, IEnumerable<string>
     {
         string[] _Tokens;
 
@@ -88,7 +90,7 @@ namespace PML
             if (_Tokens.Length != p._Tokens.Length)
                 return false;
 
-            for(int i = 0; i < _Tokens.Length; ++i)
+            for(int i = 0; i < _Tokens.Length; ++i)//Order is important!
             {
                 if (_Tokens[i] != p._Tokens[i])
                     return false;
@@ -99,7 +101,7 @@ namespace PML
 
         public override int GetHashCode()
         {
-            return (_Tokens.GetHashCode() ^ 56).GetHashCode();
+            return EnumeratorUtils.GetOrderDependentHashCode(_Tokens);
         }
 
         public static bool operator == (RuleLookahead a, RuleLookahead b)
@@ -116,6 +118,17 @@ namespace PML
         public static bool operator != (RuleLookahead a, RuleLookahead b)
         {
             return !(a == b);
+        }
+
+        //IEnumerable
+        public IEnumerator<string> GetEnumerator()
+        {
+            return ((IEnumerable<string>)_Tokens).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable<string>)_Tokens).GetEnumerator();
         }
     }
 }

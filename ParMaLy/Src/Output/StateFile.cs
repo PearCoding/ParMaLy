@@ -41,7 +41,7 @@ namespace PML.Output
             foreach(RuleState state in states)
             {
                 writer.WriteLine("[" + state.ID + "]");
-                foreach(RuleConfiguration conf in state.Configurations)
+                foreach(RuleConfiguration conf in state.All)
                 {
                     if (idOnly)
                         writer.Write("  " + conf.Rule.Group.ID + "|" + conf.Rule.ID + " -> ");
@@ -82,14 +82,14 @@ namespace PML.Output
                         if(conf.IsLast)
                             writer.Write("# ");
 
-                        //if (!conf.Lookaheads.Empty)
-                        //    writer.Write("[" +
-                        //        string.Join(",", conf.Lookaheads.Lookaheads.Select(
-                        //            v => v.Join("/", (s => (s == null ? "$" : "'" + s + "'")))).ToArray()) 
-                        //        + "]");
+                        if (!conf.Lookaheads.Empty)
+                            writer.Write("[" +
+                                string.Join(",", conf.Lookaheads.Lookaheads.Select(
+                                    v => v.Join("/", (s => (s == null ? "$" : "'" + s + "'")))).ToArray()) 
+                                + "]");
 
-                        if(conf.Lookahead != null)
-                            writer.Write("[" + conf.Lookahead.Join("/", (s => (s == null ? "$" : "'" + s + "'"))) + "]");
+                        //if(conf.Lookahead != null)
+                        //    writer.Write("[" + conf.Lookahead.Join("/", (s => (s == null ? "$" : "'" + s + "'"))) + "]");
                     }
                     writer.WriteLine();
                 }

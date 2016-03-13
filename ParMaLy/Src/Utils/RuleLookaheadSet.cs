@@ -29,11 +29,12 @@
  */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace PML
 {
-    public class RuleLookaheadSet : IEquatable<RuleLookaheadSet>
+    public class RuleLookaheadSet : IEquatable<RuleLookaheadSet>, IEnumerable<RuleLookahead>
     {
         List<RuleLookahead> _Lookaheads = new List<RuleLookahead>();
 
@@ -48,15 +49,29 @@ namespace PML
         {
         }
 
-        public RuleLookaheadSet(string[] tokens)
+        public RuleLookaheadSet(IEnumerable<string> tokens)
         {
             foreach(var s in tokens)
-                _Lookaheads.Add(new RuleLookahead(tokens));
+                _Lookaheads.Add(new RuleLookahead(s));
         }
 
         public void Add(RuleLookahead lookahead)
         {
             _Lookaheads.Add(lookahead);
+        }
+
+        public void AddUnique(IEnumerable<RuleLookahead> looks)
+        {
+            foreach(var l in looks)
+            {
+                if (!_Lookaheads.Contains(l))
+                    _Lookaheads.Add(l);
+            }
+        }
+
+        public void AddUnique(RuleLookaheadSet set)
+        {
+            AddUnique(set._Lookaheads);
         }
 
         public bool Contains(RuleLookahead lookahead)
@@ -77,6 +92,15 @@ namespace PML
 
         public bool Empty { get { return _Lookaheads.Count == 0; } }
 
+        public override bool Equals(Object obj)
+        {
+            if (obj == null)
+                return false;
+
+            RuleLookaheadSet p = obj as RuleLookaheadSet;
+            return Equals(p);
+        }
+
         public bool Equals(RuleLookaheadSet p)
         {
             if ((object)p == null)
@@ -88,7 +112,39 @@ namespace PML
             if (_Lookaheads.Count != p._Lookaheads.Count)
                 return false;
 
-            return RuleState.ScrambledEquals(_Lookaheads, p._Lookaheads);
+            return EnumeratorUtils.ScrambledEquals(_Lookaheads, p._Lookaheads);
+        }
+
+        public override int GetHashCode()
+        {
+            return EnumeratorUtils.GetOrderIndependentHashCode(_Lookaheads);
+        }
+
+        public static bool operator ==(RuleLookaheadSet a, RuleLookaheadSet b)
+        {
+            if (Object.ReferenceEquals(a, b))
+                return true;
+
+            if ((object)a == null)
+                return false;
+
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(RuleLookaheadSet a, RuleLookaheadSet b)
+        {
+            return !(a == b);
+        }
+
+        //IEnumerable
+        public IEnumerator<RuleLookahead> GetEnumerator()
+        {
+            return ((IEnumerable<RuleLookahead>)_Lookaheads).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable<RuleLookahead>)_Lookaheads).GetEnumerator();
         }
     }
 }
