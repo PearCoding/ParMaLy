@@ -47,20 +47,20 @@ namespace PML.Tests
             Assert.AreEqual(T.FirstSet.Count, 2);
             Assert.AreEqual(F.FirstSet.Count, 2);
 
-            Assert.Contains("(", A.FirstSet);
-            Assert.Contains("ID", A.FirstSet);
+            Assert.Contains(new RuleToken(RuleTokenType.Token, "("), A.FirstSet);
+            Assert.Contains(new RuleToken(RuleTokenType.Token, "ID"), A.FirstSet);
 
-            Assert.Contains("+", B.FirstSet);
+            Assert.Contains(new RuleToken(RuleTokenType.Token, "+"), B.FirstSet);
             Assert.Contains(null, B.FirstSet);
 
-            Assert.Contains("(", S.FirstSet);
-            Assert.Contains("ID", S.FirstSet);
+            Assert.Contains(new RuleToken(RuleTokenType.Token, "("), S.FirstSet);
+            Assert.Contains(new RuleToken(RuleTokenType.Token, "ID"), S.FirstSet);
 
-            Assert.Contains("*", T.FirstSet);
+            Assert.Contains(new RuleToken(RuleTokenType.Token, "*"), T.FirstSet);
             Assert.Contains(null, T.FirstSet);
 
-            Assert.Contains("(", F.FirstSet);
-            Assert.Contains("ID", F.FirstSet);
+            Assert.Contains(new RuleToken(RuleTokenType.Token, "("), F.FirstSet);
+            Assert.Contains(new RuleToken(RuleTokenType.Token, "ID"), F.FirstSet);
         }
 
         [Test]
@@ -96,23 +96,23 @@ namespace PML.Tests
             Assert.AreEqual(F.FollowSet.Count, 4);
 
             Assert.Contains(null, A.FollowSet);
-            Assert.Contains(")", A.FollowSet);
+            Assert.Contains(new RuleToken(RuleTokenType.Token, ")"), A.FollowSet);
 
             Assert.Contains(null, B.FollowSet);
-            Assert.Contains(")", B.FollowSet);
+            Assert.Contains(new RuleToken(RuleTokenType.Token, ")"), B.FollowSet);
 
             Assert.Contains(null, S.FollowSet);
-            Assert.Contains("+", S.FollowSet);
-            Assert.Contains(")", S.FollowSet);
+            Assert.Contains(new RuleToken(RuleTokenType.Token, "+"), S.FollowSet);
+            Assert.Contains(new RuleToken(RuleTokenType.Token, ")"), S.FollowSet);
 
             Assert.Contains(null, T.FollowSet);
-            Assert.Contains("+", T.FollowSet);
-            Assert.Contains(")", T.FollowSet);
+            Assert.Contains(new RuleToken(RuleTokenType.Token, "+"), T.FollowSet);
+            Assert.Contains(new RuleToken(RuleTokenType.Token, ")"), T.FollowSet);
 
             Assert.Contains(null, F.FollowSet);
-            Assert.Contains("+", F.FollowSet);
-            Assert.Contains("*", F.FollowSet);
-            Assert.Contains(")", F.FollowSet);
+            Assert.Contains(new RuleToken(RuleTokenType.Token, "+"), F.FollowSet);
+            Assert.Contains(new RuleToken(RuleTokenType.Token, "*"), F.FollowSet);
+            Assert.Contains(new RuleToken(RuleTokenType.Token, ")"), F.FollowSet);
         }
     }
 }
