@@ -34,6 +34,7 @@ using System.Diagnostics;
 namespace PML.Parser
 {
     using Statistics;
+    using BU;
 
     public class LR0 : IBUParser
     {
@@ -42,6 +43,8 @@ namespace PML.Parser
         ActionTable _ActionTable = new ActionTable();
         GotoTable _GotoTable = new GotoTable();
         Statistics _Statistics;
+
+        public string Name { get { return "LR(0)"; } }
 
         public List<RuleState> States { get { return _States; } }
 

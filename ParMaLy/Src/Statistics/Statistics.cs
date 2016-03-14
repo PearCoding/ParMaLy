@@ -27,10 +27,10 @@ namespace PML.Statistics
         public class ConflictEntry
         {
             public ConflictType Type;
-            public RuleState State;
+            public BU.RuleState State;
             public string Token;
 
-            public ConflictEntry(ConflictType type, RuleState state, string token = null)
+            public ConflictEntry(ConflictType type, BU.RuleState state, string token = null)
             {
                 Type = type;
                 State = state;
@@ -46,9 +46,9 @@ namespace PML.Statistics
             public long TimeElapsed;
             public int TotalStages;
             public int QueueJobs;
-            public RuleState Job;
+            public BU.RuleState Job;
 
-            public ProcessEntry(RuleState job, int stages, int jobs)
+            public ProcessEntry(BU.RuleState job, int stages, int jobs)
             {
                 Job = job;
                 TotalStages = stages;

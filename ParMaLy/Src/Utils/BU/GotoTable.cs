@@ -28,36 +28,36 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
+using System;
 using System.Collections.Generic;
 
-namespace PML
+namespace PML.BU
 {
-    //Used by the LL implementation
-    public class LookupTable
+    public class GotoTable
     {
         public class Entry
         {
-            public Rule Rule;
-            public string Token;
+            public RuleState State;
+            public RuleGroup Group;
         }
 
-        Dictionary<RuleGroup, List<Entry>> _Table = new Dictionary<RuleGroup, List<Entry>>();
+        Dictionary<RuleState, List<Entry>> _Table = new Dictionary<RuleState, List<Entry>>();
 
         public void Clear()
         {
             _Table.Clear();
         }
 
-        public void Set(RuleGroup grp, string token, Rule rule)
+        public void Set(RuleState state, RuleGroup grp, RuleState n)
         {
-            if (!_Table.ContainsKey(grp))
-                _Table[grp] = new List<Entry>();
+            if (!_Table.ContainsKey(state))
+                _Table[state] = new List<Entry>();
 
-            var l = _Table[grp];
+            var l = _Table[state];
             Entry entry = null;
             foreach(var e in l)
             {
-                if (e.Token == token)
+                if (e.Group == grp)
                 {
                     entry = e;
                     break;
@@ -67,29 +67,31 @@ namespace PML
             if(entry == null)
             {
                 entry = new Entry();
-                entry.Token = token;
+                entry.Group = grp;
 
                 l.Add(entry);
             }
 
-            entry.Rule = rule;
+            entry.State = n;
         }
 
-        public Entry Get(RuleGroup grp, string token)
+        public Entry Get(RuleState state, RuleGroup grp)
         {
-            if (!_Table.ContainsKey(grp))
+            if (!_Table.ContainsKey(state))
                 return null;
 
-            var l = _Table[grp];
+            var l = _Table[state];
             foreach (var e in l)
             {
-                if (e.Token == token)
+                if (e.Group == grp)
+                {
                     return e;
+                }
             }
 
             return null;
         }
 
-        public IEnumerable<RuleGroup> Rows { get { return _Table.Keys; } }
+        public IEnumerable<RuleState> Rows { get { return _Table.Keys; } }
     }
 }

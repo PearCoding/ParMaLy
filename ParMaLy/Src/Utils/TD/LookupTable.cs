@@ -28,61 +28,68 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
-using System;
-using System.Diagnostics;
 using System.Collections.Generic;
 
-namespace PML.Parser
+namespace PML.TD
 {
-    using PML.Statistics;
-    using TD;
-
-    //Pretty useless type of parser... but it's a type.
-    public class LL0 : ITDParser
+    //Used by the LL implementation
+    public class LookupTable
     {
-        LookupTable _Lookup = new LookupTable();
-
-        public string Name { get { return "LL(0)"; } }
-
-        public LookupTable Lookup { get { return _Lookup; } }
-
-        Statistics _Statistics;
-        public Statistics Statistics { get { return _Statistics; } }
-
-        public void Generate(Environment env, Logger logger)
+        public class Entry
         {
-            GenerateTable(env, logger);
+            public Rule Rule;
+            public string Token;
         }
 
-        public void GenerateTable(Environment env, Logger logger)
+        Dictionary<RuleGroup, List<Entry>> _Table = new Dictionary<RuleGroup, List<Entry>>();
+
+        public void Clear()
         {
-            _Lookup.Clear();
-            _Statistics = new Statistics();
-            _Statistics.TD = new TDStatistics();
+            _Table.Clear();
+        }
 
-            var tokens = new List<string>(env.Tokens);
-            tokens.Add(null);//EOF
+        public void Set(RuleGroup grp, string token, Rule rule)
+        {
+            if (!_Table.ContainsKey(grp))
+                _Table[grp] = new List<Entry>();
 
-            Stopwatch watch = new Stopwatch();
-            watch.Start();
-            foreach(var grp in env.Groups)
+            var l = _Table[grp];
+            Entry entry = null;
+            foreach(var e in l)
             {
-                foreach (var r in grp.Rules)
+                if (e.Token == token)
                 {
-                    foreach (var s in tokens)
-                    {
-                        if (_Lookup.Get(grp, s) != null)
-                        {
-                            _Statistics.TD.Conflicts.Add(
-                                new TDStatistics.ConflictEntry(TDStatistics.ConflictType.Lookup, grp, s, r));
-                        }
-
-                        _Lookup.Set(grp, s, r);
-                    }
+                    entry = e;
+                    break;
                 }
             }
-            watch.Stop();
-            _Statistics.TimeElapsed = watch.ElapsedMilliseconds;
+
+            if(entry == null)
+            {
+                entry = new Entry();
+                entry.Token = token;
+
+                l.Add(entry);
+            }
+
+            entry.Rule = rule;
         }
+
+        public Entry Get(RuleGroup grp, string token)
+        {
+            if (!_Table.ContainsKey(grp))
+                return null;
+
+            var l = _Table[grp];
+            foreach (var e in l)
+            {
+                if (e.Token == token)
+                    return e;
+            }
+
+            return null;
+        }
+
+        public IEnumerable<RuleGroup> Rows { get { return _Table.Keys; } }
     }
 }

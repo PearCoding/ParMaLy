@@ -33,10 +33,14 @@ using System.Diagnostics;
 
 namespace PML.Parser
 {
-    using PML.Statistics;
+    using Statistics;
+    using TD;
+
     public class LL1 : ITDParser
     {
         LookupTable _Lookup = new LookupTable();
+
+        public string Name { get { return "LL(1)"; } }
 
         public LookupTable Lookup { get { return _Lookup; } }
 

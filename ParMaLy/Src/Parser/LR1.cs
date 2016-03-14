@@ -29,12 +29,13 @@
  */
 
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 
 namespace PML.Parser
 {
     using Statistics;
-    using System.Diagnostics;
+    using BU;
+
     public class LR1 : IBUParser
     {
         List<RuleState> _States = new List<RuleState>();
@@ -42,6 +43,8 @@ namespace PML.Parser
         ActionTable _ActionTable = new ActionTable();
         GotoTable _GotoTable = new GotoTable();
         Statistics _Statistics;
+
+        public string Name { get { return "LR(1)"; } }
 
         public List<RuleState> States { get { return _States; } }
 

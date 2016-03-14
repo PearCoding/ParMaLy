@@ -32,6 +32,8 @@ using System.Collections.Generic;
 
 namespace PML.Parser
 {
+    using BU;
+
     //Represents a Bottom Up Parser
     public interface IBUParser : IParser
     {
@@ -42,11 +44,5 @@ namespace PML.Parser
         ActionTable ActionTable { get; }
 
         GotoTable GotoTable { get; }
-
-        void GenerateStates(Environment env, Logger logger);
-
-        void GenerateActionTable(Environment env, Logger logger);
-
-        void GenerateGotoTable(Environment env, Logger logger);
     }
 }

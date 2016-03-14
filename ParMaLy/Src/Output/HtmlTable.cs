@@ -7,7 +7,7 @@ namespace PML.Output
 {
     public static class HtmlTable
     {
-        public static void PrintActionTable(TextWriter writer, List<RuleState> rows, ActionTable table, Environment env, Style.HtmlStyle style)
+        public static void PrintActionTable(TextWriter writer, List<BU.RuleState> rows, BU.ActionTable table, Environment env, Style.HtmlStyle style)
         {
             AddHeader(writer, style);
             writer.WriteLine("<table class='" + style.Table_Class + " " + style.TableAction_Class + "' id='" + style.Table_ID + "'>");
@@ -42,7 +42,7 @@ namespace PML.Output
             writer.Flush();
         }
 
-        public static void PrintGotoTable(TextWriter writer, List<RuleState> rows, GotoTable table, Environment env, Style.HtmlStyle style)
+        public static void PrintGotoTable(TextWriter writer, List<BU.RuleState> rows, BU.GotoTable table, Environment env, Style.HtmlStyle style)
         {
             AddHeader(writer, style);
             writer.WriteLine("<table class='" + style.Table_Class + " " + style.TableGoto_Class + "' id='" + style.Table_ID + "'>");
@@ -74,8 +74,8 @@ namespace PML.Output
             writer.Flush();
         }
 
-        public static void PrintTransitionTable(TextWriter writer, List<RuleState> rows,
-            ActionTable actionTable, GotoTable gotoTable, Environment env, Style.HtmlStyle style)
+        public static void PrintTransitionTable(TextWriter writer, List<BU.RuleState> rows,
+            BU.ActionTable actionTable, BU.GotoTable gotoTable, Environment env, Style.HtmlStyle style)
         {
             AddHeader(writer, style);
             writer.WriteLine("<table class='" + style.Table_Class + " " + style.TableTransition_Class + "' id='" + style.Table_ID + "'>");
@@ -116,8 +116,9 @@ namespace PML.Output
             AddFooter(writer, style);
             writer.Flush();
         }
+
         public static void PrintLookupTable(TextWriter writer,
-            LookupTable lookup, Environment env, Style.HtmlStyle style)
+            TD.LookupTable lookup, Environment env, Style.HtmlStyle style)
         {
             AddHeader(writer, style);
             writer.WriteLine("<table class='" + style.Table_Class + " " + style.TableLookup_Class + "' id='" + style.Table_ID + "'>");
@@ -173,7 +174,7 @@ namespace PML.Output
             }
         }
 
-        static void AddFirstColumn(TextWriter writer, RuleState state, Style.HtmlStyle style)
+        static void AddFirstColumn(TextWriter writer, BU.RuleState state, Style.HtmlStyle style)
         {
             writer.WriteLine("<td class='" + style.TableTd_Class + "' id='" + style.TableTd_ID_Prefix + "0'>"
                     + state.ID + "</td>");
@@ -196,16 +197,16 @@ namespace PML.Output
             }
         }
 
-        static void AddActionEntry(int td, ActionTable.Entry e, TextWriter writer, Style.HtmlStyle style)
+        static void AddActionEntry(int td, BU.ActionTable.Entry e, TextWriter writer, Style.HtmlStyle style)
         {
             string special = "";
             if (e != null)
             {
-                if (e.Action == ActionTable.Action.Accept)
+                if (e.Action == BU.ActionTable.Action.Accept)
                     special = style.TableActionAccept_Class;
-                else if (e.Action == ActionTable.Action.Reduce)
+                else if (e.Action == BU.ActionTable.Action.Reduce)
                     special = style.TableActionReduce_Class;
-                else if (e.Action == ActionTable.Action.Shift)
+                else if (e.Action == BU.ActionTable.Action.Shift)
                     special = style.TableActionShift_Class;
                 else
                     special = style.TableActionEmpty_Class;
@@ -215,11 +216,11 @@ namespace PML.Output
 
             if (e != null)
             {
-                if (e.Action == ActionTable.Action.Accept)
+                if (e.Action == BU.ActionTable.Action.Accept)
                     writer.Write(style.TableActionAccept_Content);
-                else if (e.Action == ActionTable.Action.Reduce && e.State != null)
+                else if (e.Action == BU.ActionTable.Action.Reduce && e.State != null)
                     writer.Write(style.TableActionReduce_Prefix + e.State.ID);
-                else if (e.Action == ActionTable.Action.Shift && e.State != null)
+                else if (e.Action == BU.ActionTable.Action.Shift && e.State != null)
                     writer.Write(style.TableActionShift_Prefix + e.State.ID);
                 else if (!string.IsNullOrEmpty(style.TableActionEmpty_Content))
                     writer.Write(style.TableActionEmpty_Content);
@@ -239,7 +240,7 @@ namespace PML.Output
             }
         }
 
-        static void AddGotoEntry(int td, GotoTable.Entry e, TextWriter writer, Style.HtmlStyle style)
+        static void AddGotoEntry(int td, BU.GotoTable.Entry e, TextWriter writer, Style.HtmlStyle style)
         {
             string special = "";
             if (e != null)
@@ -258,7 +259,7 @@ namespace PML.Output
             writer.WriteLine("</td>");
         }
 
-        static void AddLookupEntry(int td, LookupTable.Entry e, TextWriter writer, Style.HtmlStyle style)
+        static void AddLookupEntry(int td, TD.LookupTable.Entry e, TextWriter writer, Style.HtmlStyle style)
         {
             string special = "";
             if (e != null)

@@ -73,7 +73,7 @@ namespace PML.Output
             Full
         }
 
-        public static void PrintStateGraph(TextWriter writer, Environment env, RuleState root, Style.DotStyle style)
+        public static void PrintStateGraph(TextWriter writer, Environment env, BU.RuleState root, Style.DotStyle style)
         {
             writer.WriteLine("digraph G {");
             if (!string.IsNullOrEmpty(style.Graph))
@@ -82,19 +82,19 @@ namespace PML.Output
                 writer.WriteLine("node[" + style.Node + "];");
             if (!string.IsNullOrEmpty(style.Edge))
                 writer.WriteLine("edge[" + style.Edge + "];");
-            PrintStateGraphNode(writer, env, root, new Stack<RuleState>(), style);
+            PrintStateGraphNode(writer, env, root, new Stack<BU.RuleState>(), style);
             writer.WriteLine("}");
             writer.Flush();
         }
 
-        static void PrintStateGraphNode(TextWriter writer, Environment env, RuleState node,
-            Stack<RuleState> stack, Style.DotStyle style)
+        static void PrintStateGraphNode(TextWriter writer, Environment env, BU.RuleState node,
+            Stack<BU.RuleState> stack, Style.DotStyle style)
         {
             stack.Push(node);
             string confLabel = "";
             if (style.UseNodeLabel)
             {
-                foreach (RuleConfiguration conf in node.All)
+                foreach (var conf in node.All)
                 {
                     int p = 0;
                     foreach (var t in conf.Rule.Tokens)

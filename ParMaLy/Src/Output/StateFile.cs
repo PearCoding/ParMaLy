@@ -36,12 +36,12 @@ namespace PML.Output
 {
     public static class StateFile
     {
-        public static void PrintStates(TextWriter writer, List<RuleState> states, Environment env, bool idOnly = false)
+        public static void PrintStates(TextWriter writer, List<BU.RuleState> states, Environment env, bool idOnly = false)
         {
-            foreach(RuleState state in states)
+            foreach(var state in states)
             {
                 writer.WriteLine("[" + state.ID + "]");
-                foreach(RuleConfiguration conf in state.All)
+                foreach(var conf in state.All)
                 {
                     if (idOnly)
                         writer.Write("  " + conf.Rule.Group.ID + "|" + conf.Rule.ID + " -> ");

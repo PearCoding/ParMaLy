@@ -32,7 +32,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PML
+namespace PML.BU
 {
     public class RuleState : IEquatable<RuleState>
     {

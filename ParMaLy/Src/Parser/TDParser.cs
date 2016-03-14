@@ -34,6 +34,6 @@ namespace PML.Parser
 {
     public interface ITDParser : IParser
     {
-        LookupTable Lookup { get; }
+        TD.LookupTable Lookup { get; }
     }
 }

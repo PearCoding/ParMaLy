@@ -33,12 +33,14 @@ using System.Collections.Generic;
 namespace PML.Parser
 {
     using Statistics;
+    using BU;
 
     public class SLR1 : IBUParser
     {
         LR0 _LR0 = new Parser.LR0();
         ActionTable _ActionTable = new ActionTable();
         Statistics _Statistics;
+        public string Name { get { return "SLR(1)"; } }
 
         public List<RuleState> States { get { return _LR0.States; } }
 

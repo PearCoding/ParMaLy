@@ -30,7 +30,7 @@
 
 using System;
 
-namespace PML
+namespace PML.BU
 {
     public class RuleConfiguration : IEquatable<RuleConfiguration>
     {

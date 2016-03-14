@@ -30,7 +30,7 @@
 
 using System.Collections.Generic;
 
-namespace PML
+namespace PML.BU
 {
     public class ActionTable
     {

@@ -93,6 +93,7 @@ namespace PML.Output
 
             if (parser != null)
             {
+                writer.WriteLine("Parser: " + parser.Name);
                 writer.WriteLine("Statistics:");
                 var statistics = parser.Statistics;
                 writer.WriteLine("  Elapsed: " + statistics.TimeElapsed + "ms");

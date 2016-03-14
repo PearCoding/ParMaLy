@@ -28,70 +28,20 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
-using System;
-using System.Collections.Generic;
-
-namespace PML
+namespace PML.Parser
 {
-    public class GotoTable
+    using Statistics;
+    class RD : IRParser
     {
-        public class Entry
+        public string Name { get { return "Recursive-Descent"; } }
+
+        Statistics _Statistics;
+
+        public Statistics Statistics { get { return _Statistics; } }
+
+        public void Generate(Environment env, Logger logger)
         {
-            public RuleState State;
-            public RuleGroup Group;
+            _Statistics = new Statistics();
         }
-
-        Dictionary<RuleState, List<Entry>> _Table = new Dictionary<RuleState, List<Entry>>();
-
-        public void Clear()
-        {
-            _Table.Clear();
-        }
-
-        public void Set(RuleState state, RuleGroup grp, RuleState n)
-        {
-            if (!_Table.ContainsKey(state))
-                _Table[state] = new List<Entry>();
-
-            var l = _Table[state];
-            Entry entry = null;
-            foreach(var e in l)
-            {
-                if (e.Group == grp)
-                {
-                    entry = e;
-                    break;
-                }
-            }
-
-            if(entry == null)
-            {
-                entry = new Entry();
-                entry.Group = grp;
-
-                l.Add(entry);
-            }
-
-            entry.State = n;
-        }
-
-        public Entry Get(RuleState state, RuleGroup grp)
-        {
-            if (!_Table.ContainsKey(state))
-                return null;
-
-            var l = _Table[state];
-            foreach (var e in l)
-            {
-                if (e.Group == grp)
-                {
-                    return e;
-                }
-            }
-
-            return null;
-        }
-
-        public IEnumerable<RuleState> Rows { get { return _Table.Keys; } }
     }
 }

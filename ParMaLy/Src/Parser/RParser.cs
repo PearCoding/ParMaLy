@@ -28,16 +28,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
-using System.Collections.Generic;
-
 namespace PML.Parser
 {
-    public interface IParser
+    //A recursive parser
+    public interface IRParser : IParser
     {
-        string Name { get; }
-
-        Statistics.Statistics Statistics { get; }
-
-        void Generate(Environment env, Logger logger);
     }
 }

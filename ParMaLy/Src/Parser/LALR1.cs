@@ -35,6 +35,7 @@ using System.Linq;
 namespace PML.Parser
 {
     using Statistics;
+    using BU;
 
     public class LALR1 : IBUParser
     {
@@ -43,6 +44,8 @@ namespace PML.Parser
         ActionTable _ActionTable = new ActionTable();
         GotoTable _GotoTable = new GotoTable();
         Statistics _Statistics;
+
+        public string Name { get { return "LALR(1)"; } }
 
         public List<RuleState> States { get { return _States; } }
 
