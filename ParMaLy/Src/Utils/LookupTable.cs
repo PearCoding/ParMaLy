@@ -32,35 +32,28 @@ using System.Collections.Generic;
 
 namespace PML
 {
-    public class ActionTable
+    //Used by the LL implementation
+    public class LookupTable
     {
-        public enum Action
-        {
-            Shift,
-            Reduce,
-            Accept
-        };
-
         public class Entry
         {
-            public Action Action;
-            public RuleState State;
+            public Rule Rule;
             public string Token;
         }
 
-        Dictionary<RuleState, List<Entry>> _Table = new Dictionary<RuleState, List<Entry>>();
+        Dictionary<RuleGroup, List<Entry>> _Table = new Dictionary<RuleGroup, List<Entry>>();
 
         public void Clear()
         {
             _Table.Clear();
         }
 
-        public void Set(RuleState state, string token, Action act, RuleState n)
+        public void Set(RuleGroup grp, string token, Rule rule)
         {
-            if (!_Table.ContainsKey(state))
-                _Table[state] = new List<Entry>();
+            if (!_Table.ContainsKey(grp))
+                _Table[grp] = new List<Entry>();
 
-            var l = _Table[state];
+            var l = _Table[grp];
             Entry entry = null;
             foreach(var e in l)
             {
@@ -79,27 +72,24 @@ namespace PML
                 l.Add(entry);
             }
 
-            entry.State = n;
-            entry.Action = act;
+            entry.Rule = rule;
         }
 
-        public Entry Get(RuleState state, string token)
+        public Entry Get(RuleGroup grp, string token)
         {
-            if (!_Table.ContainsKey(state))
+            if (!_Table.ContainsKey(grp))
                 return null;
 
-            var l = _Table[state];
+            var l = _Table[grp];
             foreach (var e in l)
             {
                 if (e.Token == token)
-                {
                     return e;
-                }
             }
 
             return null;
         }
 
-        public IEnumerable<RuleState> Rows { get { return _Table.Keys; } }
+        public IEnumerable<RuleGroup> Rows { get { return _Table.Keys; } }
     }
 }

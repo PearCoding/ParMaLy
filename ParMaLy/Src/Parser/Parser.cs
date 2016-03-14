@@ -30,76 +30,12 @@
 
 using System.Collections.Generic;
 
-namespace PML
+namespace PML.Parser
 {
-    public class ActionTable
+    public interface IParser
     {
-        public enum Action
-        {
-            Shift,
-            Reduce,
-            Accept
-        };
+        Statistics.Statistics Statistics { get; }
 
-        public class Entry
-        {
-            public Action Action;
-            public RuleState State;
-            public string Token;
-        }
-
-        Dictionary<RuleState, List<Entry>> _Table = new Dictionary<RuleState, List<Entry>>();
-
-        public void Clear()
-        {
-            _Table.Clear();
-        }
-
-        public void Set(RuleState state, string token, Action act, RuleState n)
-        {
-            if (!_Table.ContainsKey(state))
-                _Table[state] = new List<Entry>();
-
-            var l = _Table[state];
-            Entry entry = null;
-            foreach(var e in l)
-            {
-                if (e.Token == token)
-                {
-                    entry = e;
-                    break;
-                }
-            }
-
-            if(entry == null)
-            {
-                entry = new Entry();
-                entry.Token = token;
-
-                l.Add(entry);
-            }
-
-            entry.State = n;
-            entry.Action = act;
-        }
-
-        public Entry Get(RuleState state, string token)
-        {
-            if (!_Table.ContainsKey(state))
-                return null;
-
-            var l = _Table[state];
-            foreach (var e in l)
-            {
-                if (e.Token == token)
-                {
-                    return e;
-                }
-            }
-
-            return null;
-        }
-
-        public IEnumerable<RuleState> Rows { get { return _Table.Keys; } }
+        void Generate(Environment env, Logger logger);
     }
 }

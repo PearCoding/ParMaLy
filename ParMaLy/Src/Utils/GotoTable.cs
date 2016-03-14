@@ -92,6 +92,6 @@ namespace PML
             return null;
         }
 
-        public List<RuleState> Rows { get { return new List<RuleState>(_Table.Keys); } }
+        public IEnumerable<RuleState> Rows { get { return _Table.Keys; } }
     }
 }

@@ -30,18 +30,19 @@
 
 using System.Collections.Generic;
 using System.Linq;
+    using System.Diagnostics;
 
 namespace PML.Parser
 {
     using Statistics;
-    using System.Diagnostics;
+
     public class LALR1 : IBUParser
     {
         List<RuleState> _States = new List<RuleState>();
         RuleState _StartState;
         ActionTable _ActionTable = new ActionTable();
         GotoTable _GotoTable = new GotoTable();
-        BUStatistics _Statistics;
+        Statistics _Statistics;
 
         public List<RuleState> States { get { return _States; } }
 
@@ -51,7 +52,7 @@ namespace PML.Parser
 
         public GotoTable GotoTable { get { return _GotoTable; } }
 
-        public BUStatistics Statistics { get { return _Statistics; } }
+        public Statistics Statistics { get { return _Statistics; } }
 
         public LALR1()
         {
@@ -61,7 +62,7 @@ namespace PML.Parser
         {
             _States.Clear();
             _StartState = null;
-            _Statistics = new BUStatistics();
+            _Statistics = new Statistics();
 
             // We can not start without a 'Start' token.
             if (env.Start == null || env.Start.Rules.Count == 0)
@@ -82,7 +83,7 @@ namespace PML.Parser
             while (queue.Count != 0)
             {
                 var s = queue.Dequeue();
-                BUStatistics.ProcessEntry process = new BUStatistics.ProcessEntry(s, _States.Count, queue.Count);
+                Statistics.ProcessEntry process = new Statistics.ProcessEntry(s, _States.Count, queue.Count);
 
                 System.Console.WriteLine("State ID: " + s.ID + " Queue: " + queue.Count + " left. Full state count: " + _States.Count);
 
@@ -259,7 +260,7 @@ namespace PML.Parser
                     {
                         var a = _ActionTable.Get(state, null);
                         if (a != null && a.Action == ActionTable.Action.Accept)
-                            Statistics.Conflicts.Add(new BUStatistics.ConflictEntry(BUStatistics.ConflictType.Accept, state));
+                            Statistics.Conflicts.Add(new Statistics.ConflictEntry(Statistics.ConflictType.Accept, state));
 
                         _ActionTable.Set(state, null, ActionTable.Action.Accept, null);
                     }
@@ -271,9 +272,9 @@ namespace PML.Parser
                             if (a != null && a.Action == ActionTable.Action.Shift && a.State != state)
                             {
                                 if (a.Action != ActionTable.Action.Shift)
-                                    Statistics.Conflicts.Add(new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ReduceReduce, state, l[0]));
+                                    Statistics.Conflicts.Add(new Statistics.ConflictEntry(Statistics.ConflictType.ReduceReduce, state, l[0]));
                                 else
-                                    Statistics.Conflicts.Add(new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftReduce, state, l[0]));
+                                    Statistics.Conflicts.Add(new Statistics.ConflictEntry(Statistics.ConflictType.ShiftReduce, state, l[0]));
                             }
 
                             _ActionTable.Set(state, l[0], ActionTable.Action.Reduce, state);
@@ -288,7 +289,7 @@ namespace PML.Parser
                             if(c.Token == next)
                             {
                                 if (found != null)
-                                    Statistics.Conflicts.Add(new BUStatistics.ConflictEntry(BUStatistics.ConflictType.Internal, state, next.Name));
+                                    Statistics.Conflicts.Add(new Statistics.ConflictEntry(Statistics.ConflictType.Internal, state, next.Name));
                                 else
                                     found = c.State;
                             }
@@ -298,9 +299,9 @@ namespace PML.Parser
                         if (a != null && a.Action != ActionTable.Action.Shift && a.State != found)
                         {
                             if (a.Action != ActionTable.Action.Shift)
-                                Statistics.Conflicts.Add(new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftReduce, state, next.Name));
+                                Statistics.Conflicts.Add(new Statistics.ConflictEntry(Statistics.ConflictType.ShiftReduce, state, next.Name));
                             else
-                                Statistics.Conflicts.Add(new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftShift, state, next.Name));
+                                Statistics.Conflicts.Add(new Statistics.ConflictEntry(Statistics.ConflictType.ShiftShift, state, next.Name));
                         }
 
                         _ActionTable.Set(state, next.Name, ActionTable.Action.Shift, found);
@@ -323,6 +324,13 @@ namespace PML.Parser
                     }
                 }
             }
+        }
+
+        public void Generate(Environment env, Logger logger)
+        {
+            GenerateStates(env, logger);
+            GenerateActionTable(env, logger);
+            GenerateGotoTable(env, logger);
         }
     }
 }

@@ -58,13 +58,16 @@
     <Compile Include="Src\Output\StateFile.cs" />
     <Compile Include="Src\Output\DotGraph.cs" />
     <Compile Include="Src\Output\SimpleBreakdown.cs" />
+    <Compile Include="Src\Parser\Parser.cs" />
     <Compile Include="Src\Parser\BUParser.cs" />
+    <Compile Include="Src\Parser\LL1.cs" />
     <Compile Include="Src\Parser\LALR1.cs" />
     <Compile Include="Src\Parser\LR1.cs" />
     <Compile Include="Src\Parser\SLR1.cs" />
-    <Compile Include="Src\Statistics\BUStatistics.cs" />
+    <Compile Include="Src\Statistics\Statistics.cs" />
     <Compile Include="Src\Style\StyleParser.cs" />
     <Compile Include="Src\Style\Style.cs" />
+    <Compile Include="Src\Utils\LookupTable.cs" />
     <Compile Include="Src\Utils\EnumeratorUtils.cs" />
     <Compile Include="Src\Utils\RuleLookaheadSet.cs" />
     <Compile Include="Src\Utils\RuleLookahead.cs" />

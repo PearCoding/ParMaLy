@@ -36,7 +36,7 @@ namespace PML.Output
 {
     public static class SimpleBreakdown
     {
-        public static void Print(TextWriter writer, Environment env, Parser.IBUParser parser)
+        public static void Print(TextWriter writer, Environment env, Parser.IParser parser)
         {
             writer.WriteLine("Tokens: " + String.Join(", ", env.Tokens.Select(s => "'" + s + "'").ToArray()));
             writer.WriteLine("Groups: " + String.Join(", ", env.Groups.Select(s => s.Name).ToArray()));
@@ -95,9 +95,11 @@ namespace PML.Output
                 var statistics = parser.Statistics;
                 writer.WriteLine("  Elapsed: " + statistics.TimeElapsed + "ms");
 
-                var process = statistics.Proceedings.Aggregate((l, r) => l.TimeElapsed > r.TimeElapsed ? l : r);
-                if(process != null)
+                if (statistics.Proceedings.Count > 0)
+                {
+                    var process = statistics.Proceedings.Aggregate((l, r) => l.TimeElapsed > r.TimeElapsed ? l : r);
                     writer.WriteLine("  Longest process: State " + process.Job.ID + " with " + process.TimeElapsed + "ms");
+                }
 
                 writer.WriteLine("  Conflict count: " + statistics.Conflicts.Count);
 
@@ -110,22 +112,22 @@ namespace PML.Output
                         string token = "";
                         switch (e.Type)
                         {
-                            case Statistics.BUStatistics.ConflictType.ShiftReduce:
+                            case Statistics.Statistics.ConflictType.ShiftReduce:
                                 special = "SRC";
                                 token = " " + e.Token != null ? e.Token : "$";
                                 break;
-                            case Statistics.BUStatistics.ConflictType.ReduceReduce:
+                            case Statistics.Statistics.ConflictType.ReduceReduce:
                                 special = "RRC";
                                 token = " " + e.Token != null ? e.Token : "$";
                                 break;
-                            case Statistics.BUStatistics.ConflictType.ShiftShift:
+                            case Statistics.Statistics.ConflictType.ShiftShift:
                                 special = "SSC";
                                 token = " " + e.Token != null ? e.Token : "$";
                                 break;
-                            case Statistics.BUStatistics.ConflictType.Accept:
+                            case Statistics.Statistics.ConflictType.Accept:
                                 special = "AC";
                                 break;
-                            case Statistics.BUStatistics.ConflictType.Internal:
+                            case Statistics.Statistics.ConflictType.Internal:
                                 special = "Int";
                                 break;
                         }

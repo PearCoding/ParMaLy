@@ -74,7 +74,6 @@ namespace PML.Output
             writer.Flush();
         }
 
-
         public static void PrintTransitionTable(TextWriter writer, List<RuleState> rows,
             ActionTable actionTable, GotoTable gotoTable, Environment env, Style.HtmlStyle style)
         {
@@ -117,6 +116,40 @@ namespace PML.Output
             AddFooter(writer, style);
             writer.Flush();
         }
+        public static void PrintLookupTable(TextWriter writer,
+            LookupTable lookup, Environment env, Style.HtmlStyle style)
+        {
+            AddHeader(writer, style);
+            writer.WriteLine("<table class='" + style.Table_Class + " " + style.TableLookup_Class + "' id='" + style.Table_ID + "'>");
+
+            int tr = 0;
+            writer.WriteLine("<tr class='" + style.TableTr_Class + "' id='" + style.TableTr_ID_Prefix + tr + "'>\n<th></th>");
+            tr++;
+            var tokens = new List<string>(env.Tokens);
+            tokens.Add(null);//Add EOF
+            AddActionHeader(0, writer, tokens, style);
+            writer.WriteLine("</tr>");
+
+            foreach (var grp in env.Groups)
+            {
+                writer.WriteLine("<tr class='" + style.TableTr_Class + "' id='" + style.TableTr_ID_Prefix + tr + "'>");
+                tr++;
+
+                AddFirstColumn(writer, grp, style);
+                int td = 1;
+                foreach (string s in tokens)
+                {
+                    var e = lookup.Get(grp, s);
+                    AddLookupEntry(td, e, writer, style);
+                    td++;
+                }
+                writer.WriteLine("</tr>");
+            }
+
+            writer.WriteLine("</table>");
+            AddFooter(writer, style);
+            writer.Flush();
+        }
 
         //Parts
         static void AddHeader(TextWriter writer, Style.HtmlStyle style)
@@ -144,6 +177,12 @@ namespace PML.Output
         {
             writer.WriteLine("<td class='" + style.TableTd_Class + "' id='" + style.TableTd_ID_Prefix + "0'>"
                     + state.ID + "</td>");
+        }
+
+        static void AddFirstColumn(TextWriter writer, RuleGroup group, Style.HtmlStyle style)
+        {
+            writer.WriteLine("<td class='" + style.TableTd_Class + "' id='" + style.TableTd_ID_Prefix + "0'>"
+                    + group.Name + "</td>");
         }
 
         static void AddActionHeader(int off, TextWriter writer, List<string> tokens, Style.HtmlStyle style)
@@ -215,6 +254,25 @@ namespace PML.Output
                 writer.Write(style.TableGotoState_Prefix + e.State.ID);
             else if (!string.IsNullOrEmpty(style.TableGotoEmpty_Content))
                 writer.Write(style.TableGotoEmpty_Content);
+
+            writer.WriteLine("</td>");
+        }
+
+        static void AddLookupEntry(int td, LookupTable.Entry e, TextWriter writer, Style.HtmlStyle style)
+        {
+            string special = "";
+            if (e != null)
+                special = style.TableLookupRule_Class;
+            else
+                special = style.TableLookupEmpty_Class;
+
+
+            writer.Write("<td class='" + style.TableTd_Class + " " + special + "' id='" + style.TableTd_ID_Prefix + td + "'>");
+
+            if (e != null)
+                writer.Write(style.TableLookupRule_Prefix + e.Rule.ID);
+            else if (!string.IsNullOrEmpty(style.TableLookupEmpty_Content))
+                writer.Write(style.TableLookupEmpty_Content);
 
             writer.WriteLine("</td>");
         }

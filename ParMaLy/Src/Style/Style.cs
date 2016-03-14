@@ -38,6 +38,7 @@ namespace PML.Style
         public HtmlStyle ActionTableHtml = new HtmlStyle();
         public HtmlStyle GotoTableHtml = new HtmlStyle();
         public HtmlStyle TransitionTableHtml = new HtmlStyle();
+        public HtmlStyle LookupTableHtml = new HtmlStyle();
 
         public CSVStyle ProceedingCSV = new CSVStyle();
     }
@@ -82,6 +83,7 @@ namespace PML.Style
         public string TableAction_Class = "action_table";
         public string TableGoto_Class = "goto_table";
         public string TableTransition_Class = "transition_table";
+        public string TableLookup_Class = "lookup_table";
 
         public string TableTr_ID_Prefix = "row_";
         public string TableTh_ID_Prefix = "header_";
@@ -99,6 +101,9 @@ namespace PML.Style
         public string TableGotoState_Class = "goto_state";
         public string TableGotoEmpty_Class = "goto_empty";
 
+        public string TableLookupRule_Class = "lookup_rule";
+        public string TableLookupEmpty_Class = "lookup_empty";
+
         public string TableActionShift_Prefix = "s";
         public string TableActionReduce_Prefix = "r";
         public string TableActionAccept_Content = "Accept";
@@ -106,6 +111,9 @@ namespace PML.Style
 
         public string TableGotoState_Prefix = "";
         public string TableGotoEmpty_Content = "";
+
+        public string TableLookupRule_Prefix = "";
+        public string TableLookupEmpty_Content = "";
 
         public string EOF_Identificator = "$";
         public bool UseRuleName = true;

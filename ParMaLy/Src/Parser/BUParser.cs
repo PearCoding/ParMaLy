@@ -33,7 +33,7 @@ using System.Collections.Generic;
 namespace PML.Parser
 {
     //Represents a Bottom Up Parser
-    public interface IBUParser
+    public interface IBUParser : IParser
     {
         List<RuleState> States { get; }
 
@@ -42,8 +42,6 @@ namespace PML.Parser
         ActionTable ActionTable { get; }
 
         GotoTable GotoTable { get; }
-
-        Statistics.BUStatistics Statistics { get; }
 
         void GenerateStates(Environment env, Logger logger);
 

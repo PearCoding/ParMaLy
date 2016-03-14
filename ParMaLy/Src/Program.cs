@@ -52,6 +52,7 @@ namespace PML
         public string ActionHtmlFile;
         public string GotoHtmlFile;
         public string TransitionHtmlFile;
+        public string LookupHtmlFile;
 
         public string ProceedingCSVFile;
 
@@ -68,14 +69,14 @@ namespace PML
             p.WriteOptionDescriptions(Console.Out);
             Console.WriteLine();
             Console.WriteLine("PARSER=");
-            Console.WriteLine("\tlr0\t\t[LR(0)]");
-            Console.WriteLine("\tslr1\t\t[SLR(1)]");
-            Console.WriteLine("\tlalr1\t\t[LALR(1)]");
-            Console.WriteLine("\tlr1\t\t[LR(1)]");
-            Console.WriteLine("\tlr2, lr3...\t[LR(k)]");
-            Console.WriteLine("\tll0\t\t[LL(0)]");
-            Console.WriteLine("\tll1\t\t[LL(1)]");
-            Console.WriteLine("\tll2, ll3...\t[LL(k)]");
+            Console.WriteLine("\tlr0\t\t[LR(0)](LR)");
+            Console.WriteLine("\tslr1\t\t[SLR(1)](LR)");
+            Console.WriteLine("\tlalr1\t\t[LALR(1)](LR)");
+            Console.WriteLine("\tlr1\t\t[LR(1)](LR)");
+            Console.WriteLine("\tlr2, lr3...\t[LR(k)](LR)");
+            Console.WriteLine("\tll0\t\t[LL(0)](LL)");
+            Console.WriteLine("\tll1\t\t[LL(1)](LL)");
+            Console.WriteLine("\tll2, ll3...\t[LL(k)](LL)");
             Console.WriteLine("\trd\t\t[Recursive-Descent]");
         }
 
@@ -89,23 +90,26 @@ namespace PML
                     "Choose underlying {PARSER}.",
                     (string s) => opts.Parser = s },
                 { "states=",
-                    "Generate a state {FILE} based on the chosen parser.",
+                    "Generate a state {FILE} based on the chosen parser. Only usable with LR parsers.",
                     (string s) => { opts.StateFile = s; opts.Parse = true; } },
                 { "group-dot=",
                     "Generate a dot {FILE} from the calculated group graph.",
                     (string s) => opts.GroupDotFile = s },
                 { "state-dot=",
-                    "Generate a dot {FILE} from the calculated state graph.",
+                    "Generate a dot {FILE} from the calculated state graph. Only usable with LR parsers.",
                     (string s) => { opts.StateDotFile = s; opts.Parse = true; } },
                 { "action-html=",
-                    "Generate a html {FILE} from the calculated ACTION table.",
+                    "Generate a html {FILE} from the calculated ACTION table. Only usable with LR parsers.",
                     (string s) => { opts.ActionHtmlFile = s; opts.Parse = true; } },
                 { "goto-html=",
-                    "Generate a html {FILE} from the calculated GOTO table.",
+                    "Generate a html {FILE} from the calculated GOTO table. Only usable with LR parsers.",
                     (string s) => { opts.GotoHtmlFile = s; opts.Parse = true; } },
                 { "transition-html=",
-                    "Generate a html {FILE} from the calculated ACTION and GOTO table.",
+                    "Generate a html {FILE} from the calculated ACTION and GOTO table. Only usable with LR parsers.",
                     (string s) => { opts.TransitionHtmlFile = s; opts.Parse = true; } },
+                { "lookup-html=",
+                    "Generate a html {FILE} from the calculated LOOKUP table. Only usable with LL parsers.",
+                    (string s) => { opts.LookupHtmlFile = s; opts.Parse = true; } },
                 { "proceeding-csv=",
                     "Generate a csv {FILE} from generation process.",
                     (string s) => { opts.ProceedingCSVFile = s; opts.Parse = true; } },
@@ -165,7 +169,7 @@ namespace PML
 
             FirstSet.Setup(env);
             FollowSet.Setup(env);
-            Parser.IBUParser parser = null;
+            Parser.IParser parser = null;
 
             Style.Style style = null;
             if (opts.StyleFile == null)
@@ -178,6 +182,7 @@ namespace PML
 
             if (!String.IsNullOrEmpty(opts.Parser))
             {
+                bool llParser = false;
                 if (opts.Parser.ToLower() == "lr0")
                     parser = new Parser.LR0();
                 else if (opts.Parser.ToLower() == "slr1")
@@ -186,6 +191,11 @@ namespace PML
                     parser = new Parser.LALR1();
                 else if (opts.Parser.ToLower() == "lr1")
                     parser = new Parser.LR1();
+                else if (opts.Parser.ToLower() == "ll1")
+                {
+                    parser = new Parser.LL1();
+                    llParser = true;
+                }
                 else
                 {
                     Console.WriteLine("Unknown parser selected.");
@@ -195,44 +205,54 @@ namespace PML
 
                 if (opts.Parse && parser != null)
                 {
-                    parser.GenerateStates(env, logger);
-                    parser.GenerateActionTable(env, logger);
-                    parser.GenerateGotoTable(env, logger);
+                    parser.Generate(env, logger);
 
-                    if (!String.IsNullOrEmpty(opts.StateFile))
+                    if (!llParser)
                     {
-                        Output.StateFile.PrintStates(File.CreateText(opts.StateFile),
-                                    parser.States, env, false);
+                        Parser.IBUParser buParser = parser as Parser.IBUParser;
+
+                        if (!String.IsNullOrEmpty(opts.StateFile))
+                        {
+                            Output.StateFile.PrintStates(File.CreateText(opts.StateFile),
+                                        buParser.States, env, false);
+                        }
+
+                        if (!String.IsNullOrEmpty(opts.StateDotFile))
+                        {
+                            Output.DotGraph.PrintStateGraph(File.CreateText(opts.StateDotFile),
+                                env, buParser.StartState, style.StateDot);
+                        }
+
+                        if (!String.IsNullOrEmpty(opts.ActionHtmlFile))
+                        {
+                            Output.HtmlTable.PrintActionTable(File.CreateText(opts.ActionHtmlFile), buParser.States,
+                                buParser.ActionTable, env, style.ActionTableHtml);
+                        }
+
+                        if (!String.IsNullOrEmpty(opts.GotoHtmlFile))
+                        {
+                            Output.HtmlTable.PrintGotoTable(File.CreateText(opts.GotoHtmlFile), buParser.States,
+                                buParser.GotoTable, env, style.GotoTableHtml);
+                        }
+
+                        if (!String.IsNullOrEmpty(opts.TransitionHtmlFile))
+                        {
+                            Output.HtmlTable.PrintTransitionTable(File.CreateText(opts.TransitionHtmlFile), buParser.States,
+                                buParser.ActionTable, buParser.GotoTable, env, style.TransitionTableHtml);
+                        }
+
+                        if (!String.IsNullOrEmpty(opts.ProceedingCSVFile))
+                        {
+                            Output.CSV.PrintProceedings(File.CreateText(opts.ProceedingCSVFile), parser.Statistics.Proceedings,
+                                style.ProceedingCSV);
+                        }
                     }
-
-                    if (!String.IsNullOrEmpty(opts.StateDotFile))
+                    else//llParser
                     {
-                        Output.DotGraph.PrintStateGraph(File.CreateText(opts.StateDotFile),
-                            env, parser.StartState, style.StateDot);
-                    }
-
-                    if (!String.IsNullOrEmpty(opts.ActionHtmlFile))
-                    {
-                        Output.HtmlTable.PrintActionTable(File.CreateText(opts.ActionHtmlFile), parser.States,
-                            parser.ActionTable, env, style.ActionTableHtml);
-                    }
-
-                    if (!String.IsNullOrEmpty(opts.GotoHtmlFile))
-                    {
-                        Output.HtmlTable.PrintGotoTable(File.CreateText(opts.GotoHtmlFile), parser.States,
-                            parser.GotoTable, env, style.GotoTableHtml);
-                    }
-
-                    if (!String.IsNullOrEmpty(opts.TransitionHtmlFile))
-                    {
-                        Output.HtmlTable.PrintTransitionTable(File.CreateText(opts.TransitionHtmlFile), parser.States,
-                            parser.ActionTable, parser.GotoTable, env, style.TransitionTableHtml);
-                    }
-
-                    if(!String.IsNullOrEmpty(opts.ProceedingCSVFile))
-                    {
-                        Output.CSV.PrintProceedings(File.CreateText(opts.ProceedingCSVFile), parser.Statistics.Proceedings,
-                            style.ProceedingCSV);
+                        if(!String.IsNullOrEmpty(opts.LookupHtmlFile))
+                        {
+                            Output.HtmlTable.PrintLookupTable(File.CreateText(opts.LookupHtmlFile), ((Parser.LL1)parser).Lookup, env, style.LookupTableHtml);
+                        }
                     }
                 }
             }
