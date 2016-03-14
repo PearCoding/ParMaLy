@@ -8,7 +8,7 @@ namespace PML.Output
     using Statistics;
     public static class CSV
     {
-        public static void PrintProceedings(TextWriter writer, IEnumerable<BTStatistics.ProcessEntry> proceedings, Style.CSVStyle style)
+        public static void PrintProceedings(TextWriter writer, IEnumerable<BUStatistics.ProcessEntry> proceedings, Style.CSVStyle style)
         {
             foreach(var proc in proceedings)
             {

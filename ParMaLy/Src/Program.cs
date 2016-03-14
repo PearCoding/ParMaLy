@@ -165,7 +165,7 @@ namespace PML
 
             FirstSet.Setup(env);
             FollowSet.Setup(env);
-            Parser.IBTParser parser = null;
+            Parser.IBUParser parser = null;
 
             Style.Style style = null;
             if (opts.StyleFile == null)

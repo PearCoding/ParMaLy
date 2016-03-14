@@ -36,7 +36,7 @@ namespace PML.Output
 {
     public static class SimpleBreakdown
     {
-        public static void Print(TextWriter writer, Environment env, Parser.IBTParser parser)
+        public static void Print(TextWriter writer, Environment env, Parser.IBUParser parser)
         {
             writer.WriteLine("Tokens: " + String.Join(", ", env.Tokens.Select(s => "'" + s + "'").ToArray()));
             writer.WriteLine("Groups: " + String.Join(", ", env.Groups.Select(s => s.Name).ToArray()));
@@ -110,22 +110,22 @@ namespace PML.Output
                         string token = "";
                         switch (e.Type)
                         {
-                            case Statistics.BTStatistics.ConflictType.ShiftReduce:
+                            case Statistics.BUStatistics.ConflictType.ShiftReduce:
                                 special = "SRC";
                                 token = " " + e.Token != null ? e.Token : "$";
                                 break;
-                            case Statistics.BTStatistics.ConflictType.ReduceReduce:
+                            case Statistics.BUStatistics.ConflictType.ReduceReduce:
                                 special = "RRC";
                                 token = " " + e.Token != null ? e.Token : "$";
                                 break;
-                            case Statistics.BTStatistics.ConflictType.ShiftShift:
+                            case Statistics.BUStatistics.ConflictType.ShiftShift:
                                 special = "SSC";
                                 token = " " + e.Token != null ? e.Token : "$";
                                 break;
-                            case Statistics.BTStatistics.ConflictType.Accept:
+                            case Statistics.BUStatistics.ConflictType.Accept:
                                 special = "AC";
                                 break;
-                            case Statistics.BTStatistics.ConflictType.Internal:
+                            case Statistics.BUStatistics.ConflictType.Internal:
                                 special = "Int";
                                 break;
                         }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PML.Statistics
 {
-    public class BTStatistics
+    public class BUStatistics
     {
         public enum ConflictType
         {
