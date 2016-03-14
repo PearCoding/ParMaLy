@@ -40,6 +40,8 @@ namespace PML.Style
         public HtmlStyle TransitionTableHtml = new HtmlStyle();
         public HtmlStyle LookupTableHtml = new HtmlStyle();
 
+        public CodeStyle RDCode = new CodeStyle();
+
         public CSVStyle ProceedingCSV = new CSVStyle();
     }
 
@@ -126,5 +128,14 @@ namespace PML.Style
     public class CSVStyle
     {
         public string Seperator = ";";
+    }
+
+    public class CodeStyle
+    {
+        public bool UseInExpression = false;
+        public string NullExpression = "null";
+        public string StringBracket = "\"";
+        public string FunctionNamePrefix = "gr_";
+        public string Ident = "\t";
     }
 }

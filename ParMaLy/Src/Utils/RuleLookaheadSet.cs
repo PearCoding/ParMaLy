@@ -29,57 +29,79 @@
  */
 
 using System;
-using System.Linq;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
 
-namespace PML.BU
+namespace PML
 {
-    public class RuleLookahead : IEquatable<RuleLookahead>, IEnumerable<string>
+    public class RuleLookaheadSet : IEquatable<RuleLookaheadSet>, IEnumerable<RuleLookahead>
     {
-        string[] _Tokens;
+        List<RuleLookahead> _Lookaheads = new List<RuleLookahead>();
 
-        public string this [int index]
+        public List<RuleLookahead> Lookaheads { get { return _Lookaheads; } }
+
+        public RuleLookahead this [int index]
         {
-            get { return _Tokens[index]; }
-            set { _Tokens[index] = value; }
+            get { return _Lookaheads[index]; }
         } 
 
-        public RuleLookahead(int count)
+        public RuleLookaheadSet()
         {
-            _Tokens = new string[count];
         }
 
-        public RuleLookahead(string[] tokens)
+        public RuleLookaheadSet(IEnumerable<string> tokens)
         {
-            _Tokens = tokens;
+            foreach(var s in tokens)
+                _Lookaheads.Add(new RuleLookahead(s));
         }
 
-        public RuleLookahead(string token)
+        public void Add(RuleLookahead lookahead)
         {
-            _Tokens = new string[] { token };
+            _Lookaheads.Add(lookahead);
         }
 
-        public string Join(string delim)
+        public void AddUnique(IEnumerable<RuleLookahead> looks)
         {
-            return String.Join(delim, _Tokens);
+            foreach(var l in looks)
+            {
+                if (!_Lookaheads.Contains(l))
+                    _Lookaheads.Add(l);
+            }
         }
 
-        public string Join(string delim, Func<string, string> selector) 
+        public void AddUnique(RuleLookaheadSet set)
         {
-            return String.Join(delim, _Tokens.Select(selector).ToArray());
+            AddUnique(set._Lookaheads);
         }
+
+        public bool Contains(RuleLookahead lookahead)
+        {
+            return _Lookaheads.Contains(lookahead);
+        }
+
+        public bool Contains(string str)
+        {
+            foreach(var l in _Lookaheads)
+            {
+                if (l[0] == str)
+                    return true;
+            }
+
+            return false;
+        }
+
+        public bool Empty { get { return _Lookaheads.Count == 0; } }
 
         public override bool Equals(Object obj)
         {
             if (obj == null)
                 return false;
 
-            RuleLookahead p = obj as RuleLookahead;
+            RuleLookaheadSet p = obj as RuleLookaheadSet;
             return Equals(p);
         }
 
-        public bool Equals(RuleLookahead p)
+        public bool Equals(RuleLookaheadSet p)
         {
             if ((object)p == null)
                 return false;
@@ -87,24 +109,18 @@ namespace PML.BU
             if (ReferenceEquals(this, p))
                 return true;
 
-            if (_Tokens.Length != p._Tokens.Length)
+            if (_Lookaheads.Count != p._Lookaheads.Count)
                 return false;
 
-            for(int i = 0; i < _Tokens.Length; ++i)//Order is important!
-            {
-                if (_Tokens[i] != p._Tokens[i])
-                    return false;
-            }
-
-            return true;
+            return EnumeratorUtils.ScrambledEquals(_Lookaheads, p._Lookaheads);
         }
 
         public override int GetHashCode()
         {
-            return EnumeratorUtils.GetOrderDependentHashCode(_Tokens);
+            return EnumeratorUtils.GetOrderIndependentHashCode(_Lookaheads);
         }
 
-        public static bool operator == (RuleLookahead a, RuleLookahead b)
+        public static bool operator ==(RuleLookaheadSet a, RuleLookaheadSet b)
         {
             if (Object.ReferenceEquals(a, b))
                 return true;
@@ -115,20 +131,20 @@ namespace PML.BU
             return a.Equals(b);
         }
 
-        public static bool operator != (RuleLookahead a, RuleLookahead b)
+        public static bool operator !=(RuleLookaheadSet a, RuleLookaheadSet b)
         {
             return !(a == b);
         }
 
         //IEnumerable
-        public IEnumerator<string> GetEnumerator()
+        public IEnumerator<RuleLookahead> GetEnumerator()
         {
-            return ((IEnumerable<string>)_Tokens).GetEnumerator();
+            return ((IEnumerable<RuleLookahead>)_Lookaheads).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable<string>)_Tokens).GetEnumerator();
+            return ((IEnumerable<RuleLookahead>)_Lookaheads).GetEnumerator();
         }
     }
 }

@@ -29,59 +29,19 @@
  */
 
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 
-namespace PML.Parser
+namespace PML.R
 {
-    using Statistics;
-    using R;
-
-    class RD : IRParser
+    public class RState
     {
-        public string Name { get { return "Recursive-Descent"; } }
+        RuleGroup _Group;
+        public RuleGroup Group { get { return _Group; } }
 
-        Statistics _Statistics;
+        public Dictionary<Rule, RuleLookaheadSet> Lookaheads = new Dictionary<Rule, RuleLookaheadSet>();
 
-        public Statistics Statistics { get { return _Statistics; } }
-
-        List<RState> _States = new List<RState>();
-        public IEnumerable<RState> States { get { return _States; } }
-
-        public void Generate(Environment env, Logger logger)//Currently only a LL(1) parser...
+        public RState(RuleGroup grp)
         {
-            _States.Clear();
-            _Statistics = new Statistics();
-
-            // We can not start without a 'Start' token.
-            if (env.Start == null || env.Start.Rules.Count == 0)
-                return;
-
-            Stopwatch watch = new Stopwatch();
-            watch.Start();
-            foreach(var grp in env.Groups)
-            {
-                RState state = new RState(grp);
-
-                if (grp.Rules.Count == 1)//k == 0
-                {
-                    state.Lookaheads.Add(grp.Rules.First(), null);
-                }
-                else
-                { 
-                    foreach (var r in grp.Rules)//This is only k == 1... Have to make it adaptable!
-                    {
-                        var l = Enumerable.Concat(FirstSet.Generate(r.Tokens), grp.FollowSet);
-                        RuleLookaheadSet set = new RuleLookaheadSet(l);
-                        state.Lookaheads.Add(r, set);
-                    }
-                }
-
-                _States.Add(state);
-            }
-            watch.Stop();
-
-            _Statistics.TimeElapsed = watch.ElapsedMilliseconds;
+            _Group = grp;
         }
     }
 }

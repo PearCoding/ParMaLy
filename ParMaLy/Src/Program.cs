@@ -54,6 +54,8 @@ namespace PML
         public string TransitionHtmlFile;
         public string LookupHtmlFile;
 
+        public string CodeFile;
+
         public string ProceedingCSVFile;
 
         public bool ShowHelp = false;
@@ -77,7 +79,7 @@ namespace PML
             Console.WriteLine("\tll0\t\t[LL(0)](LL)");
             Console.WriteLine("\tll1\t\t[LL(1)](LL)");
             Console.WriteLine("\tll2, ll3...\t[LL(k)](LL)");
-            Console.WriteLine("\trd\t\t[Recursive-Descent]");
+            Console.WriteLine("\trd\t\t[Recursive-Descent](Recursive)");
         }
 
         static int Main(string[] args)
@@ -113,6 +115,9 @@ namespace PML
                 { "proceeding-csv=",
                     "Generate a csv {FILE} from generation process.",
                     (string s) => { opts.ProceedingCSVFile = s; opts.Parse = true; } },
+                { "code=",
+                    "Generate a pseudo code file. Currently only available for recursive parsers.",
+                    (string s) => { opts.CodeFile = s; opts.Parse = true; } },
                 { "breakdown=",
                     "Generate a general breakdown text {FILE}.",
                     (string s) => opts.BreakdownFile = s },
@@ -182,7 +187,7 @@ namespace PML
 
             if (!String.IsNullOrEmpty(opts.Parser))
             {
-                bool llParser = false;
+                int type = 0;
                 if (opts.Parser.ToLower() == "lr0")
                     parser = new Parser.LR0();
                 else if (opts.Parser.ToLower() == "slr1")
@@ -194,12 +199,17 @@ namespace PML
                 else if (opts.Parser.ToLower() == "ll0")
                 {
                     parser = new Parser.LL0();
-                    llParser = true;
+                    type = 1;
                 }
                 else if (opts.Parser.ToLower() == "ll1")
                 {
                     parser = new Parser.LL1();
-                    llParser = true;
+                    type = 1;
+                }
+                else if (opts.Parser.ToLower() == "rd")
+                {
+                    parser = new Parser.RD();
+                    type = 2;
                 }
                 else
                 {
@@ -212,7 +222,7 @@ namespace PML
                 {
                     parser.Generate(env, logger);
 
-                    if (!llParser)
+                    if (type == 0)
                     {
                         Parser.IBUParser buParser = parser as Parser.IBUParser;
 
@@ -252,11 +262,18 @@ namespace PML
                                 style.ProceedingCSV);
                         }
                     }
-                    else//llParser
+                    else if(type == 1)//LLParser
                     {
                         if(!String.IsNullOrEmpty(opts.LookupHtmlFile))
                         {
                             Output.HtmlTable.PrintLookupTable(File.CreateText(opts.LookupHtmlFile), ((Parser.ITDParser)parser).Lookup, env, style.LookupTableHtml);
+                        }
+                    }
+                    else if(type == 2)//RParser
+                    {
+                        if (!String.IsNullOrEmpty(opts.CodeFile))
+                        {
+                            Output.PseudoCode.PrintRD(File.CreateText(opts.CodeFile), ((Parser.IRParser)parser).States, env, style.RDCode);
                         }
                     }
                 }

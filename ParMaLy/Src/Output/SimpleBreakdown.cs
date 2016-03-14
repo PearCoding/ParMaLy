@@ -141,7 +141,7 @@ namespace PML.Output
                         }
                     }
                 }
-                else//TD
+                else if(statistics.TD != null)//TD
                 {
                     writer.WriteLine("  Conflict count: " + statistics.TD.Conflicts.Count);
 
