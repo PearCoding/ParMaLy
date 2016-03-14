@@ -7,6 +7,14 @@ namespace PML.Statistics
 {
     public class Statistics
     {
+        public BUStatistics BU;
+        public TDStatistics TD;
+
+        public long TimeElapsed = 0;//ms
+    }
+
+    public class BUStatistics
+    {
         public enum ConflictType
         {
             ShiftReduce,
@@ -33,8 +41,6 @@ namespace PML.Statistics
         List<ConflictEntry> _Conflicts = new List<ConflictEntry>();
         public List<ConflictEntry> Conflicts { get { return _Conflicts; } }
 
-        public long TimeElapsed = 0;//ms
-
         public class ProcessEntry
         {
             public long TimeElapsed;
@@ -53,5 +59,33 @@ namespace PML.Statistics
 
         List<ProcessEntry> _Proceedings = new List<ProcessEntry>();
         public List<ProcessEntry> Proceedings { get { return _Proceedings; } }
+    }
+
+    public class TDStatistics
+    {
+        public enum ConflictType
+        {
+            Lookup,
+            Internal
+        }
+
+        public class ConflictEntry
+        {
+            public ConflictType Type;
+            public RuleGroup Group;
+            public Rule Rule;
+            public string Token;
+
+            public ConflictEntry(ConflictType type, RuleGroup grp, string token, Rule rule)
+            {
+                Type = type;
+                Group = grp;
+                Rule = rule;
+                Token = token;
+            }
+        }
+
+        List<ConflictEntry> _Conflicts = new List<ConflictEntry>();
+        public List<ConflictEntry> Conflicts { get { return _Conflicts; } }
     }
 }

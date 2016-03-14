@@ -30,11 +30,14 @@
 
 using System;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace PML.Parser
 {
     using PML.Statistics;
-    public class LL1 : ITDParser
+
+    //Pretty useless type of parser... but it's a type.
+    public class LL0 : ITDParser
     {
         LookupTable _Lookup = new LookupTable();
 
@@ -54,38 +57,24 @@ namespace PML.Parser
             _Statistics = new Statistics();
             _Statistics.TD = new TDStatistics();
 
+            var tokens = new List<string>(env.Tokens);
+            tokens.Add(null);//EOF
+
             Stopwatch watch = new Stopwatch();
             watch.Start();
             foreach(var grp in env.Groups)
             {
                 foreach (var r in grp.Rules)
                 {
-                    var first = FirstSet.Generate(r.Tokens);
-                    foreach (var s in first)
+                    foreach (var s in tokens)
                     {
-                        if (s == null)//Empty
+                        if (_Lookup.Get(grp, s) != null)
                         {
-                            foreach (var f in grp.FollowSet)
-                            {
-                                if (_Lookup.Get(grp, s) != null)
-                                {
-                                    _Statistics.TD.Conflicts.Add(
-                                        new TDStatistics.ConflictEntry(TDStatistics.ConflictType.Lookup, grp, f, r));
-                                }
-
-                                _Lookup.Set(grp, f, r);
-                            }
+                            _Statistics.TD.Conflicts.Add(
+                                new TDStatistics.ConflictEntry(TDStatistics.ConflictType.Lookup, grp, s, r));
                         }
-                        else
-                        {
-                            if (_Lookup.Get(grp, s) != null)
-                            {
-                                _Statistics.TD.Conflicts.Add(
-                                    new TDStatistics.ConflictEntry(TDStatistics.ConflictType.Lookup, grp, s, r));
-                            }
 
-                            _Lookup.Set(grp, s, r);
-                        }
+                        _Lookup.Set(grp, s, r);
                     }
                 }
             }

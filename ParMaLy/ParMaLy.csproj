@@ -58,6 +58,8 @@
     <Compile Include="Src\Output\StateFile.cs" />
     <Compile Include="Src\Output\DotGraph.cs" />
     <Compile Include="Src\Output\SimpleBreakdown.cs" />
+    <Compile Include="Src\Parser\LL0.cs" />
+    <Compile Include="Src\Parser\TDParser.cs" />
     <Compile Include="Src\Parser\Parser.cs" />
     <Compile Include="Src\Parser\BUParser.cs" />
     <Compile Include="Src\Parser\LL1.cs" />

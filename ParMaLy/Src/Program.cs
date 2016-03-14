@@ -191,6 +191,11 @@ namespace PML
                     parser = new Parser.LALR1();
                 else if (opts.Parser.ToLower() == "lr1")
                     parser = new Parser.LR1();
+                else if (opts.Parser.ToLower() == "ll0")
+                {
+                    parser = new Parser.LL0();
+                    llParser = true;
+                }
                 else if (opts.Parser.ToLower() == "ll1")
                 {
                     parser = new Parser.LL1();
@@ -243,7 +248,7 @@ namespace PML
 
                         if (!String.IsNullOrEmpty(opts.ProceedingCSVFile))
                         {
-                            Output.CSV.PrintProceedings(File.CreateText(opts.ProceedingCSVFile), parser.Statistics.Proceedings,
+                            Output.CSV.PrintProceedings(File.CreateText(opts.ProceedingCSVFile), parser.Statistics.BU.Proceedings,
                                 style.ProceedingCSV);
                         }
                     }
@@ -251,7 +256,7 @@ namespace PML
                     {
                         if(!String.IsNullOrEmpty(opts.LookupHtmlFile))
                         {
-                            Output.HtmlTable.PrintLookupTable(File.CreateText(opts.LookupHtmlFile), ((Parser.LL1)parser).Lookup, env, style.LookupTableHtml);
+                            Output.HtmlTable.PrintLookupTable(File.CreateText(opts.LookupHtmlFile), ((Parser.ITDParser)parser).Lookup, env, style.LookupTableHtml);
                         }
                     }
                 }

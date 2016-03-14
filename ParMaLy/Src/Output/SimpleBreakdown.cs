@@ -34,6 +34,8 @@ using System.IO;
 
 namespace PML.Output
 {
+    using Statistics;
+
     public static class SimpleBreakdown
     {
         public static void Print(TextWriter writer, Environment env, Parser.IParser parser)
@@ -95,44 +97,73 @@ namespace PML.Output
                 var statistics = parser.Statistics;
                 writer.WriteLine("  Elapsed: " + statistics.TimeElapsed + "ms");
 
-                if (statistics.Proceedings.Count > 0)
+                if (statistics.BU != null)
                 {
-                    var process = statistics.Proceedings.Aggregate((l, r) => l.TimeElapsed > r.TimeElapsed ? l : r);
-                    writer.WriteLine("  Longest process: State " + process.Job.ID + " with " + process.TimeElapsed + "ms");
-                }
-
-                writer.WriteLine("  Conflict count: " + statistics.Conflicts.Count);
-
-                if (statistics.Conflicts.Count != 0)
-                {
-                    writer.WriteLine("  Conflicts:");
-                    foreach (var e in statistics.Conflicts)
+                    if (statistics.BU.Proceedings.Count > 0)
                     {
-                        string special = "";
-                        string token = "";
-                        switch (e.Type)
-                        {
-                            case Statistics.Statistics.ConflictType.ShiftReduce:
-                                special = "SRC";
-                                token = " " + e.Token != null ? e.Token : "$";
-                                break;
-                            case Statistics.Statistics.ConflictType.ReduceReduce:
-                                special = "RRC";
-                                token = " " + e.Token != null ? e.Token : "$";
-                                break;
-                            case Statistics.Statistics.ConflictType.ShiftShift:
-                                special = "SSC";
-                                token = " " + e.Token != null ? e.Token : "$";
-                                break;
-                            case Statistics.Statistics.ConflictType.Accept:
-                                special = "AC";
-                                break;
-                            case Statistics.Statistics.ConflictType.Internal:
-                                special = "Int";
-                                break;
-                        }
+                        var process = statistics.BU.Proceedings.Aggregate((l, r) => l.TimeElapsed > r.TimeElapsed ? l : r);
+                        writer.WriteLine("  Longest process: State " + process.Job.ID + " with " + process.TimeElapsed + "ms");
+                    }
 
-                        writer.WriteLine("    [" + special + "] State (" + e.State.ID + ")" + token);
+                    writer.WriteLine("  Conflict count: " + statistics.BU.Conflicts.Count);
+
+                    if (statistics.BU.Conflicts.Count != 0)
+                    {
+                        writer.WriteLine("  Conflicts:");
+                        foreach (var e in statistics.BU.Conflicts)
+                        {
+                            string special = "";
+                            string token = "";
+                            switch (e.Type)
+                            {
+                                case BUStatistics.ConflictType.ShiftReduce:
+                                    special = "SRC";
+                                    token = " with token " + (e.Token != null ? e.Token : "$");
+                                    break;
+                                case BUStatistics.ConflictType.ReduceReduce:
+                                    special = "RRC";
+                                    token = " with token " + (e.Token != null ? e.Token : "$");
+                                    break;
+                                case BUStatistics.ConflictType.ShiftShift:
+                                    special = "SSC";
+                                    token = " with token " + (e.Token != null ? e.Token : "$");
+                                    break;
+                                case BUStatistics.ConflictType.Accept:
+                                    special = "AC";
+                                    break;
+                                case BUStatistics.ConflictType.Internal:
+                                    special = "Int";
+                                    break;
+                            }
+
+                            writer.WriteLine("    [" + special + "] State (" + e.State.ID + ")" + token);
+                        }
+                    }
+                }
+                else//TD
+                {
+                    writer.WriteLine("  Conflict count: " + statistics.TD.Conflicts.Count);
+
+                    if (statistics.TD.Conflicts.Count != 0)
+                    {
+                        writer.WriteLine("  Conflicts:");
+                        foreach (var e in statistics.TD.Conflicts)
+                        {
+                            string special = "";
+                            string token = "";
+                            switch (e.Type)
+                            {
+                                case TDStatistics.ConflictType.Lookup:
+                                    special = "LC";
+                                    token = " with token " + (e.Token != null ? e.Token : "$");
+                                    break;
+                                case TDStatistics.ConflictType.Internal:
+                                    special = "Int";
+                                    break;
+                            }
+
+                            writer.WriteLine("    [" + special + "] Rule (" + e.Rule.ID + ") in " + e.Group.Name + token);
+                        }
                     }
                 }
             }
