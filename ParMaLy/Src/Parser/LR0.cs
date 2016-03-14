@@ -211,7 +211,7 @@ namespace PML.Parser
                     }
                     else if(conf.IsLast)//Reduce
                     {
-                        foreach(string t in env.Tokens)
+                        foreach(var t in env.Tokens)
                         {
                             var a = _ActionTable.Get(state, t);
                             if (a != null)
@@ -250,24 +250,24 @@ namespace PML.Parser
                             {
                                 if (found != null)
                                     Statistics.BU.Conflicts.Add(
-                                        new BUStatistics.ConflictEntry(BUStatistics.ConflictType.Internal, state, next.Name));
+                                        new BUStatistics.ConflictEntry(BUStatistics.ConflictType.Internal, state, next));
                                 else
                                     found = c.State;
                             }
                         }
 
-                        var a = _ActionTable.Get(state, next.Name);
+                        var a = _ActionTable.Get(state, next);
                         if (a != null)
                         {
                             if (a.Action != ActionTable.Action.Shift)
                                 Statistics.BU.Conflicts.Add(
-                                    new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftReduce, state, next.Name));
+                                    new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftReduce, state, next));
                             else if (a.Action == ActionTable.Action.Shift && a.State != found)
                                 Statistics.BU.Conflicts.Add(
-                                    new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftShift, state, next.Name));
+                                    new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftShift, state, next));
                         }
 
-                        _ActionTable.Set(state, next.Name, ActionTable.Action.Shift, found);
+                        _ActionTable.Set(state, next, ActionTable.Action.Shift, found);
                     }
                 }
             }

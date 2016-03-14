@@ -29,6 +29,7 @@
  */
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PML
 {
@@ -42,7 +43,7 @@ namespace PML
             if(env.Start != null)
             {
                 if (env.Start.FollowSet == null)
-                    env.Start.FollowSet = new List<string>();
+                    env.Start.FollowSet = new List<RuleToken>();
                 env.Start.FollowSet.Add(null);
             }
 
@@ -50,7 +51,7 @@ namespace PML
             foreach (Rule r in env.Rules)
             {
                 if (r.Group.FollowSet == null)
-                    r.Group.FollowSet = new List<string>();
+                    r.Group.FollowSet = new List<RuleToken>();
 
                 for (int i = 0; i < r.Tokens.Count - 1; ++i)
                 {
@@ -59,11 +60,11 @@ namespace PML
                     {
                         RuleGroup grp = t.Group;
                         if (grp.FollowSet == null)
-                            grp.FollowSet = new List<string>();
+                            grp.FollowSet = new List<RuleToken>();
 
                         var l = FirstSet.Generate(r.Tokens.GetRange(i + 1, r.Tokens.Count - i - 1));
 
-                        foreach (string str in l)
+                        foreach (var str in l)
                         {
                             if (!grp.FollowSet.Contains(str))
                                 grp.FollowSet.Add(str);
@@ -83,7 +84,7 @@ namespace PML
                         RuleGroup grp = t.Group;
                         if (i == r.Tokens.Count - 1)
                         {
-                            foreach (string str in r.Group.FollowSet)
+                            foreach (var str in r.Group.FollowSet)
                             {
                                 if (!grp.FollowSet.Contains(str))
                                     grp.FollowSet.Add(str);
@@ -95,7 +96,7 @@ namespace PML
 
                             if (l.Contains(null))
                             {
-                                foreach (string str in r.Group.FollowSet)
+                                foreach (var str in r.Group.FollowSet)
                                 {
                                     if (!grp.FollowSet.Contains(str))
                                         grp.FollowSet.Add(str);
@@ -104,6 +105,18 @@ namespace PML
                         }
                     }
                 }
+            }
+        }
+
+        public static IEnumerable<RuleToken> Generate(RuleGroup grp, int k)
+        {
+            if (k < 1)
+                return null;
+            else if (k == 1)
+                return grp.FollowSet;
+            else
+            {//TODO
+                return null;
             }
         }
     }

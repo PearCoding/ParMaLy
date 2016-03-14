@@ -49,9 +49,15 @@ namespace PML
         {
         }
 
-        public RuleLookaheadSet(IEnumerable<string> tokens)
+        public RuleLookaheadSet(IEnumerable<RuleToken> tokens)
         {
             foreach(var s in tokens)
+                _Lookaheads.Add(new RuleLookahead(s));
+        }
+
+        public RuleLookaheadSet(IEnumerable<string> tokens)
+        {
+            foreach (var s in tokens)
                 _Lookaheads.Add(new RuleLookahead(s));
         }
 
@@ -79,7 +85,7 @@ namespace PML
             return _Lookaheads.Contains(lookahead);
         }
 
-        public bool Contains(string str)
+        public bool Contains(RuleToken str)
         {
             foreach(var l in _Lookaheads)
             {

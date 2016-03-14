@@ -37,37 +37,11 @@ namespace PML
         // null is Empty!
         public static void Setup(Environment env)
         {
-            //foreach(RuleGroup grp in env.Groups)
-            //{
-            //    if (grp.FirstSet == null)
-            //        grp.FirstSet = new List<string>();
-
-            //    //Rule (2)
-            //    foreach (Rule r in grp.Rules)
-            //    {
-            //        if(r.IsEmpty)
-            //        {
-            //            if(!grp.FirstSet.Contains(null))
-            //            {
-            //                grp.FirstSet.Add(null);
-            //            }
-            //        }
-
-            //        if(r.Tokens.Count >= 1 && r.Tokens[0].Type == RuleTokenType.Token)
-            //        {
-            //            var token = r.Tokens[0].Name;
-            //            if(grp.FirstSet.Contains(token))
-            //            {
-            //                grp.FirstSet.Add(token);
-            //            }
-            //        }
-            //    }
-            //}
             // First rule (2)
             foreach (Rule r in env.Rules)
             {
                 if (r.Group.FirstSet == null)
-                    r.Group.FirstSet = new List<string>();
+                    r.Group.FirstSet = new List<RuleToken>();
 
                 if (r.IsEmpty)
                 {
@@ -77,8 +51,8 @@ namespace PML
                 else if (r.Tokens.Count == 1 && r.Tokens[0].Type == RuleTokenType.Token)
                 {
                     RuleToken t = r.Tokens[0];
-                    if (!r.Group.FirstSet.Contains(t.Name))
-                        r.Group.FirstSet.Add(t.Name);
+                    if (!r.Group.FirstSet.Contains(t))
+                        r.Group.FirstSet.Add(t);
                 }
             }
 
@@ -93,24 +67,22 @@ namespace PML
         static void Rule3(Environment env, Rule rule, Stack<KeyValuePair<Rule, Rule>> stack)
         {
             if (rule.Group.FirstSet == null)
-                rule.Group.FirstSet = new List<string>();
+                rule.Group.FirstSet = new List<RuleToken>();
 
             bool empty = true;
             foreach (RuleToken t in rule.Tokens)
             {
                 if (t.Type == RuleTokenType.Token)
                 {
-                    if (!rule.Group.FirstSet.Contains(t.Name))
-                        rule.Group.FirstSet.Add(t.Name);
+                    if (!rule.Group.FirstSet.Contains(t))
+                        rule.Group.FirstSet.Add(t);
 
                     empty = false;
                     break;
                 }
                 else
                 {
-                    RuleGroup grp = env.GroupByName(t.Name);
-
-                    foreach (Rule r in grp.Rules)
+                    foreach (Rule r in t.Group.Rules)
                     {
                         var pair = new KeyValuePair<Rule, Rule>(rule, r);
 
@@ -123,13 +95,13 @@ namespace PML
                         }
                     }
                     
-                    foreach (string s in grp.FirstSet)
+                    foreach (var s in t.Group.FirstSet)
                     {
                         if (s != null && !rule.Group.FirstSet.Contains(s))
                             rule.Group.FirstSet.Add(s);
                     }
 
-                    if (!grp.FirstSet.Contains(null))
+                    if (!t.Group.FirstSet.Contains(null))
                     {
                         empty = false;
                         break;
@@ -144,22 +116,17 @@ namespace PML
             }
         }
 
-        public static List<string> Generate(Environment env, string source)
+        public static IEnumerable<RuleToken> Generate(IEnumerable<RuleToken> tokens)
         {
-            return Generate(env.ParseLine(source));
-        }
-
-        public static List<string> Generate(IEnumerable<RuleToken> tokens)
-        {
-            List<string> list = new List<string>();
+            List<RuleToken> list = new List<RuleToken>();
 
             bool empty = true;
             foreach (RuleToken t in tokens)
             {
                 if (t.Type == RuleTokenType.Token)
                 {
-                    if (!list.Contains(t.Name))
-                        list.Add(t.Name);
+                    if (!list.Contains(t))
+                        list.Add(t);
 
                     empty = false;
                     break;
@@ -168,7 +135,7 @@ namespace PML
                 {
                     RuleGroup grp = t.Group;
 
-                    foreach (string s in grp.FirstSet)
+                    foreach (var s in grp.FirstSet)
                     {
                         if (s != null && !list.Contains(s))
                             list.Add(s);
@@ -189,6 +156,18 @@ namespace PML
             }
 
             return list;
+        }
+
+        public static IEnumerable<RuleToken> Generate(IEnumerable<RuleToken> tokens, int k)
+        {
+            if (k < 1)
+                return null;
+            else if (k == 1)
+                return Generate(tokens);
+            else
+            {//TODO
+                return null;
+            }
         }
     }
 }

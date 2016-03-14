@@ -40,20 +40,21 @@ namespace PML
 
     public class RuleToken : System.IEquatable<RuleToken>
     {
-        Rule _Parent;
-        public Rule Parent { get { return _Parent; } }
-
         RuleTokenType _Type;
         public RuleTokenType Type { get { return _Type; } }
 
         string _String;
         public string Name { get { return _String; } }
 
+        //Rule
+        public Rule Parent;
         public RuleGroup Group;
 
-        public RuleToken(Rule parent, RuleTokenType type, string str)
+        //Token
+        public bool IsComplex = false;
+
+        public RuleToken(RuleTokenType type, string str)
         {
-            _Parent = parent;
             _Type = type;
             _String = str;
         }
@@ -75,12 +76,12 @@ namespace PML
             if (ReferenceEquals(this, other))
                 return true;
 
-            return _Parent == other._Parent && _Type == other._Type && _String == other._String;
+            return _Type == other._Type && _String == other._String;
         }
 
         public override int GetHashCode()
         {
-            return _Parent.GetHashCode() ^ _Type.GetHashCode() ^ _String.GetHashCode();
+            return _Type.GetHashCode() ^ _String.GetHashCode();
         }
 
         public static bool operator ==(RuleToken a, RuleToken b)

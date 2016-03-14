@@ -40,7 +40,7 @@ namespace PML.Output
     {
         public static void Print(TextWriter writer, Environment env, Parser.IParser parser)
         {
-            writer.WriteLine("Tokens: " + String.Join(", ", env.Tokens.Select(s => "'" + s + "'").ToArray()));
+            writer.WriteLine("Tokens: " + String.Join(", ", env.Tokens.Select(s => s.IsComplex ? s.Name : "'" + s.Name + "'").ToArray()));
             writer.WriteLine("Groups: " + String.Join(", ", env.Groups.Select(s => s.Name).ToArray()));
             writer.WriteLine("Start: " + (env.Start == null ? "NOT SET!" : env.Start.Name));
 
@@ -119,15 +119,15 @@ namespace PML.Output
                             {
                                 case BUStatistics.ConflictType.ShiftReduce:
                                     special = "SRC";
-                                    token = " with token " + (e.Token != null ? e.Token : "$");
+                                    token = " with token " + (e.Token != null ? e.Token.Name : "$");
                                     break;
                                 case BUStatistics.ConflictType.ReduceReduce:
                                     special = "RRC";
-                                    token = " with token " + (e.Token != null ? e.Token : "$");
+                                    token = " with token " + (e.Token != null ? e.Token.Name : "$");
                                     break;
                                 case BUStatistics.ConflictType.ShiftShift:
                                     special = "SSC";
-                                    token = " with token " + (e.Token != null ? e.Token : "$");
+                                    token = " with token " + (e.Token != null ? e.Token.Name : "$");
                                     break;
                                 case BUStatistics.ConflictType.Accept:
                                     special = "AC";
@@ -156,7 +156,7 @@ namespace PML.Output
                             {
                                 case TDStatistics.ConflictType.Lookup:
                                     special = "LC";
-                                    token = " with token " + (e.Token != null ? e.Token : "$");
+                                    token = " with token " + (e.Token != null ? e.Token.Name : "$");
                                     break;
                                 case TDStatistics.ConflictType.Internal:
                                     special = "Int";

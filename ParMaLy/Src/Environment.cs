@@ -38,11 +38,11 @@ namespace PML
         List<Rule> _Rules = new List<Rule>();
         RuleGroup _Start;
         List<RuleGroup> _Groups = new List<RuleGroup>();
-        List<string> _Tokens = new List<string>();
+        List<RuleToken> _Tokens = new List<RuleToken>();
 
         public List<Rule> Rules { get { return _Rules; } }
         public List<RuleGroup> Groups { get { return _Groups; } }
-        public List<string> Tokens { get { return _Tokens; } }
+        public List<RuleToken> Tokens { get { return _Tokens; } }
 
         public RuleGroup Start { get { return _Start; } }
 
@@ -63,10 +63,13 @@ namespace PML
                 {
                     Grammar.TokenDefStatement tds = stmt as Grammar.TokenDefStatement;
 
-                    if (_Tokens.Contains(tds.Token))
+                    RuleToken token = new RuleToken(RuleTokenType.Token, tds.Token);
+                    token.IsComplex = true;
+
+                    if (_Tokens.Contains(token))
                         _Logger.Log(LogLevel.Warning, "Token '" + tds.Token + "' already defined.");
                     else
-                        _Tokens.Add(tds.Token);
+                        _Tokens.Add(token);
                 }
             }
 
@@ -92,13 +95,26 @@ namespace PML
                         {
                             if (t.WasString)
                             {
-                                if (!_Tokens.Contains(t.Name))
-                                    _Tokens.Add(t.Name);
-                            }
+                                var token = new RuleToken(RuleTokenType.Token, t.Name);
+                                if (!_Tokens.Contains(token))
+                                    _Tokens.Add(token);
 
-                            rule.Tokens.Add(new RuleToken(rule,
-                                _Tokens.Contains(t.Name) ? RuleTokenType.Token : RuleTokenType.Rule,
-                                t.Name));
+                                rule.Tokens.Add(token);
+                            }
+                            else
+                            {
+                                var token = new RuleToken(RuleTokenType.Token, t.Name);
+                                int index = _Tokens.IndexOf(token);
+
+                                if (index < 0)
+                                {
+                                    token = new RuleToken(RuleTokenType.Rule, t.Name);
+                                    token.Parent = rule;
+                                    rule.Tokens.Add(token);
+                                }
+                                else
+                                    rule.Tokens.Add(_Tokens[index]);
+                            }
                         }
 
                         if (!IsRuleUnique(rule))
@@ -149,28 +165,7 @@ namespace PML
                 }
             }
         }
-
-        public List<RuleToken> ParseLine(string source)
-        {
-            Grammar.Parser parser = new Grammar.Parser(source, _Logger);
-            var tokens = parser.ParseLine();
-
-            List<RuleToken> rt = new List<RuleToken>();
-            foreach (Grammar.RuleDefToken t in tokens)
-            {
-                if (t.WasString && !_Tokens.Contains(t.Name))
-                {
-                    _Logger.Log(LogLevel.Warning, "Token '" + t.Name + "' was not defined in grammar.");
-                    break;
-                }
-
-                rt.Add(new RuleToken(null,
-                    _Tokens.Contains(t.Name) ? RuleTokenType.Token : RuleTokenType.Rule,
-                    t.Name));
-            }
-
-            return rt;
-        }
+        
 
         // Access
         public RuleGroup GroupByName(string name)

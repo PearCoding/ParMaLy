@@ -136,6 +136,7 @@ namespace PML.Style
         public string NullExpression = "null";
         public string StringBracket = "\"";
         public string FunctionNamePrefix = "gr_";
+        public string ComplexCheckPrefix = "is_";
         public string Ident = "\t";
     }
 }

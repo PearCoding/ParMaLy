@@ -75,7 +75,7 @@ namespace PML.Parser
             RuleState state = new RuleState(_States.Count);
             foreach (Rule r in env.Start.Rules)
             {
-                state.Header.Add(new RuleConfiguration(r, 0, new RuleLookahead((string)null)));
+                state.Header.Add(new RuleConfiguration(r, 0, new RuleLookahead((RuleToken)null)));
             }
             _StartState = state;
             _States.Add(state);
@@ -123,7 +123,7 @@ namespace PML.Parser
                         foreach (var look in c.Lookaheads.Lookaheads)
                         {
                             var tmpL = new List<RuleToken>(tmp);
-                            tmpL.Add(new RuleToken(c.Rule, RuleTokenType.Token, look[0]));//This is the point why we have LR(1) not LR(k)
+                            tmpL.Add(look[0]);//This is the point why we have LR(1) not LR(k)
                             var delta = FirstSet.Generate(tmpL);
                                                             
                             foreach (var r in t.Group.Rules)
@@ -260,7 +260,7 @@ namespace PML.Parser
                 {
                     if(conf.Rule.Group == env.Start &&
                         conf.IsLast &&
-                        conf.Lookaheads.Contains((string)null))//Accept
+                        conf.Lookaheads.Contains((RuleToken)null))//Accept
                     {
                         var a = _ActionTable.Get(state, null);
                         if (a != null && a.Action != ActionTable.Action.Accept)
@@ -296,24 +296,24 @@ namespace PML.Parser
                             {
                                 if (found != null)
                                     Statistics.BU.Conflicts.Add(
-                                        new BUStatistics.ConflictEntry(BUStatistics.ConflictType.Internal, state, next.Name));
+                                        new BUStatistics.ConflictEntry(BUStatistics.ConflictType.Internal, state, next));
                                 else
                                     found = c.State;
                             }
                         }
 
-                        var a = _ActionTable.Get(state, next.Name);
+                        var a = _ActionTable.Get(state, next);
                         if (a != null)
                         {
                             if (a.Action != ActionTable.Action.Shift)
                                 Statistics.BU.Conflicts.Add(
-                                    new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftReduce, state, next.Name));
+                                    new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftReduce, state, next));
                             else if(a.Action == ActionTable.Action.Shift && a.State != found)
                                 Statistics.BU.Conflicts.Add(
-                                    new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftShift, state, next.Name));
+                                    new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftShift, state, next));
                         }
 
-                        _ActionTable.Set(state, next.Name, ActionTable.Action.Shift, found);
+                        _ActionTable.Set(state, next, ActionTable.Action.Shift, found);
                     }
                 }
             }

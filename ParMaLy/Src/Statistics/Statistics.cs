@@ -28,9 +28,9 @@ namespace PML.Statistics
         {
             public ConflictType Type;
             public BU.RuleState State;
-            public string Token;
+            public RuleToken Token;
 
-            public ConflictEntry(ConflictType type, BU.RuleState state, string token = null)
+            public ConflictEntry(ConflictType type, BU.RuleState state, RuleToken token = null)
             {
                 Type = type;
                 State = state;
@@ -74,9 +74,9 @@ namespace PML.Statistics
             public ConflictType Type;
             public RuleGroup Group;
             public Rule Rule;
-            public string Token;
+            public RuleToken Token;
 
-            public ConflictEntry(ConflictType type, RuleGroup grp, string token, Rule rule)
+            public ConflictEntry(ConflictType type, RuleGroup grp, RuleToken token, Rule rule)
             {
                 Type = type;
                 Group = grp;

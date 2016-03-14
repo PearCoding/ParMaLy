@@ -40,6 +40,18 @@ namespace PML.Output
     {
         public static void PrintRD(TextWriter writer, IEnumerable<RState> states, Environment env, Style.CodeStyle style)
         {
+            foreach (var t in env.Tokens)
+            {
+                if (t.IsComplex)
+                {
+                    writer.WriteLine("function " + style.ComplexCheckPrefix + t.Name + "(c) {");
+                    writer.WriteLine(style.Ident + "// TODO");
+                    writer.WriteLine(style.Ident + "return true;");
+                    writer.WriteLine("}");
+                    writer.WriteLine();
+                }
+            }
+
             foreach (var state in states)
             {
                 writer.WriteLine("function " + style.FunctionNamePrefix + state.Group.Name + "() {");
@@ -65,9 +77,9 @@ namespace PML.Output
                             writer.Write(string.Join(",", p.Value.Lookaheads.Select(
                                         delegate (RuleLookahead v) {
                                             if (v.Count() != 1)
-                                                return "[" + v.Join("", s => (s == null ? style.NullExpression : style.StringBracket + s + style.StringBracket)) + "]";
+                                                return "[" + v.Join("", s => (s == null ? style.NullExpression : style.StringBracket + s.Name + style.StringBracket)) + "]";
                                             else
-                                                return v[0] == null ? style.NullExpression : style.StringBracket + v[0] + style.StringBracket;
+                                                return v[0] == null ? style.NullExpression : style.StringBracket + v[0].Name + style.StringBracket;
                                         }
                                         ).ToArray()));
                             writer.Write("]) ");
@@ -76,14 +88,19 @@ namespace PML.Output
                         {
                             writer.Write(string.Join(" ||\n" + style.Ident + style.Ident + style.Ident,
                                 p.Value.Lookaheads.Select(
-                                           delegate (RuleLookahead v) {
-                                           if (v.Count() != 1)
-                                                   return "(" + PrintLookaheadIf(writer, v, style) + ")";
-                                           else
-                                               return "current() == " +
-                                               (v[0] == null ? style.NullExpression : style.StringBracket + v[0] + style.StringBracket);
-                                           }
-                                           ).ToArray()));
+                                            delegate (RuleLookahead v) {
+                                                if (v.Count() != 1)
+                                                    return "(" + PrintLookaheadIf(writer, v, style) + ")";
+                                                else
+                                                {
+                                                    if (v[0] != null && v[0].IsComplex)
+                                                        return style.ComplexCheckPrefix + v[0].Name + "(current())";
+                                                    else
+                                                        return "current() == " +
+                                                        (v[0] == null ? style.NullExpression : style.StringBracket + v[0].Name + style.StringBracket);
+                                                }
+                                            }
+                                            ).ToArray()));
                         }
 
                         writer.WriteLine("{");
@@ -117,12 +134,26 @@ namespace PML.Output
             string s = "";
             for (int i = 0; i < lookahead.Count(); ++i)
             {
-                if (i == 0)
-                    s += "current() ";
-                else
-                    s += "lookahead(" + i + ") ";
+                if (lookahead[0] != null && lookahead[0].IsComplex)
+                {
+                    s += style.ComplexCheckPrefix + lookahead[0].Name + "(";
 
-                s += " == " + style.StringBracket + lookahead[i] + style.StringBracket;
+                    if (i == 0)
+                        s += "current()";
+                    else
+                        s += "lookahead(" + i + ")";
+
+                    s += ")";
+                }
+                else
+                {
+                    if (i == 0)
+                        s += "current() ";
+                    else
+                        s += "lookahead(" + i + ") ";
+
+                    s += " == " + style.StringBracket + (lookahead[i] == null ? style.NullExpression : lookahead[i].Name) + style.StringBracket;
+                }
 
                 if (i != lookahead.Count() - 1)
                     s += " && ";

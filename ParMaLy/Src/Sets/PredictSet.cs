@@ -29,75 +29,26 @@
  */
 
 using System.Collections.Generic;
+using System.Linq;
 
-namespace PML.BU
+namespace PML
 {
-    public class ActionTable
+    public static class PredictSet
     {
-        public enum Action
+        public static IEnumerable<RuleToken> Generate(RuleGroup grp, IEnumerable<RuleToken> tokens, int k = 1)
         {
-            Shift,
-            Reduce,
-            Accept
-        };
-
-        public class Entry
-        {
-            public Action Action;
-            public RuleState State;
-            public RuleToken Token;
-        }
-
-        Dictionary<RuleState, List<Entry>> _Table = new Dictionary<RuleState, List<Entry>>();
-
-        public void Clear()
-        {
-            _Table.Clear();
-        }
-
-        public void Set(RuleState state, RuleToken token, Action act, RuleState n)
-        {
-            if (!_Table.ContainsKey(state))
-                _Table[state] = new List<Entry>();
-
-            var l = _Table[state];
-            Entry entry = null;
-            foreach(var e in l)
+            if (k == 0)
+                return null;//Empty
+            else
             {
-                if (e.Token == token)
+                var l = FirstSet.Generate(tokens, k);
+                if (l.Contains(null))
                 {
-                    entry = e;
-                    break;
+                    return l.Where(v => v != null).Union(grp.FollowSet);
                 }
+                else
+                    return l;
             }
-
-            if(entry == null)
-            {
-                entry = new Entry();
-                entry.Token = token;
-
-                l.Add(entry);
-            }
-
-            entry.State = n;
-            entry.Action = act;
         }
-
-        public Entry Get(RuleState state, RuleToken token)
-        {
-            if (!_Table.ContainsKey(state))
-                return null;
-
-            var l = _Table[state];
-            foreach (var e in l)
-            {
-                if (e.Token == token)
-                    return e;
-            }
-
-            return null;
-        }
-
-        public IEnumerable<RuleState> Rows { get { return _Table.Keys; } }
     }
 }

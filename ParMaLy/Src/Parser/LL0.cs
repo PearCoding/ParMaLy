@@ -60,7 +60,7 @@ namespace PML.Parser
             _Statistics = new Statistics();
             _Statistics.TD = new TDStatistics();
 
-            var tokens = new List<string>(env.Tokens);
+            var tokens = new List<RuleToken>(env.Tokens);
             tokens.Add(null);//EOF
 
             Stopwatch watch = new Stopwatch();

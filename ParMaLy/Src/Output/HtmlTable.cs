@@ -44,7 +44,7 @@ namespace PML.Output
             writer.WriteLine("<tr class='" + style.TableTr_Class + "' id='" + style.TableTr_ID_Prefix + tr + "'>\n<th></th>");
             tr++;
 
-            var tokens = new List<string>(env.Tokens);
+            var tokens = new List<RuleToken>(env.Tokens);
             tokens.Add(null);//Add EOF
             AddActionHeader(0, writer, tokens, style);
             writer.WriteLine("</tr>");
@@ -56,7 +56,7 @@ namespace PML.Output
 
                 AddFirstColumn(writer, state, style);
                 int td = 1;
-                foreach (string s in tokens)
+                foreach (var s in tokens)
                 {
                     var e = table.Get(state, s);
                     AddActionEntry(td, e, writer, style);
@@ -111,7 +111,7 @@ namespace PML.Output
             int tr = 0;
             writer.WriteLine("<tr class='" + style.TableTr_Class + "' id='" + style.TableTr_ID_Prefix + tr + "'>\n<th></th>");
             tr++;
-            var tokens = new List<string>(env.Tokens);
+            var tokens = new List<RuleToken>(env.Tokens);
             tokens.Add(null);//Add EOF
             AddActionHeader(0, writer, tokens, style);
             AddGotoHeader(tokens.Count, writer, env.Groups, style);
@@ -124,7 +124,7 @@ namespace PML.Output
 
                 AddFirstColumn(writer, state, style);
                 int td = 1;
-                foreach (string s in tokens)
+                foreach (var s in tokens)
                 {
                     var e = actionTable.Get(state, s);
                     AddActionEntry(td, e, writer, style);
@@ -154,7 +154,7 @@ namespace PML.Output
             int tr = 0;
             writer.WriteLine("<tr class='" + style.TableTr_Class + "' id='" + style.TableTr_ID_Prefix + tr + "'>\n<th></th>");
             tr++;
-            var tokens = new List<string>(env.Tokens);
+            var tokens = new List<RuleToken>(env.Tokens);
             tokens.Add(null);//Add EOF
             AddActionHeader(0, writer, tokens, style);
             writer.WriteLine("</tr>");
@@ -166,7 +166,7 @@ namespace PML.Output
 
                 AddFirstColumn(writer, grp, style);
                 int td = 1;
-                foreach (string s in tokens)
+                foreach (var s in tokens)
                 {
                     var e = lookup.Get(grp, s);
                     AddLookupEntry(td, e, writer, style);
@@ -214,13 +214,13 @@ namespace PML.Output
                     + group.Name + "</td>");
         }
 
-        static void AddActionHeader(int off, TextWriter writer, List<string> tokens, Style.HtmlStyle style)
+        static void AddActionHeader(int off, TextWriter writer, List<RuleToken> tokens, Style.HtmlStyle style)
         {
             int th = off;
-            foreach (string s in tokens)
+            foreach (var s in tokens)
             {
                 writer.WriteLine("<th class='" + style.TableTh_Class + "' id='" + style.TableTh_ID_Prefix + th + "'>"
-                    + (s == null ? style.EOF_Identificator : style.TokenNamePrefix + s + style.TokenNameSuffix) + "</th>");
+                    + (s == null ? style.EOF_Identificator : style.TokenNamePrefix + s.Name + style.TokenNameSuffix) + "</th>");
                 th++;
             }
         }

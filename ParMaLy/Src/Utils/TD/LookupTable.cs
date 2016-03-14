@@ -38,7 +38,7 @@ namespace PML.TD
         public class Entry
         {
             public Rule Rule;
-            public string Token;
+            public RuleToken Token;
         }
 
         Dictionary<RuleGroup, List<Entry>> _Table = new Dictionary<RuleGroup, List<Entry>>();
@@ -48,7 +48,7 @@ namespace PML.TD
             _Table.Clear();
         }
 
-        public void Set(RuleGroup grp, string token, Rule rule)
+        public void Set(RuleGroup grp, RuleToken token, Rule rule)
         {
             if (!_Table.ContainsKey(grp))
                 _Table[grp] = new List<Entry>();
@@ -75,7 +75,7 @@ namespace PML.TD
             entry.Rule = rule;
         }
 
-        public Entry Get(RuleGroup grp, string token)
+        public Entry Get(RuleGroup grp, RuleToken token)
         {
             if (!_Table.ContainsKey(grp))
                 return null;

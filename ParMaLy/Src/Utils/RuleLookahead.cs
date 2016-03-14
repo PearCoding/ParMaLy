@@ -35,11 +35,11 @@ using System.Collections;
 
 namespace PML
 {
-    public class RuleLookahead : IEquatable<RuleLookahead>, IEnumerable<string>
+    public class RuleLookahead : IEquatable<RuleLookahead>, IEnumerable<RuleToken>
     {
-        string[] _Tokens;
+        RuleToken[] _Tokens;
 
-        public string this [int index]
+        public RuleToken this [int index]
         {
             get { return _Tokens[index]; }
             set { _Tokens[index] = value; }
@@ -47,25 +47,30 @@ namespace PML
 
         public RuleLookahead(int count)
         {
-            _Tokens = new string[count];
+            _Tokens = new RuleToken[count];
         }
 
-        public RuleLookahead(string[] tokens)
+        public RuleLookahead(RuleToken[] tokens)
         {
             _Tokens = tokens;
         }
 
+        public RuleLookahead(RuleToken token)
+        {
+            _Tokens = new RuleToken[] { token };
+        }
+
         public RuleLookahead(string token)
         {
-            _Tokens = new string[] { token };
+            _Tokens = new RuleToken[] { new RuleToken(RuleTokenType.Token, token) };
         }
 
         public string Join(string delim)
         {
-            return String.Join(delim, _Tokens);
+            return String.Join(delim, _Tokens.Select(v => v.Name).ToArray());
         }
 
-        public string Join(string delim, Func<string, string> selector) 
+        public string Join(string delim, Func<RuleToken, string> selector) 
         {
             return String.Join(delim, _Tokens.Select(selector).ToArray());
         }
@@ -121,14 +126,14 @@ namespace PML
         }
 
         //IEnumerable
-        public IEnumerator<string> GetEnumerator()
+        public IEnumerator<RuleToken> GetEnumerator()
         {
-            return ((IEnumerable<string>)_Tokens).GetEnumerator();
+            return ((IEnumerable<RuleToken>)_Tokens).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable<string>)_Tokens).GetEnumerator();
+            return ((IEnumerable<RuleToken>)_Tokens).GetEnumerator();
         }
     }
 }

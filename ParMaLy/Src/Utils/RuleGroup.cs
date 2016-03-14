@@ -43,8 +43,8 @@ namespace PML
 
         public List<Rule> Rules = new List<Rule>();
 
-        public List<string> FirstSet;
-        public List<string> FollowSet;
+        public List<RuleToken> FirstSet;
+        public List<RuleToken> FollowSet;
 
         public RuleGroup(int id, string name)
         {
