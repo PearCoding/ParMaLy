@@ -64,32 +64,16 @@ namespace PML.Parser
             {
                 foreach (var r in grp.Rules)
                 {
-                    var first = FirstSet.Generate(r.Tokens);
-                    foreach (var s in first)
+                    var predict = PredictSet.Generate(grp, r.Tokens);
+                    foreach (var s in predict)
                     {
-                        if (s == null)//Empty
+                        if (_Lookup.Get(grp, s) != null)
                         {
-                            foreach (var f in grp.FollowSet)
-                            {
-                                if (_Lookup.Get(grp, s) != null)
-                                {
-                                    _Statistics.TD.Conflicts.Add(
-                                        new TDStatistics.ConflictEntry(TDStatistics.ConflictType.Lookup, grp, f, r));
-                                }
-
-                                _Lookup.Set(grp, f, r);
-                            }
+                            _Statistics.TD.Conflicts.Add(
+                                new TDStatistics.ConflictEntry(TDStatistics.ConflictType.Lookup, grp, s, r));
                         }
-                        else
-                        {
-                            if (_Lookup.Get(grp, s) != null)
-                            {
-                                _Statistics.TD.Conflicts.Add(
-                                    new TDStatistics.ConflictEntry(TDStatistics.ConflictType.Lookup, grp, s, r));
-                            }
 
-                            _Lookup.Set(grp, s, r);
-                        }
+                        _Lookup.Set(grp, s, r);   
                     }
                 }
             }

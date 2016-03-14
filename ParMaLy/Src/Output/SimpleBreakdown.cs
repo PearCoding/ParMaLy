@@ -79,7 +79,7 @@ namespace PML.Output
             foreach (RuleGroup grp in env.Groups)
             {
                 writer.WriteLine("  " + grp.Name + ": { " 
-                    + String.Join(", ", grp.FirstSet.Select(s => (s == null ? "/*EMPTY*/" : "'" + s + "'")).ToArray())
+                    + String.Join(", ", grp.FirstSet.Select(s => (s == null ? "/*EMPTY*/" : (s.IsComplex ? s.Name : "'" + s.Name + "'"))).ToArray())
                     + " }");
             }
 
@@ -87,7 +87,7 @@ namespace PML.Output
             foreach (RuleGroup grp in env.Groups)
             {
                 writer.WriteLine("  " + grp.Name + ": { "
-                    + String.Join(", ", grp.FollowSet.Select(s => (s == null ? "/*EOF*/" : "'" + s + "'")).ToArray())
+                    + String.Join(", ", grp.FollowSet.Select(s => (s == null ? "/*EOF*/" : (s.IsComplex ? s.Name : "'" + s.Name + "'"))).ToArray())
                     + " }");
             }
 

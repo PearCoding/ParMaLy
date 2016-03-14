@@ -68,12 +68,43 @@ namespace PML.Parser
                     state.Lookaheads.Add(grp.Rules.First(), null);
                 }
                 else
-                { 
+                {
+                    List<IEnumerable<RuleToken>> tokens = new List<IEnumerable<RuleToken>>();
+
+                    int max = 10;
                     foreach (var r in grp.Rules)//This is only k == 1... Have to make it adaptable!
                     {
-                        var l = Enumerable.Concat(FirstSet.Generate(r.Tokens), grp.FollowSet);
-                        RuleLookaheadSet set = new RuleLookaheadSet(l);
-                        state.Lookaheads.Add(r, set);
+                        bool found = false;
+                        IEnumerable<RuleToken> l = null;
+                        for (int k = 1; k <= max; ++k)
+                        {
+                            l = PredictSet.Generate(grp, r.Tokens, k);
+
+                            found = false;
+                            foreach (var other in tokens)
+                            {
+                                if (other.Intersect(l).Count() != 0)
+                                {
+                                    found = true;
+                                    break;
+                                }
+                            }
+
+                            if (!found)
+                            {
+                                tokens.Add(l);
+                                RuleLookaheadSet set = new RuleLookaheadSet(l);
+                                state.Lookaheads.Add(r, set);
+                                break;
+                            }
+                        }
+
+                        if(found)
+                        {
+                            logger.Log(LogLevel.Warning, "Coulnd't solve conflict after " + max + " lookaheads");
+                            RuleLookaheadSet set = new RuleLookaheadSet(l);
+                            state.Lookaheads.Add(r, set);
+                        }
                     }
                 }
 

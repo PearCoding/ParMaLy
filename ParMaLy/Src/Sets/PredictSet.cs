@@ -35,10 +35,23 @@ namespace PML
 {
     public static class PredictSet
     {
-        public static IEnumerable<RuleToken> Generate(RuleGroup grp, IEnumerable<RuleToken> tokens, int k = 1)
+        public static IEnumerable<RuleToken> Generate(RuleGroup grp, IEnumerable<RuleToken> tokens)
+        {
+            var l = FirstSet.Generate(tokens);
+            if (l.Contains(null))
+            {
+                return l.Where(v => v != null).Union(grp.FollowSet);
+            }
+            else
+                return l;
+        }
+
+        public static IEnumerable<RuleToken> Generate(RuleGroup grp, IEnumerable<RuleToken> tokens, int k)
         {
             if (k == 0)
                 return null;//Empty
+            else if (k == 1)
+                return Generate(grp, tokens);
             else
             {
                 var l = FirstSet.Generate(tokens, k);
