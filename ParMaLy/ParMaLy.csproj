@@ -56,6 +56,7 @@
     <Compile Include="Src\Output\PseudoCode.cs" />
     <Compile Include="Src\Output\CSV.cs" />
     <Compile Include="Src\Output\HtmlTable.cs" />
+    <Compile Include="Src\Output\SetFile.cs" />
     <Compile Include="Src\Output\StateFile.cs" />
     <Compile Include="Src\Output\DotGraph.cs" />
     <Compile Include="Src\Output\SimpleBreakdown.cs" />

@@ -58,7 +58,11 @@ namespace PML
 
         public string ProceedingCSVFile;
 
+        public string FirstSetFile;
+        public int K = 1;
+
         public bool ShowHelp = false;
+        public bool NoLog = false;
     }
 
     class Program
@@ -84,7 +88,6 @@ namespace PML
 
         static int Main(string[] args)
         {
-            Logger logger = new Logger();
             Options opts = new Options();
             OptionSet p = new OptionSet()
             {
@@ -124,9 +127,16 @@ namespace PML
                 { "style=",
                     "The underlying style {FILE}.",
                     (string s) => opts.StyleFile = s },
-                { "h|help",
-                    "Show this message and exit.",
-                    v => opts.ShowHelp = v != null }
+                { "firstset=",
+                    "Generate a {FILE} with all entries in the first sets. Makes use of the -k option.",
+                    (string s) => { opts.FirstSetFile = s; } },
+                { "k|lookahead=",
+                    "The used {MAX} amount of lookahead. Not every parser consider this option.",
+                    (int k) => opts.K = k },
+                { "h|help", "Show this message and exit.",
+                    v => opts.ShowHelp = v != null },
+                { "nl|no-log", "Do not produce any log file.",
+                    v => opts.NoLog = true }
             };
 
             List<string> input;
@@ -155,6 +165,7 @@ namespace PML
             }
 
             string file = input[0];
+            Logger logger = new Logger(!opts.NoLog);
             Environment env = new Environment(logger);
             try
             {
@@ -183,6 +194,16 @@ namespace PML
 
             if (!String.IsNullOrEmpty(opts.GroupDotFile))
                 Output.DotGraph.PrintGroupGraph(File.CreateText(opts.GroupDotFile), env, style.GroupDot);
+
+            if (!String.IsNullOrEmpty(opts.FirstSetFile))
+            {
+                for (int i = 1; i <= (opts.K < 1 ? 1 : opts.K); ++i)
+                {
+                    env.FirstCache.Setup(env, i);
+                }
+
+                Output.SetFile.PrintFirstSets(File.CreateText(opts.FirstSetFile), env.FirstCache, env);
+            }
 
             if (!String.IsNullOrEmpty(opts.Parser))
             {

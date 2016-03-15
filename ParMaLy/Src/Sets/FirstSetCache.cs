@@ -40,9 +40,17 @@ namespace PML
         Dictionary<KeyValuePair<IEnumerable<RuleToken>, int>, RuleLookaheadSet> _ExprCache =
             new Dictionary<KeyValuePair<IEnumerable<RuleToken>, int>, RuleLookaheadSet>();
 
+        List<int> _Setups = new List<int>();
+
+        public int MaxK { get { return _Setups.Max(); } }
+
         public void Setup(Environment env, int k)
         {
-            FirstSet.Setup(env, this, k);
+            if (!_Setups.Contains(k))
+            {
+                _Setups.Add(k);
+                FirstSet.Setup(env, this, k);
+            }
         }
 
         public RuleLookaheadSet Generate(IEnumerable<RuleToken> tokens, int k)
@@ -67,7 +75,17 @@ namespace PML
         {
             return _RuleCache.ContainsKey(new KeyValuePair<Rule, int>(r, k));
         }
-        
+
+        public bool Has(RuleGroup grp, int k)
+        {
+            foreach(var p in _RuleCache)
+            {
+                if (p.Key.Key.Group == grp && p.Key.Value == k)
+                    return true;
+            }
+            return false;
+        }
+
         public void Set(Rule r, int k, RuleLookaheadSet set)
         {
             _RuleCache[new KeyValuePair<Rule, int>(r, k)] = set;
@@ -96,6 +114,7 @@ namespace PML
         {
             _RuleCache.Clear();
             _ExprCache.Clear();
+            _Setups.Clear();
         }
     }
 }

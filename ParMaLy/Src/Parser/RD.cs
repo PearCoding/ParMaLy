@@ -57,6 +57,8 @@ namespace PML.Parser
             if (env.Start == null || env.Start.Rules.Count == 0)
                 return;
 
+            int max = 3;
+            int currentMaxK = 1;
             env.FirstCache.Setup(env, 1);
 
             Stopwatch watch = new Stopwatch();
@@ -73,13 +75,18 @@ namespace PML.Parser
                 {
                     List<RuleLookaheadSet> tokens = new List<RuleLookaheadSet>();
 
-                    int max = 10;
                     foreach (var r in grp.Rules)
                     {
                         bool found = false;
                         RuleLookaheadSet l = null;
                         for (int k = 1; k <= max; ++k)
                         {
+                            if(k > currentMaxK)
+                            {
+                                currentMaxK = k;
+                                env.FirstCache.Setup(env, k);
+                            }
+
                             l = PredictSet.Generate(env, grp, r.Tokens, k);
 
                             found = false;
