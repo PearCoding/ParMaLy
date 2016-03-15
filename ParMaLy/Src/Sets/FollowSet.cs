@@ -62,12 +62,12 @@ namespace PML
                         if (grp.FollowSet == null)
                             grp.FollowSet = new List<RuleToken>();
 
-                        var l = FirstSet.Generate(r.Tokens.GetRange(i + 1, r.Tokens.Count - i - 1));
+                        var l = env.FirstCache.Generate(r.Tokens.GetRange(i + 1, r.Tokens.Count - i - 1), 1);
 
                         foreach (var str in l)
                         {
-                            if (!grp.FollowSet.Contains(str))
-                                grp.FollowSet.Add(str);
+                            if (!grp.FollowSet.Contains(str[0]))
+                                grp.FollowSet.Add(str[0]);
                         }
                     }
                 }
@@ -92,9 +92,9 @@ namespace PML
                         }
                         else
                         {
-                            var l = FirstSet.Generate(r.Tokens.GetRange(i + 1, r.Tokens.Count - i - 1));
+                            var l = env.FirstCache.Generate(r.Tokens.GetRange(i + 1, r.Tokens.Count - i - 1), 1);
 
-                            if (l.Contains(null))
+                            if (l.Contains((RuleLookahead)null))
                             {
                                 foreach (var str in r.Group.FollowSet)
                                 {
@@ -108,12 +108,12 @@ namespace PML
             }
         }
 
-        public static IEnumerable<RuleToken> Generate(RuleGroup grp, int k)
+        public static RuleLookaheadSet Generate(RuleGroup grp, int k)
         {
             if (k < 1)
                 return null;
             else if (k == 1)
-                return grp.FollowSet;
+                return new RuleLookaheadSet(grp.FollowSet);
             else
             {//TODO
                 return null;

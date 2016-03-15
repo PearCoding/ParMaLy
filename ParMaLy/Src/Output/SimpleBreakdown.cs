@@ -74,15 +74,7 @@ namespace PML.Output
                     writer.WriteLine("    --> [" + con.Group.Name + "]");
                 }
             }
-
-            writer.WriteLine("First Sets:");
-            foreach (RuleGroup grp in env.Groups)
-            {
-                writer.WriteLine("  " + grp.Name + ": { " 
-                    + String.Join(", ", grp.FirstSet.Select(s => (s == null ? "/*EMPTY*/" : (s.IsComplex ? s.Name : "'" + s.Name + "'"))).ToArray())
-                    + " }");
-            }
-
+            
             writer.WriteLine("Follow Sets:");
             foreach (RuleGroup grp in env.Groups)
             {

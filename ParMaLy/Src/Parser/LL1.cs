@@ -58,13 +58,15 @@ namespace PML.Parser
             _Statistics = new Statistics();
             _Statistics.TD = new TDStatistics();
 
+            env.FirstCache.Setup(env, 1);
+
             Stopwatch watch = new Stopwatch();
             watch.Start();
             foreach(var grp in env.Groups)
             {
                 foreach (var r in grp.Rules)
                 {
-                    var predict = PredictSet.Generate(grp, r.Tokens);
+                    var predict = PredictSet.Generate(env, grp, r.Tokens);
                     foreach (var s in predict)
                     {
                         if (_Lookup.Get(grp, s) != null)

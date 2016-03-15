@@ -69,6 +69,7 @@
     <Compile Include="Src\Parser\LALR1.cs" />
     <Compile Include="Src\Parser\LR1.cs" />
     <Compile Include="Src\Parser\SLR1.cs" />
+    <Compile Include="Src\Sets\FirstSetCache.cs" />
     <Compile Include="Src\Sets\PredictSet.cs" />
     <Compile Include="Src\Statistics\Statistics.cs" />
     <Compile Include="Src\Style\StyleParser.cs" />

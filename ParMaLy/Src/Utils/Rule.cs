@@ -30,9 +30,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PML
 {
+    [System.Diagnostics.DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class Rule : IEquatable<Rule>
     {
         int _ID;
@@ -56,7 +58,19 @@ namespace PML
                 return Tokens.Count == 0;
             }
         }
-
+        
+        public bool HasNonTerminals
+        {
+            get
+            {
+                foreach(var t in Tokens)
+                {
+                    if (t.Type == RuleTokenType.Rule)
+                        return true;
+                }
+                return false;
+            }
+        }
 
         public override bool Equals(object obj)
         {
@@ -97,6 +111,17 @@ namespace PML
         public static bool operator !=(Rule a, Rule b)
         {
             return !(a == b);
+        }
+
+        //System
+        private string DebuggerDisplay
+        {
+            get
+            {
+                return _Group.Name + "[" + ID + "] " +
+                    (IsEmpty ? "/* EMPTY */" : String.Join(" ",
+                        Tokens.Select(v => (v.Type == RuleTokenType.Token ? "'" + v.Name + "'" : v.Name)).ToArray()));
+            }
         }
     }
 }

@@ -33,6 +33,7 @@ using System.Collections.Generic;
 
 namespace PML
 {
+    [System.Diagnostics.DebuggerDisplay("{Name,nq} <{ID}>")]
     public class RuleGroup : IEquatable<RuleGroup>
     {
         int _ID;
@@ -42,8 +43,7 @@ namespace PML
         public string Name { get { return _Name; } }
 
         public List<Rule> Rules = new List<Rule>();
-
-        public List<RuleToken> FirstSet;
+        
         public List<RuleToken> FollowSet;
 
         public RuleGroup(int id, string name)

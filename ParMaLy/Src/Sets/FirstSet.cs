@@ -29,144 +29,229 @@
  */
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PML
 {
     public static class FirstSet
     {
-        // null is Empty!
-        public static void Setup(Environment env)
+        // Should work with Caches
+        public static RuleLookaheadSet Generate(IEnumerable<RuleToken> tokens, int k, FirstSetCache cache)
         {
-            // First rule (2)
-            foreach (Rule r in env.Rules)
+            if (k < 1 || tokens.Count() == 0)
             {
-                if (r.Group.FirstSet == null)
-                    r.Group.FirstSet = new List<RuleToken>();
-
-                if (r.IsEmpty)
-                {
-                    if (!r.Group.FirstSet.Contains(null))
-                        r.Group.FirstSet.Add(null);
-                }
-                else if (r.Tokens.Count == 1 && r.Tokens[0].Type == RuleTokenType.Token)
-                {
-                    RuleToken t = r.Tokens[0];
-                    if (!r.Group.FirstSet.Contains(t))
-                        r.Group.FirstSet.Add(t);
-                }
+                var s = new RuleLookaheadSet();
+                s.Add((RuleLookahead)null);
+                return s;
             }
-
-            // Second rule (3)
-            var stack = new Stack<KeyValuePair<Rule, Rule>>();
-            foreach (Rule r in env.Rules)
+            else
             {
-                Rule3(env, r, stack);
-            }
-        }
+                RuleLookaheadSet set = new RuleLookaheadSet();
+                set.Add(null);
 
-        static void Rule3(Environment env, Rule rule, Stack<KeyValuePair<Rule, Rule>> stack)
-        {
-            if (rule.Group.FirstSet == null)
-                rule.Group.FirstSet = new List<RuleToken>();
-
-            bool empty = true;
-            foreach (RuleToken t in rule.Tokens)
-            {
-                if (t.Type == RuleTokenType.Token)
+                bool hasTerminals = true;
+                foreach(var t in tokens)
                 {
-                    if (!rule.Group.FirstSet.Contains(t))
-                        rule.Group.FirstSet.Add(t);
-
-                    empty = false;
-                    break;
-                }
-                else
-                {
-                    foreach (Rule r in t.Group.Rules)
+                    if(t.Type == RuleTokenType.Rule)
                     {
-                        var pair = new KeyValuePair<Rule, Rule>(rule, r);
+                        hasTerminals = false;
+                        break;
+                    }
+                }
 
-                        if (stack.Contains(pair))
-                            continue;
-                        else
+                int maxLength = (hasTerminals && tokens.Count() < k ?
+                    tokens.Count() : k);//TODO: Really??
+
+                for (int i = 0; i < tokens.Count(); ++i)
+                {
+                    var t = tokens.ElementAt(i);
+                    if (t.Type == RuleTokenType.Token)
+                    {
+                        var preSet = new RuleLookaheadSet();
+                        foreach (var l in set)
                         {
-                            stack.Push(pair);
-                            Rule3(env, r, stack);
+                            if (l != null && l.Count == maxLength)
+                                preSet.Add(l);
+                            else
+                            {
+                                var look = new RuleLookahead();
+                                if (l != null)
+                                    look.Add(l);
+
+                                look.Add(t);
+                                preSet.AddUnique(look);
+                            }
                         }
+                        set = preSet;
+                    }
+                    else
+                    {
+                        var otherSet = cache.Get(t.Group, k);
+                        var newSet = new RuleLookaheadSet();
+                        foreach (var l in set)
+                        {
+                            if (l != null && l.Count == k)
+                                newSet.Add(l);
+                            else
+                            {
+                                foreach (var o in otherSet)
+                                {
+                                    if (o == null)
+                                        newSet.AddUnique(l);
+                                    else
+                                    {
+                                        var look = new RuleLookahead();
+
+                                        if (l != null)
+                                            look.Add(l);
+
+                                        if (o.Count < (k - look.Count))
+                                            look.Add(o);
+                                        else
+                                            look.Add(o.Take(k - look.Count));
+
+                                        newSet.AddUnique(look);
+                                    }
+                                }
+                            }
+                        }
+                        set = newSet;
                     }
                     
-                    foreach (var s in t.Group.FirstSet)
+                    bool finished = true;
+                    foreach (var s in set)
                     {
-                        if (s != null && !rule.Group.FirstSet.Contains(s))
-                            rule.Group.FirstSet.Add(s);
+                        if (s == null || s.Count < k)
+                        {
+                            finished = false;
+                            break;
+                        }
                     }
 
-                    if (!t.Group.FirstSet.Contains(null))
-                    {
-                        empty = false;
+                    if (finished)
                         break;
-                    }
                 }
-            }
 
-            if (empty)
-            {
-                if (!rule.Group.FirstSet.Contains(null))
-                    rule.Group.FirstSet.Add(null);
+                return set;
             }
         }
 
-        public static IEnumerable<RuleToken> Generate(IEnumerable<RuleToken> tokens)
+        public static void Setup(Environment env, FirstSetCache cache, int k)
         {
-            List<RuleToken> list = new List<RuleToken>();
-
-            bool empty = true;
-            foreach (RuleToken t in tokens)
+            // Setup caches
+            foreach (var r in env.Rules)
             {
-                if (t.Type == RuleTokenType.Token)
-                {
-                    if (!list.Contains(t))
-                        list.Add(t);
-
-                    empty = false;
-                    break;
-                }
-                else
-                {
-                    RuleGroup grp = t.Group;
-
-                    foreach (var s in grp.FirstSet)
-                    {
-                        if (s != null && !list.Contains(s))
-                            list.Add(s);
-                    }
-
-                    if (!grp.FirstSet.Contains(null))
-                    {
-                        empty = false;
-                        break;
-                    }
-                }
+                cache.Set(r, k, new RuleLookaheadSet());
             }
-
-            if (empty)
+            
+            Stack<KeyValuePair<Rule, Rule>> stack = new Stack<KeyValuePair<Rule, Rule>>();
+            foreach (var r in env.Rules)
             {
-                if (!list.Contains(null))
-                    list.Add(null);
+                SetupInternal(cache, r, stack, k);
             }
-
-            return list;
         }
 
-        public static IEnumerable<RuleToken> Generate(IEnumerable<RuleToken> tokens, int k)
+        static void SetupInternal(FirstSetCache cache, Rule rule, Stack<KeyValuePair<Rule, Rule>> stack, int k)
         {
-            if (k < 1)
-                return null;
-            else if (k == 1)
-                return Generate(tokens);
+            RuleLookaheadSet set = cache.Get(rule, k);
+            if (rule.IsEmpty)
+            {
+                set.AddUnique((RuleLookahead)null);
+            }
             else
-            {//TODO
-                return null;
+            {
+                if (set.Count() == 0)
+                {
+                    set.Add(null);
+                }
+
+                int maxLength = (!rule.HasNonTerminals && rule.Tokens.Count() < k ?
+                    rule.Tokens.Count() : k);//TODO: Really??
+
+                for (int i = 0; i < rule.Tokens.Count(); ++i)
+                {
+                    var t = rule.Tokens.ElementAt(i);
+
+                    if (t.Type == RuleTokenType.Token)
+                    {
+                        var preSet = new RuleLookaheadSet();
+                        foreach (var l in set)
+                        {
+                            if (l != null && l.Count == maxLength)
+                                preSet.Add(l);
+                            else
+                            {
+                                var look = new RuleLookahead();
+                                if (l != null)
+                                    look.Add(l);
+
+                                look.Add(t);
+                                preSet.AddUnique(look);
+                            }
+                        }
+                        set = preSet;
+                    }
+                    else if (t.Type == RuleTokenType.Rule)
+                    {
+                        foreach (Rule r in t.Group.Rules)
+                        {
+                            var pair = new KeyValuePair<Rule, Rule>(rule, r);
+
+                            if (stack.Contains(pair))
+                                continue;
+                            else
+                            {
+                                stack.Push(pair);
+                                SetupInternal(cache, r, stack, k);
+                            }
+                        }
+                        var otherSet = cache.Get(t.Group, k);
+
+                        var newSet = new RuleLookaheadSet();
+                        foreach (var l in set)
+                        {
+                            if (l != null && l.Count == maxLength)
+                                newSet.Add(l);
+                            else
+                            {
+                                foreach (var o in otherSet)
+                                {
+                                    if (o == null)
+                                        newSet.AddUnique(l);
+                                    else
+                                    {
+                                        var look = new RuleLookahead();
+                                        if (l != null)
+                                            look.Add(l);
+
+                                        if (o.Count <= (maxLength - look.Count))
+                                            look.Add(o);
+                                        else
+                                            look.Add(o.Take(maxLength - look.Count));
+
+                                        newSet.AddUnique(look);
+                                    }
+                                }
+                            }
+                        }
+                        set = newSet;
+                    }
+
+                    cache.Set(rule, k, set);
+
+                    bool finished = true;
+                    foreach (var s in set)
+                    {
+                        if (s == null || (s.Count < maxLength))
+                        {
+                            finished = false;
+                            break;
+                        }
+                    }
+
+                    if (finished)
+                        break;
+                }
             }
         }
     }

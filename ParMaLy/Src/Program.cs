@@ -171,8 +171,7 @@ namespace PML
                 Console.Error.Write(ex.Message);
                 return -2;
             }
-
-            FirstSet.Setup(env);
+            
             FollowSet.Setup(env);
             Parser.IParser parser = null;
 

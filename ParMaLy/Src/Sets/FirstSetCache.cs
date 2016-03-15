@@ -33,35 +33,69 @@ using System.Linq;
 
 namespace PML
 {
-    public static class PredictSet
+    public class FirstSetCache
     {
-        public static IEnumerable<RuleToken> Generate(Environment env, RuleGroup grp, IEnumerable<RuleToken> tokens)
+        Dictionary<KeyValuePair<Rule, int>, RuleLookaheadSet> _RuleCache =
+            new Dictionary<KeyValuePair<Rule, int>, RuleLookaheadSet>();
+        Dictionary<KeyValuePair<IEnumerable<RuleToken>, int>, RuleLookaheadSet> _ExprCache =
+            new Dictionary<KeyValuePair<IEnumerable<RuleToken>, int>, RuleLookaheadSet>();
+
+        public void Setup(Environment env, int k)
         {
-            var l = env.FirstCache.Generate(tokens, 1);
-            if (l.Contains((RuleLookahead)null))
-            {
-                return l.Where(v => v != null).Select(v => v[0]).Union(grp.FollowSet);
-            }
-            else
-                return l.Select(v => v[0]);
+            FirstSet.Setup(env, this, k);
         }
 
-        public static RuleLookaheadSet Generate(Environment env, RuleGroup grp, IEnumerable<RuleToken> tokens, int k)
+        public RuleLookaheadSet Generate(IEnumerable<RuleToken> tokens, int k)
         {
-            if (k == 0)
-                return null;//Empty
-            else if (k == 1)
-                return new RuleLookaheadSet(Generate(env, grp, tokens));
-            else
-            {//TODO
-                var l = env.FirstCache.Generate(tokens, k);
-                if (l.Contains((RuleLookahead)null))
-                {
-                    return new RuleLookaheadSet(l.Where(v => v != null).Union(FollowSet.Generate(grp, k)));
-                }
-                else
-                    return l;
+            var key = new KeyValuePair<IEnumerable<RuleToken>, int>(tokens, k);
+            if (_ExprCache.ContainsKey(key))
+            {
+                return _ExprCache[key];
             }
+            else
+            {
+                var res = FirstSet.Generate(tokens, k, this);
+
+                if(k >= 1)
+                    _ExprCache.Add(key, res);
+
+                return res;
+            }
+        }
+
+        public bool Has(Rule r, int k)
+        {
+            return _RuleCache.ContainsKey(new KeyValuePair<Rule, int>(r, k));
+        }
+        
+        public void Set(Rule r, int k, RuleLookaheadSet set)
+        {
+            _RuleCache[new KeyValuePair<Rule, int>(r, k)] = set;
+        }
+
+        public RuleLookaheadSet Get(Rule r, int k)
+        {
+            return _RuleCache[new KeyValuePair<Rule, int>(r, k)];
+        }
+
+        public RuleLookaheadSet Get(RuleGroup grp, int k)
+        {
+            RuleLookaheadSet set = new RuleLookaheadSet();
+            foreach(var r in grp.Rules)
+            {
+                if(Has(r, k))
+                {
+                    var s = Get(r, k);
+                    set.AddUnique(s);
+                }
+            }
+            return set;
+        }
+        
+        public void Clear()
+        {
+            _RuleCache.Clear();
+            _ExprCache.Clear();
         }
     }
 }

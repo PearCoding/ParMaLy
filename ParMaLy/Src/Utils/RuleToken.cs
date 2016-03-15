@@ -38,6 +38,7 @@ namespace PML
         Rule,
     }
 
+    [System.Diagnostics.DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class RuleToken : System.IEquatable<RuleToken>
     {
         RuleTokenType _Type;
@@ -98,6 +99,13 @@ namespace PML
         public static bool operator !=(RuleToken a, RuleToken b)
         {
             return !(a == b);
+        }
+        private string DebuggerDisplay
+        {
+            get
+            {
+                return _String + " (" + _Type.ToString() + ")";
+            }
         }
     }
 }

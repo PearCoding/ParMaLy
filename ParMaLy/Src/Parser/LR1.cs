@@ -71,10 +71,12 @@ namespace PML.Parser
             if (env.Start == null || env.Start.Rules.Count == 0)
                 return;
 
+            env.FirstCache.Setup(env, 1);
+
             RuleState state = new RuleState(_States.Count);
             foreach (Rule r in env.Start.Rules)
             {
-                state.Header.Add(new RuleConfiguration(r, 0, new RuleLookahead((string)null)));
+                state.Header.Add(new RuleConfiguration(r, 0, new RuleLookahead((RuleToken)null)));
             }
             _StartState = state;
             _States.Add(state);
@@ -91,8 +93,8 @@ namespace PML.Parser
                 System.Console.WriteLine("State ID: " + s.ID + " Queue: " + queue.Count + " left. Full state count: " + _States.Count);
 
                 watch.Start();
-                GenerateClosure(s, logger);
-                StepState(s, queue, logger);
+                GenerateClosure(s, env.FirstCache, logger);
+                StepState(s, queue, env.FirstCache, logger);
                 watch.Stop();
 
                 process.TimeElapsed = watch.ElapsedMilliseconds;
@@ -101,7 +103,7 @@ namespace PML.Parser
             }
         }
 
-        void GenerateClosure(RuleState state, Logger logger)
+        void GenerateClosure(RuleState state, FirstSetCache firstCache, Logger logger)
         {
             for (int i = 0; i < state.Count; ++i)
             {
@@ -123,7 +125,7 @@ namespace PML.Parser
                         {
                             var tmpL = new List<RuleToken>(tmp);
                             tmpL.Add(look[0]);//This is the point why we have LR(1) not LR(k)
-                            var delta = FirstSet.Generate(tmpL);
+                            var delta = firstCache.Generate(tmpL, 1);
                                                             
                             foreach (var r in t.Group.Rules)
                             {
@@ -151,7 +153,7 @@ namespace PML.Parser
             }
         }
 
-        void StepState(RuleState state, Queue<RuleState> queue, Logger logger)
+        void StepState(RuleState state, Queue<RuleState> queue, FirstSetCache firstCache, Logger logger)
         {
             foreach (var c in state.All)
             {

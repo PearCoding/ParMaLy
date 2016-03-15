@@ -57,6 +57,8 @@ namespace PML.Parser
             if (env.Start == null || env.Start.Rules.Count == 0)
                 return;
 
+            env.FirstCache.Setup(env, 1);
+
             Stopwatch watch = new Stopwatch();
             watch.Start();
             foreach(var grp in env.Groups)
@@ -69,25 +71,31 @@ namespace PML.Parser
                 }
                 else
                 {
-                    List<IEnumerable<RuleToken>> tokens = new List<IEnumerable<RuleToken>>();
+                    List<RuleLookaheadSet> tokens = new List<RuleLookaheadSet>();
 
                     int max = 10;
-                    foreach (var r in grp.Rules)//This is only k == 1... Have to make it adaptable!
+                    foreach (var r in grp.Rules)
                     {
                         bool found = false;
-                        IEnumerable<RuleToken> l = null;
+                        RuleLookaheadSet l = null;
                         for (int k = 1; k <= max; ++k)
                         {
-                            l = PredictSet.Generate(grp, r.Tokens, k);
+                            l = PredictSet.Generate(env, grp, r.Tokens, k);
 
                             found = false;
                             foreach (var other in tokens)
                             {
-                                if (other.Intersect(l).Count() != 0)
+                                foreach (var o in other)
                                 {
-                                    found = true;
-                                    break;
+                                    if (l.Contains(o))
+                                    {
+                                        found = true;
+                                        break;
+                                    }
                                 }
+
+                                if (found)
+                                    break;
                             }
 
                             if (!found)

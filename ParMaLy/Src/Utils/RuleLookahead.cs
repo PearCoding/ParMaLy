@@ -35,34 +35,42 @@ using System.Collections;
 
 namespace PML
 {
+    [System.Diagnostics.DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class RuleLookahead : IEquatable<RuleLookahead>, IEnumerable<RuleToken>
     {
-        RuleToken[] _Tokens;
+        List<RuleToken> _Tokens;
+
+        public int Count { get { return _Tokens.Count; } }
 
         public RuleToken this [int index]
         {
             get { return _Tokens[index]; }
             set { _Tokens[index] = value; }
-        } 
-
-        public RuleLookahead(int count)
+        }
+        public RuleLookahead()
         {
-            _Tokens = new RuleToken[count];
+            _Tokens = new List<RuleToken>();
         }
 
-        public RuleLookahead(RuleToken[] tokens)
+        public RuleLookahead(IEnumerable<RuleToken> tokens)
         {
-            _Tokens = tokens;
+            _Tokens = tokens.ToList();
         }
 
         public RuleLookahead(RuleToken token)
         {
-            _Tokens = new RuleToken[] { token };
+            _Tokens = new List<RuleToken>();
+            _Tokens.Add(token);
         }
 
-        public RuleLookahead(string token)
+        public void Add(RuleToken token)
         {
-            _Tokens = new RuleToken[] { new RuleToken(RuleTokenType.Token, token) };
+            _Tokens.Add(token);
+        }
+
+        public void Add(IEnumerable<RuleToken> tokens)
+        {
+            _Tokens.AddRange(tokens);
         }
 
         public string Join(string delim)
@@ -92,16 +100,10 @@ namespace PML
             if (ReferenceEquals(this, p))
                 return true;
 
-            if (_Tokens.Length != p._Tokens.Length)
+            if (_Tokens.Count != p._Tokens.Count)
                 return false;
 
-            for(int i = 0; i < _Tokens.Length; ++i)//Order is important!
-            {
-                if (_Tokens[i] != p._Tokens[i])
-                    return false;
-            }
-
-            return true;
+            return _Tokens.SequenceEqual(p._Tokens);
         }
 
         public override int GetHashCode()
@@ -135,5 +137,8 @@ namespace PML
         {
             return ((IEnumerable<RuleToken>)_Tokens).GetEnumerator();
         }
+
+        //System
+        private string DebuggerDisplay { get { return "[" + Join(",", v => (v == null ? "$" : "'" + v.Name + "'")) + "]"; } }
     }
 }

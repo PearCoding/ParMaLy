@@ -34,6 +34,7 @@ using System.Collections.Generic;
 
 namespace PML
 {
+    [System.Diagnostics.DebuggerDisplay("Count = {_Lookaheads.Count}")]
     public class RuleLookaheadSet : IEquatable<RuleLookaheadSet>, IEnumerable<RuleLookahead>
     {
         List<RuleLookahead> _Lookaheads = new List<RuleLookahead>();
@@ -49,15 +50,15 @@ namespace PML
         {
         }
 
+        public RuleLookaheadSet(IEnumerable<RuleLookahead> tokens)
+        {
+            foreach (var s in tokens)
+                _Lookaheads.Add(s);
+        }
+
         public RuleLookaheadSet(IEnumerable<RuleToken> tokens)
         {
             foreach(var s in tokens)
-                _Lookaheads.Add(new RuleLookahead(s));
-        }
-
-        public RuleLookaheadSet(IEnumerable<string> tokens)
-        {
-            foreach (var s in tokens)
                 _Lookaheads.Add(new RuleLookahead(s));
         }
 
@@ -78,6 +79,12 @@ namespace PML
         public void AddUnique(RuleLookaheadSet set)
         {
             AddUnique(set._Lookaheads);
+        }
+
+        public void AddUnique(RuleLookahead l)
+        {
+            if (!_Lookaheads.Contains(l))
+                _Lookaheads.Add(l);
         }
 
         public bool Contains(RuleLookahead lookahead)

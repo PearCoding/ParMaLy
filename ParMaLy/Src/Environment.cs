@@ -40,9 +40,13 @@ namespace PML
         List<RuleGroup> _Groups = new List<RuleGroup>();
         List<RuleToken> _Tokens = new List<RuleToken>();
 
+        FirstSetCache _FirstCache = new FirstSetCache();
+
         public List<Rule> Rules { get { return _Rules; } }
         public List<RuleGroup> Groups { get { return _Groups; } }
         public List<RuleToken> Tokens { get { return _Tokens; } }
+
+        public FirstSetCache FirstCache { get { return _FirstCache; } }
 
         public RuleGroup Start { get { return _Start; } }
 
