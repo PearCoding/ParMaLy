@@ -66,7 +66,7 @@
     <Compile Include="Src\Parser\TDParser.cs" />
     <Compile Include="Src\Parser\Parser.cs" />
     <Compile Include="Src\Parser\BUParser.cs" />
-    <Compile Include="Src\Parser\LL1.cs" />
+    <Compile Include="Src\Parser\LLK.cs" />
     <Compile Include="Src\Parser\LALR1.cs" />
     <Compile Include="Src\Parser\LR1.cs" />
     <Compile Include="Src\Parser\SLR1.cs" />

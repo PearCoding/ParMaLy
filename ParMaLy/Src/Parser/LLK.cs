@@ -36,16 +36,22 @@ namespace PML.Parser
     using Statistics;
     using TD;
 
-    public class LL1 : ITDParser
+    public class LLK : ITDParser
     {
         LookupTable _Lookup = new LookupTable();
 
-        public string Name { get { return "LL(1)"; } }
+        public string Name { get { return "LL(" + K + ")"; } }
 
         public LookupTable Lookup { get { return _Lookup; } }
 
         Statistics _Statistics;
         public Statistics Statistics { get { return _Statistics; } }
+
+        int K;
+        public LLK(int k)
+        {
+            K = k;
+        }
 
         public void Generate(Environment env, Logger logger)
         {
@@ -58,7 +64,8 @@ namespace PML.Parser
             _Statistics = new Statistics();
             _Statistics.TD = new TDStatistics();
 
-            env.FirstCache.Setup(env, 1);
+            env.FirstCache.Setup(env, K);
+            env.FollowCache.Setup(env, K);
 
             Stopwatch watch = new Stopwatch();
             watch.Start();
@@ -66,7 +73,7 @@ namespace PML.Parser
             {
                 foreach (var r in grp.Rules)
                 {
-                    var predict = PredictSet.Generate(env, grp, r.Tokens, 1);
+                    var predict = PredictSet.Generate(env, grp, r.Tokens, K);
                     foreach (var s in predict)
                     {
                         if (_Lookup.Get(grp, s) != null)

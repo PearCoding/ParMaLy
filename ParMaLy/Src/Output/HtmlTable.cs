@@ -166,7 +166,7 @@ namespace PML.Output
                 int td = 1;
                 foreach (var s in tokens)
                 {
-                    var e = lookup.Get(grp, new RuleLookahead(s));//For now
+                    var e = lookup.Get(grp, s);//For now
                     AddLookupEntry(td, e, writer, style);
                     td++;
                 }

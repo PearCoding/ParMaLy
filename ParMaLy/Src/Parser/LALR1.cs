@@ -73,6 +73,7 @@ namespace PML.Parser
                 return;
 
             env.FirstCache.Setup(env, 1);
+            env.FollowCache.Setup(env, 1);
 
             RuleState state = new RuleState(_States.Count);
             foreach (Rule r in env.Start.Rules)

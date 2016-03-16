@@ -66,7 +66,10 @@ namespace PML.Parser
         {
             _ActionTable.Clear();
 
-            foreach(RuleState state in States)
+            env.FirstCache.Setup(env, 1);
+            env.FollowCache.Setup(env, 1);
+
+            foreach (RuleState state in States)
             {
                 foreach(RuleConfiguration conf in state.All)
                 {

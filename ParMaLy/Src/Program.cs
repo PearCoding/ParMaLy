@@ -84,7 +84,7 @@ namespace PML
             Console.WriteLine("\tlr2, lr3...\t[LR(k)](LR)");
             Console.WriteLine("\tll0\t\t[LL(0)](LL)");
             Console.WriteLine("\tll1\t\t[LL(1)](LL)");
-            Console.WriteLine("\tll2, ll3...\t[LL(k)](LL)");
+            Console.WriteLine("\tll\t\t[LL(k)](LL)");
             Console.WriteLine("\trd\t\t[Recursive-Descent](Recursive)");
         }
 
@@ -241,7 +241,16 @@ namespace PML
                 }
                 else if (opts.Parser.ToLower() == "ll1")
                 {
-                    parser = new Parser.LL1();
+                    parser = new Parser.LLK(1);
+                    type = 1;
+                }
+                else if (opts.Parser.ToLower() == "ll")
+                {
+                    if (opts.K == 0)
+                        parser = new Parser.LL0();
+                    else
+                        parser = new Parser.LLK(opts.K < 1 ? 1 : opts.K);
+
                     type = 1;
                 }
                 else if (opts.Parser.ToLower() == "rd")
