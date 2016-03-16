@@ -1,4 +1,4 @@
 [submodule "datalisp"]
 	path = datalisp
-	url = git@github.com:PearCoding/DataLisp-CSharp.git
+	url = git://github.com/PearCoding/DataLisp-CSharp.git
 	branch = master

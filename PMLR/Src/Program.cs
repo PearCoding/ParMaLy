@@ -29,6 +29,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 
 namespace PML
 {
@@ -44,7 +45,7 @@ namespace PML
     {
         static void ShowHelp(OptionSet p)
         {
-            Console.WriteLine("Usage: pmlr pmlr_file input_file [OPTIONS]+");
+            Console.WriteLine("Usage: PMLR pmlr_file input_file [OPTIONS]+");
             Console.WriteLine();
             Console.WriteLine("Options:");
             p.WriteOptionDescriptions(Console.Out);
@@ -60,6 +61,33 @@ namespace PML
                 { "nl|no-log", "Do not produce any log file.",
                     v => opts.NoLog = true }
             };
+
+            List<string> input;
+            try
+            {
+                input = p.Parse(args);
+            }
+            catch (OptionException e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine("Try 'PMLR --help' for more information.");
+                return -1;
+            }
+
+            if (opts.ShowHelp)
+            {
+                ShowHelp(p);
+                return 0;
+            }
+
+            if (input.Count != 2)
+            {
+                Console.WriteLine("No pml file and/or input file given.");
+                Console.WriteLine("Try 'PMLR --help' for more information.");
+                return -2;
+            }
+
+            Logger logger = new Logger(!opts.NoLog);
 
             return 0;
         }
