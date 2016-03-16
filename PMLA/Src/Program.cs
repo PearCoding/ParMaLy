@@ -71,7 +71,7 @@ namespace PML
     {
         static void ShowHelp(OptionSet p)
         {
-            Console.WriteLine("Usage: ParMaLy grammar_file [OPTIONS]+");
+            Console.WriteLine("Usage: PMLA grammar_file [OPTIONS]+");
             Console.WriteLine();
             Console.WriteLine("Options:");
             p.WriteOptionDescriptions(Console.Out);
@@ -155,7 +155,7 @@ namespace PML
             catch (OptionException e)
             {
                 Console.WriteLine(e.Message);
-                Console.WriteLine("Try 'ParMaLy --help' for more information.");
+                Console.WriteLine("Try 'PMLA --help' for more information.");
                 return -4;
             }
 
@@ -168,7 +168,7 @@ namespace PML
             if (input.Count != 1)
             {
                 Console.WriteLine("No grammar file given.");
-                Console.WriteLine("Try 'ParMaLy --help' for more information.");
+                Console.WriteLine("Try 'PMLA --help' for more information.");
                 return -3;
             }
 
@@ -261,7 +261,7 @@ namespace PML
                 else
                 {
                     Console.WriteLine("Unknown parser selected.");
-                    Console.WriteLine("Try 'ParMaLy --help' for more information.");
+                    Console.WriteLine("Try 'PMLA --help' for more information.");
                     return -1;
                 }
 

@@ -1,4 +1,4 @@
-[submodule "ParMaLy/Src/DataLisp"]
-	path = ParMaLy/Src/DataLisp
-	url = git://github.com/PearCoding/DataLisp-CSharp.git
+[submodule "datalisp"]
+	path = datalisp
+	url = git@github.com:PearCoding/DataLisp-CSharp.git
 	branch = master

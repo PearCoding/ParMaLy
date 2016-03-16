@@ -48,11 +48,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ParMaLy\PMLA.csproj">
+    <ProjectReference Include="..\PMLA\PMLA.csproj">
       <Project>{94badb9e-9c5a-4463-8e6e-c5508d409719}</Project>
       <Name>PMLA</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ParMaLy\Src\DataLisp\DL-Library.csproj">
+    <ProjectReference Include="..\datalisp\DL-Library.csproj">
       <Project>{0362048a-7482-4552-bd1d-41ae85ab20b0}</Project>
       <Name>DL-Library</Name>
     </ProjectReference>

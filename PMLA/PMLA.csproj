@@ -108,7 +108,7 @@
       <Project>{c6391d62-417d-4ea6-a313-0e63c66e2754}</Project>
       <Name>PML</Name>
     </ProjectReference>
-    <ProjectReference Include="Src\DataLisp\DL-Library.csproj">
+    <ProjectReference Include="..\datalisp\DL-Library.csproj">
       <Project>{0362048a-7482-4552-bd1d-41ae85ab20b0}</Project>
       <Name>DL-Library</Name>
     </ProjectReference>
