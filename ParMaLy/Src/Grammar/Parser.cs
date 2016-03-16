@@ -163,7 +163,7 @@ namespace PML.Grammar
             Token token = _Lexer.Next();
             if (token.Type != type)
             {
-                throw new Error(ErrorType.Parser_WrongToken, _Lexer.CurrentLine, _Lexer.CurrentColumn, type, token.Type);
+                throw new ParserError(ErrorType.Parser_WrongToken, _Lexer.CurrentLine, _Lexer.CurrentColumn, type, token.Type);
             }
             return token;
         }

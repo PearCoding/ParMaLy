@@ -32,7 +32,7 @@ using System;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 
-namespace PML
+namespace PML.Grammar
 {
     public enum ErrorType
     {
@@ -46,7 +46,7 @@ namespace PML
     }
 
     [Serializable()]
-    public class Error : Exception, ISerializable
+    public class ParserError : Exception, ISerializable
     {
         private ErrorType _Type;
         private Object[] _Values;
@@ -59,30 +59,30 @@ namespace PML
             }
         }
 
-        public Error(ErrorType type)
+        public ParserError(ErrorType type)
         {
             _Type = type;
         }
 
-        public Error(ErrorType type, Object val)
+        public ParserError(ErrorType type, Object val)
         {
             _Type = type;
             _Values = new Object[] { val };
         }
 
-        public Error(ErrorType type, Object val1, Object val2)
+        public ParserError(ErrorType type, Object val1, Object val2)
         {
             _Type = type;
             _Values = new Object[] { val1, val2 };
         }
 
-        public Error(ErrorType type, Object val1, Object val2, Object val3)
+        public ParserError(ErrorType type, Object val1, Object val2, Object val3)
         {
             _Type = type;
             _Values = new Object[] { val1, val2, val3 };
         }
 
-        public Error(ErrorType type, Object val1, Object val2, Object val3, Object val4)
+        public ParserError(ErrorType type, Object val1, Object val2, Object val3, Object val4)
         {
             _Type = type;
             _Values = new Object[] { val1, val2, val3, val4 };
@@ -93,7 +93,7 @@ namespace PML
             return _Values[i];
         }
 
-        protected Error(SerializationInfo info, StreamingContext context) :
+        protected ParserError(SerializationInfo info, StreamingContext context) :
              base( info, context )
         {
             _Type = (ErrorType)info.GetInt32("ERR_Type");

@@ -111,7 +111,7 @@ namespace PML.Grammar
                 }
                 else
                 {
-                    throw new Error(ErrorType.Lexer_InvalidComment,
+                    throw new ParserError(ErrorType.Lexer_InvalidComment,
                         _Column, _Line);
                 }
             }
@@ -169,7 +169,7 @@ namespace PML.Grammar
                     if (_Position >= _Source.Length ||
                         CurrentChar == '\n')
                     {
-                        throw new Error(ErrorType.Lexer_StringNotClosed,
+                        throw new ParserError(ErrorType.Lexer_StringNotClosed,
                             _Column, _Line, str);
                     }
                     else if (CurrentChar == '\\')
@@ -180,7 +180,7 @@ namespace PML.Grammar
                         if (_Position >= _Source.Length ||
                             CurrentChar == '\n')
                         {
-                            throw new Error(ErrorType.Lexer_InvalidOperator, _Column, _Line,
+                            throw new ParserError(ErrorType.Lexer_InvalidOperator, _Column, _Line,
                                 "\\");
                         }
                         str += CurrentChar;
@@ -236,7 +236,7 @@ namespace PML.Grammar
             }
             else
             {
-                throw new Error(ErrorType.Lexer_UnknownCharacter, _Column, _Line, CurrentChar);
+                throw new ParserError(ErrorType.Lexer_UnknownCharacter, _Column, _Line, CurrentChar);
             }
         }
 

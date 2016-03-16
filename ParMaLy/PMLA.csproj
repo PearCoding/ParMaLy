@@ -7,8 +7,8 @@
     <ProjectGuid>{94BADB9E-9C5A-4463-8E6E-C5508D409719}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ParMaLy</RootNamespace>
-    <AssemblyName>ParMaLy</AssemblyName>
+    <RootNamespace>PML</RootNamespace>
+    <AssemblyName>PMLA</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -44,10 +44,8 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -76,6 +74,7 @@
     <Compile Include="Src\Statistics\Statistics.cs" />
     <Compile Include="Src\Style\StyleParser.cs" />
     <Compile Include="Src\Style\Style.cs" />
+    <Compile Include="Src\Utils\DataLispLogger.cs" />
     <Compile Include="Src\Utils\R\RState.cs" />
     <Compile Include="Src\Utils\TD\LookupTable.cs" />
     <Compile Include="Src\Utils\EnumeratorUtils.cs" />
@@ -90,8 +89,7 @@
     <Compile Include="Src\Utils\RuleToken.cs" />
     <Compile Include="Src\Utils\Rule.cs" />
     <Compile Include="Src\Environment.cs" />
-    <Compile Include="Src\Error.cs" />
-    <Compile Include="Src\Logger.cs" />
+    <Compile Include="Src\Grammar\ParserError.cs" />
     <Compile Include="Src\Grammar\Lexer.cs" />
     <Compile Include="Src\Grammar\Parser.cs" />
     <Compile Include="Src\Grammar\Statements.cs" />
@@ -106,6 +104,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PML\PML.csproj">
+      <Project>{c6391d62-417d-4ea6-a313-0e63c66e2754}</Project>
+      <Name>PML</Name>
+    </ProjectReference>
     <ProjectReference Include="Src\DataLisp\DL-Library.csproj">
       <Project>{0362048a-7482-4552-bd1d-41ae85ab20b0}</Project>
       <Name>DL-Library</Name>

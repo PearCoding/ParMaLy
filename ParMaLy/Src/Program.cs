@@ -180,7 +180,7 @@ namespace PML
                 string source = File.ReadAllText(file);
                 env.Parse(source);
             }
-            catch(Error err)
+            catch(Grammar.ParserError err)
             {
                 Console.Error.Write(err.Type.ToString());
                 return 2;

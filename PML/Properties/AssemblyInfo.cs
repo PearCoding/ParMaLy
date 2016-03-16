@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // Allgemeine Informationen über eine Assembly werden über die folgenden 
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die einer Assembly zugeordnet sind.
-[assembly: AssemblyTitle("ParMaLy Analyzer")]
+[assembly: AssemblyTitle("ParMaLy Library")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ParMaLy Analyzer")]
+[assembly: AssemblyProduct("ParMaLy Library")]
 [assembly: AssemblyCopyright("Copyright ©  2016, Ömercan Yazici <omercan@pearcoding.eu>")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // Die folgende GUID bestimmt die ID der Typbibliothek, wenn dieses Projekt für COM verfügbar gemacht wird
-[assembly: Guid("94badb9e-9c5a-4463-8e6e-c5508d409719")]
+[assembly: Guid("c6391d62-417d-4ea6-a313-0e63c66e2754")]
 
 // Versionsinformationen für eine Assembly bestehen aus den folgenden vier Werten:
 //

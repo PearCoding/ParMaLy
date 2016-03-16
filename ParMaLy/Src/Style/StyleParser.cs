@@ -37,7 +37,7 @@ namespace PML.Style
     {
         public static Style Parse(string source, PML.Logger logger)
         {
-            DataLisp lisp = new DataLisp(logger);
+            DataLisp lisp = new DataLisp(new DataLispLogger(logger));
             DataContainer container = new DataContainer();
 
             lisp.Parse(source);
