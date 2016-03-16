@@ -246,23 +246,24 @@ namespace PML.Parser
                     {
                         foreach (var l in conf.Lookaheads.Lookaheads)
                         {
-                            var a = _ActionTable.Get(state, l[0]);
+                            var a = _ActionTable.Get(state, l);
                             if (a != null)
                             {
                                 if (a.Action != ActionTable.Action.Shift && a.State != state)
                                     Statistics.BU.Conflicts.Add(
-                                        new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ReduceReduce, state, l[0]));
+                                        new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ReduceReduce, state, l));
                                 else if (a.Action == ActionTable.Action.Shift)
                                     Statistics.BU.Conflicts.Add(
-                                        new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftReduce, state, l[0]));
+                                        new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftReduce, state, l));
                             }
 
-                            _ActionTable.Set(state, l[0], ActionTable.Action.Reduce, state);
+                            _ActionTable.Set(state, l, ActionTable.Action.Reduce, state);
                         }
                     }
                     else if(conf.GetNext().Type == RuleTokenType.Token)//Shift
                     {
                         RuleToken next = conf.GetNext();
+                        RuleLookahead look = new RuleLookahead(next);
                         RuleState found = null;
                         foreach(RuleState.Connection c in state.Production)
                         {
@@ -270,24 +271,24 @@ namespace PML.Parser
                             {
                                 if (found != null)
                                     Statistics.BU.Conflicts.Add(
-                                        new BUStatistics.ConflictEntry(BUStatistics.ConflictType.Internal, state, next));
+                                        new BUStatistics.ConflictEntry(BUStatistics.ConflictType.Internal, state, look));
                                 else
                                     found = c.State;
                             }
                         }
 
-                        var a = _ActionTable.Get(state, next);
+                        var a = _ActionTable.Get(state, look);
                         if (a != null)
                         {
                             if (a.Action != ActionTable.Action.Shift)
                                 Statistics.BU.Conflicts.Add(
-                                    new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftReduce, state, next));
+                                    new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftReduce, state, look));
                             else if (a.Action == ActionTable.Action.Shift && a.State != found)
                                 Statistics.BU.Conflicts.Add(
-                                    new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftShift, state, next));
+                                    new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftShift, state, look));
                         }
 
-                        _ActionTable.Set(state, next, ActionTable.Action.Shift, found);
+                        _ActionTable.Set(state, look, ActionTable.Action.Shift, found);
                     }
                 }
             }

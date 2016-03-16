@@ -45,7 +45,7 @@ namespace PML.BU
         {
             public Action Action;
             public RuleState State;
-            public RuleToken Token;
+            public RuleLookahead Lookahead;
         }
 
         Dictionary<RuleState, List<Entry>> _Table = new Dictionary<RuleState, List<Entry>>();
@@ -55,7 +55,7 @@ namespace PML.BU
             _Table.Clear();
         }
 
-        public void Set(RuleState state, RuleToken token, Action act, RuleState n)
+        public void Set(RuleState state, RuleLookahead lookahead, Action act, RuleState n)
         {
             if (!_Table.ContainsKey(state))
                 _Table[state] = new List<Entry>();
@@ -64,7 +64,7 @@ namespace PML.BU
             Entry entry = null;
             foreach(var e in l)
             {
-                if (e.Token == token)
+                if (e.Lookahead == lookahead)
                 {
                     entry = e;
                     break;
@@ -74,7 +74,7 @@ namespace PML.BU
             if(entry == null)
             {
                 entry = new Entry();
-                entry.Token = token;
+                entry.Lookahead = lookahead;
 
                 l.Add(entry);
             }
@@ -83,7 +83,7 @@ namespace PML.BU
             entry.Action = act;
         }
 
-        public Entry Get(RuleState state, RuleToken token)
+        public Entry Get(RuleState state, RuleLookahead lookahead)
         {
             if (!_Table.ContainsKey(state))
                 return null;
@@ -91,7 +91,7 @@ namespace PML.BU
             var l = _Table[state];
             foreach (var e in l)
             {
-                if (e.Token == token)
+                if (e.Lookahead == lookahead)
                     return e;
             }
 
@@ -99,5 +99,23 @@ namespace PML.BU
         }
 
         public IEnumerable<RuleState> Rows { get { return _Table.Keys; } }
+
+        public IEnumerable<RuleLookahead> Colums//TODO: We can cache it!
+        {
+            get
+            {
+                List<RuleLookahead> columns = new List<RuleLookahead>();
+                foreach(var p in _Table)
+                {
+                    foreach(var e in p.Value)
+                    {
+                        if (!columns.Contains(e.Lookahead))
+                            columns.Add(e.Lookahead);
+                    }
+                }
+
+                return columns;
+            }
+        }
     }
 }

@@ -74,14 +74,6 @@ namespace PML.Output
                     writer.WriteLine("    --> [" + con.Group.Name + "]");
                 }
             }
-            
-            writer.WriteLine("Follow Sets:");
-            foreach (RuleGroup grp in env.Groups)
-            {
-                writer.WriteLine("  " + grp.Name + ": { "
-                    + String.Join(", ", grp.FollowSet.Select(s => (s == null ? "/*EOF*/" : (s.IsComplex ? s.Name : "'" + s.Name + "'"))).ToArray())
-                    + " }");
-            }
 
             if (parser != null)
             {
@@ -111,15 +103,15 @@ namespace PML.Output
                             {
                                 case BUStatistics.ConflictType.ShiftReduce:
                                     special = "SRC";
-                                    token = " with token " + (e.Token != null ? e.Token.Name : "$");
+                                    token = " with lookahead " + (e.Lookahead != null ? e.Lookahead.ToString() : "$");
                                     break;
                                 case BUStatistics.ConflictType.ReduceReduce:
                                     special = "RRC";
-                                    token = " with token " + (e.Token != null ? e.Token.Name : "$");
+                                    token = " with lookahead " + (e.Lookahead != null ? e.Lookahead.ToString() : "$");
                                     break;
                                 case BUStatistics.ConflictType.ShiftShift:
                                     special = "SSC";
-                                    token = " with token " + (e.Token != null ? e.Token.Name : "$");
+                                    token = " with lookahead " + (e.Lookahead != null ? e.Lookahead.ToString() : "$");
                                     break;
                                 case BUStatistics.ConflictType.Accept:
                                     special = "AC";
@@ -148,7 +140,7 @@ namespace PML.Output
                             {
                                 case TDStatistics.ConflictType.Lookup:
                                     special = "LC";
-                                    token = " with token " + (e.Token != null ? e.Token.Name : "$");
+                                    token = " with lookahead " + (e.Lookahead != null ? e.Lookahead.ToString() : "$");
                                     break;
                                 case TDStatistics.ConflictType.Internal:
                                     special = "Int";

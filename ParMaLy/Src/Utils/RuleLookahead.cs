@@ -83,6 +83,11 @@ namespace PML
             return String.Join(delim, _Tokens.Select(selector).ToArray());
         }
 
+        public override string ToString()
+        {
+            return "[" + Join(",", v => (v == null ? "$" : "'" + v.Name + "'")) + "]";
+        }
+
         public override bool Equals(Object obj)
         {
             if (obj == null)

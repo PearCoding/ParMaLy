@@ -28,62 +28,48 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
-using System;
-using System.Diagnostics;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace PML.Parser
+namespace PML
 {
-    using PML.Statistics;
-    using TD;
-
-    //Pretty useless type of parser... but it's a type.
-    public class LL0 : ITDParser
+    public class FollowSetCache
     {
-        LookupTable _Lookup = new LookupTable();
+        Dictionary<KeyValuePair<RuleGroup, int>, RuleLookaheadSet> _GroupCache =
+            new Dictionary<KeyValuePair<RuleGroup, int>, RuleLookaheadSet>();
 
-        public string Name { get { return "LL(0)"; } }
+        List<int> _Setups = new List<int>();
 
-        public LookupTable Lookup { get { return _Lookup; } }
+        public int MaxK { get { return _Setups.Max(); } }
 
-        Statistics _Statistics;
-        public Statistics Statistics { get { return _Statistics; } }
-
-        public void Generate(Environment env, Logger logger)
+        public void Setup(Environment env, int k)
         {
-            GenerateTable(env, logger);
+            if (!_Setups.Contains(k))
+            {
+                _Setups.Add(k);
+                FollowSet.Setup(env, this, k);
+            }
         }
 
-        public void GenerateTable(Environment env, Logger logger)
+        public bool Has(RuleGroup grp, int k)
         {
-            _Lookup.Clear();
-            _Statistics = new Statistics();
-            _Statistics.TD = new TDStatistics();
+            return _GroupCache.ContainsKey(new KeyValuePair<RuleGroup, int>(grp, k));
+        }
 
-            var tokens = new List<RuleToken>(env.Tokens);
-            tokens.Add(null);//EOF
+        public void Set(RuleGroup grp, int k, RuleLookaheadSet set)
+        {
+            _GroupCache[new KeyValuePair<RuleGroup, int>(grp, k)] = set;
+        }
 
-            Stopwatch watch = new Stopwatch();
-            watch.Start();
-            foreach(var grp in env.Groups)
-            {
-                foreach (var r in grp.Rules)
-                {
-                    foreach (var s in tokens)
-                    {
-                        var look = new RuleLookahead(s);
-                        if (_Lookup.Get(grp, look) != null)
-                        {
-                            _Statistics.TD.Conflicts.Add(
-                                new TDStatistics.ConflictEntry(TDStatistics.ConflictType.Lookup, grp, look, r));
-                        }
-
-                        _Lookup.Set(grp, look, r);
-                    }
-                }
-            }
-            watch.Stop();
-            _Statistics.TimeElapsed = watch.ElapsedMilliseconds;
+        public RuleLookaheadSet Get(RuleGroup grp, int k)
+        {
+            return _GroupCache[new KeyValuePair<RuleGroup, int>(grp, k)];
+        }
+        
+        public void Clear()
+        {
+            _GroupCache.Clear();
+            _Setups.Clear();
         }
     }
 }

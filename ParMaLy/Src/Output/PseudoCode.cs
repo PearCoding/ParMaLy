@@ -89,7 +89,11 @@ namespace PML.Output
                             writer.Write(string.Join(" ||\n" + style.Ident + style.Ident + style.Ident,
                                 p.Value.Lookaheads.Select(
                                             delegate (RuleLookahead v) {
-                                                if (v.Count() != 1)
+                                                if(v == null)
+                                                {
+                                                    return "current() == " + style.NullExpression;
+                                                }
+                                                else if (v.Count() != 1)
                                                     return "(" + PrintLookaheadIf(writer, v, style) + ")";
                                                 else
                                                 {
@@ -97,7 +101,8 @@ namespace PML.Output
                                                         return style.ComplexCheckPrefix + v[0].Name + "(current())";
                                                     else
                                                         return "current() == " +
-                                                        (v[0] == null ? style.NullExpression : style.StringBracket + v[0].Name + style.StringBracket);
+                                                        (v[0] == null ?
+                                                        style.NullExpression : style.StringBracket + v[0].Name + style.StringBracket);
                                                 }
                                             }
                                             ).ToArray()));

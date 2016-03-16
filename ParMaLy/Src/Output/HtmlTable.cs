@@ -29,6 +29,7 @@
  */
 
 using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 
 namespace PML.Output
@@ -44,8 +45,7 @@ namespace PML.Output
             writer.WriteLine("<tr class='" + style.TableTr_Class + "' id='" + style.TableTr_ID_Prefix + tr + "'>\n<th></th>");
             tr++;
 
-            var tokens = new List<RuleToken>(env.Tokens);
-            tokens.Add(null);//Add EOF
+            var tokens = table.Colums;
             AddActionHeader(0, writer, tokens, style);
             writer.WriteLine("</tr>");
 
@@ -111,10 +111,9 @@ namespace PML.Output
             int tr = 0;
             writer.WriteLine("<tr class='" + style.TableTr_Class + "' id='" + style.TableTr_ID_Prefix + tr + "'>\n<th></th>");
             tr++;
-            var tokens = new List<RuleToken>(env.Tokens);
-            tokens.Add(null);//Add EOF
+            var tokens = actionTable.Colums;
             AddActionHeader(0, writer, tokens, style);
-            AddGotoHeader(tokens.Count, writer, env.Groups, style);
+            AddGotoHeader(tokens.Count(), writer, env.Groups, style);
             writer.WriteLine("</tr>");
 
             foreach (var state in rows)
@@ -154,8 +153,7 @@ namespace PML.Output
             int tr = 0;
             writer.WriteLine("<tr class='" + style.TableTr_Class + "' id='" + style.TableTr_ID_Prefix + tr + "'>\n<th></th>");
             tr++;
-            var tokens = new List<RuleToken>(env.Tokens);
-            tokens.Add(null);//Add EOF
+            var tokens = lookup.Colums;
             AddActionHeader(0, writer, tokens, style);
             writer.WriteLine("</tr>");
 
@@ -168,7 +166,7 @@ namespace PML.Output
                 int td = 1;
                 foreach (var s in tokens)
                 {
-                    var e = lookup.Get(grp, s);
+                    var e = lookup.Get(grp, new RuleLookahead(s));//For now
                     AddLookupEntry(td, e, writer, style);
                     td++;
                 }
@@ -214,13 +212,13 @@ namespace PML.Output
                     + group.Name + "</td>");
         }
 
-        static void AddActionHeader(int off, TextWriter writer, List<RuleToken> tokens, Style.HtmlStyle style)
+        static void AddActionHeader(int off, TextWriter writer, IEnumerable<RuleLookahead> tokens, Style.HtmlStyle style)
         {
             int th = off;
             foreach (var s in tokens)
             {
                 writer.WriteLine("<th class='" + style.TableTh_Class + "' id='" + style.TableTh_ID_Prefix + th + "'>"
-                    + (s == null ? style.EOF_Identificator : style.TokenNamePrefix + s.Name + style.TokenNameSuffix) + "</th>");
+                    + (s == null ? style.EOF_Identificator : s.ToString()) + "</th>");//TODO: Remove prefix etc.
                 th++;
             }
         }

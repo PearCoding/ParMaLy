@@ -44,8 +44,6 @@ namespace PML
 
         public List<Rule> Rules = new List<Rule>();
         
-        public List<RuleToken> FollowSet;
-
         public RuleGroup(int id, string name)
         {
             _ID = id;

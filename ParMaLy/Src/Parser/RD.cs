@@ -48,6 +48,13 @@ namespace PML.Parser
         List<RState> _States = new List<RState>();
         public IEnumerable<RState> States { get { return _States; } }
 
+        int MaxK;
+
+        public RD(int maxK)
+        {
+            MaxK = maxK;
+        }
+
         public void Generate(Environment env, Logger logger)//Currently only a LL(1) parser...
         {
             _States.Clear();
@@ -56,10 +63,10 @@ namespace PML.Parser
             // We can not start without a 'Start' token.
             if (env.Start == null || env.Start.Rules.Count == 0)
                 return;
-
-            int max = 3;
+            
             int currentMaxK = 1;
             env.FirstCache.Setup(env, 1);
+            env.FollowCache.Setup(env, 1);
 
             Stopwatch watch = new Stopwatch();
             watch.Start();
@@ -73,53 +80,51 @@ namespace PML.Parser
                 }
                 else
                 {
-                    List<RuleLookaheadSet> tokens = new List<RuleLookaheadSet>();
-
+                    Dictionary<Rule, RuleLookaheadSet> tokens = new Dictionary<Rule, RuleLookaheadSet>();
                     foreach (var r in grp.Rules)
                     {
-                        bool found = false;
-                        RuleLookaheadSet l = null;
-                        for (int k = 1; k <= max; ++k)
+                        RuleLookaheadSet set = null;
+                        var conflicts = new Dictionary<Rule, RuleLookaheadSet>(tokens);
+                        for (int k = 1; k <= MaxK; ++k)
                         {
                             if(k > currentMaxK)
                             {
                                 currentMaxK = k;
                                 env.FirstCache.Setup(env, k);
+                                env.FollowCache.Setup(env, k);
                             }
 
-                            l = PredictSet.Generate(env, grp, r.Tokens, k);
+                            set = PredictSet.Generate(env, grp, r.Tokens, k);
 
-                            found = false;
-                            foreach (var other in tokens)
+                            var newConflict = new Dictionary<Rule, RuleLookaheadSet>();
+                            foreach (var other in conflicts)
                             {
-                                foreach (var o in other)
+                                foreach (var o in other.Value)
                                 {
-                                    if (l.Contains(o))
+                                    if (set.Contains(o))
                                     {
-                                        found = true;
+                                        var newSet = PredictSet.Generate(env, grp, other.Key.Tokens, k);
+                                        newConflict.Add(other.Key, newSet);
+                                        tokens[other.Key] = newSet;
                                         break;
                                     }
                                 }
-
-                                if (found)
-                                    break;
                             }
 
-                            if (!found)
-                            {
-                                tokens.Add(l);
-                                RuleLookaheadSet set = new RuleLookaheadSet(l);
-                                state.Lookaheads.Add(r, set);
-                                break;
-                            }
+                            conflicts = newConflict;
                         }
 
-                        if(found)
+                        tokens.Add(r, set);
+
+                        if (conflicts.Count != 0)
                         {
-                            logger.Log(LogLevel.Warning, "Coulnd't solve conflict after " + max + " lookaheads");
-                            RuleLookaheadSet set = new RuleLookaheadSet(l);
-                            state.Lookaheads.Add(r, set);
+                            logger.Log(LogLevel.Warning, "Couldn't solve conflict after " + MaxK + " lookahead");
                         }
+                    }
+
+                    foreach(var t in tokens)
+                    {
+                        state.Lookaheads.Add(t.Key, t.Value);
                     }
                 }
 

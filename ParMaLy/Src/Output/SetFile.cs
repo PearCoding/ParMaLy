@@ -54,13 +54,45 @@ namespace PML.Output
                             if(l == null)
                                 writer.WriteLine("    /* EMPTY */");
                             else
-                                writer.WriteLine("    " + l.Join(",", v => (v == null ? "$" :
-                            (v.Type == RuleTokenType.Token && !v.IsComplex ? "'" + v.Name + "'" : v.Name))));
+                                writer.WriteLine("    " + l.Join(",",
+                                    v => (v.Type == RuleTokenType.Token && !v.IsComplex ? "'" + v.Name + "'" : v.Name)));
                         }
                     }
                 }
 
                 if(i != cache.MaxK)
+                {
+                    for (int j = 0; j < 80; ++j)
+                        writer.Write("-");
+                    writer.WriteLine();
+                }
+            }
+
+            writer.Flush();
+        }
+        public static void PrintFollowSets(TextWriter writer, FollowSetCache cache, Environment env)
+        {
+            for (int i = 1; i <= cache.MaxK; ++i)
+            {
+                writer.WriteLine("K = " + i);
+                foreach (RuleGroup grp in env.Groups)
+                {
+                    if (cache.Has(grp, i))
+                    {
+                        writer.WriteLine("  " + grp.Name + ":");
+                        var set = cache.Get(grp, i);
+                        foreach (var l in set)
+                        {
+                            if (l == null)
+                                writer.WriteLine("    $");
+                            else
+                                writer.WriteLine("    " + l.Join(",",
+                                    v => (v.Type == RuleTokenType.Token && !v.IsComplex ? "'" + v.Name + "'" : v.Name)));
+                        }
+                    }
+                }
+
+                if (i != cache.MaxK)
                 {
                     for (int j = 0; j < 80; ++j)
                         writer.Write("-");

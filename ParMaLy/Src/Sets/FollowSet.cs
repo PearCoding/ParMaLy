@@ -35,45 +35,42 @@ namespace PML
 {
     public static class FollowSet
     {
-        // null means End of File!
-        public static void Setup(Environment env)
+        // null means End of File (EOF)!
+        public static void Setup(Environment env, FollowSetCache cache, int k)
         {
-            // First rule (1)
-            // Add EOF token to starting rule.
+            // Setup caches
+            foreach (var grp in env.Groups)
+            {
+                cache.Set(grp, k, new RuleLookaheadSet());
+            }
+            
+            // Rule 1: Add EOF to starter group
             if(env.Start != null)
             {
-                if (env.Start.FollowSet == null)
-                    env.Start.FollowSet = new List<RuleToken>();
-                env.Start.FollowSet.Add(null);
+                var set = cache.Get(env.Start, k);
+                set.Add(null);
             }
 
-            // Second rule (2)
-            foreach (Rule r in env.Rules)
+            // Rule 2:
+            foreach (var r in env.Rules)
             {
-                if (r.Group.FollowSet == null)
-                    r.Group.FollowSet = new List<RuleToken>();
-
                 for (int i = 0; i < r.Tokens.Count - 1; ++i)
                 {
                     RuleToken t = r.Tokens[i];
                     if (t.Type == RuleTokenType.Rule)
                     {
-                        RuleGroup grp = t.Group;
-                        if (grp.FollowSet == null)
-                            grp.FollowSet = new List<RuleToken>();
-
-                        var l = env.FirstCache.Generate(r.Tokens.GetRange(i + 1, r.Tokens.Count - i - 1), 1);
-
-                        foreach (var str in l)
+                        var l = env.FirstCache.Generate(r.Tokens.Skip(i + 1), k);
+                        var set = cache.Get(t.Group, k);
+                        foreach (var look in l)
                         {
-                            if (!grp.FollowSet.Contains(str[0]))
-                                grp.FollowSet.Add(str[0]);
+                            if (!set.Contains(look))
+                                set.Add(look);
                         }
                     }
                 }
             }
             
-            // Third rule (3)
+            // Rule 3:
             foreach (Rule r in env.Rules)
             {
                 for (int i = 0; i < r.Tokens.Count; ++i)
@@ -81,42 +78,29 @@ namespace PML
                     RuleToken t = r.Tokens[i];
                     if (t.Type == RuleTokenType.Rule)
                     {
-                        RuleGroup grp = t.Group;
+                        var setT = cache.Get(t.Group, k);
+                        var setR = cache.Get(r.Group, k);
                         if (i == r.Tokens.Count - 1)
                         {
-                            foreach (var str in r.Group.FollowSet)
+                            foreach (var look in setR)
                             {
-                                if (!grp.FollowSet.Contains(str))
-                                    grp.FollowSet.Add(str);
+                                setT.AddUnique(look);
                             }
                         }
                         else
                         {
-                            var l = env.FirstCache.Generate(r.Tokens.GetRange(i + 1, r.Tokens.Count - i - 1), 1);
+                            var l = env.FirstCache.Generate(r.Tokens.Skip(i + 1), k);
 
                             if (l.Contains((RuleLookahead)null))
                             {
-                                foreach (var str in r.Group.FollowSet)
+                                foreach (var look in setR)
                                 {
-                                    if (!grp.FollowSet.Contains(str))
-                                        grp.FollowSet.Add(str);
+                                    setT.AddUnique(look);
                                 }
                             }
                         }
                     }
                 }
-            }
-        }
-
-        public static RuleLookaheadSet Generate(RuleGroup grp, int k)
-        {
-            if (k < 1)
-                return null;
-            else if (k == 1)
-                return new RuleLookaheadSet(grp.FollowSet);
-            else
-            {//TODO
-                return null;
             }
         }
     }

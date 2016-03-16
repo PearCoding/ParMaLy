@@ -59,6 +59,8 @@ namespace PML
         public string ProceedingCSVFile;
 
         public string FirstSetFile;
+        public string FollowSetFile;
+        public string PredictSetFile;
         public int K = 1;
 
         public bool ShowHelp = false;
@@ -130,8 +132,14 @@ namespace PML
                 { "firstset=",
                     "Generate a {FILE} with all entries in the first sets. Makes use of the -k option.",
                     (string s) => { opts.FirstSetFile = s; } },
+                { "followset=",
+                    "Generate a {FILE} with all entries in the follow sets. Makes use of the -k option.",
+                    (string s) => { opts.FollowSetFile = s; } },
+                { "predictset=",
+                    "Generate a {FILE} with all entries in the predict sets. Makes use of the -k option.",
+                    (string s) => { opts.PredictSetFile = s; } },
                 { "k|lookahead=",
-                    "The used {MAX} amount of lookahead. Not every parser consider this option.",
+                    "The used {MAX} amount of lookahead. Default is " + opts.K + ". Not every parser consider this option.",
                     (int k) => opts.K = k },
                 { "h|help", "Show this message and exit.",
                     v => opts.ShowHelp = v != null },
@@ -183,7 +191,6 @@ namespace PML
                 return -2;
             }
             
-            FollowSet.Setup(env);
             Parser.IParser parser = null;
 
             Style.Style style = null;
@@ -203,6 +210,17 @@ namespace PML
                 }
 
                 Output.SetFile.PrintFirstSets(File.CreateText(opts.FirstSetFile), env.FirstCache, env);
+            }
+
+            if (!String.IsNullOrEmpty(opts.FollowSetFile))
+            {
+                for (int i = 1; i <= (opts.K < 1 ? 1 : opts.K); ++i)
+                {
+                    env.FirstCache.Setup(env, i);//We can't assume that first sets are already created. The cache will not do it twice ;)
+                    env.FollowCache.Setup(env, i);
+                }
+
+                Output.SetFile.PrintFollowSets(File.CreateText(opts.FollowSetFile), env.FollowCache, env);
             }
 
             if (!String.IsNullOrEmpty(opts.Parser))
@@ -228,7 +246,7 @@ namespace PML
                 }
                 else if (opts.Parser.ToLower() == "rd")
                 {
-                    parser = new Parser.RD();
+                    parser = new Parser.RD(opts.K < 1 ? 1 : opts.K);
                     type = 2;
                 }
                 else

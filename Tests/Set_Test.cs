@@ -65,55 +65,55 @@ namespace PML.Tests
         [Test]
         public void Follow()
         {
-            //TODO
+            Environment env = new Environment(new Logger(false));
+            env.Parse(Test_Source);
+            env.FirstCache.Setup(env, 1);
+            env.FollowCache.Setup(env, 1);
 
-            //Environment env = new Environment(new Logger(false));
-            //env.Parse(Test_Source);
-            //env.FirstCache.Setup(env, 1);
-            //FollowSet.Setup(env);
+            var A = env.FollowCache.Get(env.GroupByName("A"), 1);
+            var B = env.FollowCache.Get(env.GroupByName("B"), 1);
+            var S = env.FollowCache.Get(env.GroupByName("S"), 1);
+            var T = env.FollowCache.Get(env.GroupByName("T"), 1);
+            var F = env.FollowCache.Get(env.GroupByName("F"), 1);
 
-            //RuleGroup A = env.GroupByName("A");
-            //RuleGroup B = env.GroupByName("B");
-            //RuleGroup S = env.GroupByName("S");
-            //RuleGroup T = env.GroupByName("T");
-            //RuleGroup F = env.GroupByName("F");
+            Assert.AreEqual(A.Count(), 2);
+            Assert.AreEqual(B.Count(), 2);
+            Assert.AreEqual(S.Count(), 3);
+            Assert.AreEqual(T.Count(), 3);
+            Assert.AreEqual(F.Count(), 4);
+            
+            Assert.IsNull(A[0]);
+            Assert.AreEqual(A[1].Count(), 1);
 
-            //Assert.NotNull(A);
-            //Assert.NotNull(B);
-            //Assert.NotNull(S);
-            //Assert.NotNull(T);
-            //Assert.NotNull(F);
+            Assert.IsNull(B[0]);
+            Assert.AreEqual(B[1].Count(), 1);
 
-            //Assert.NotNull(A.FollowSet);
-            //Assert.NotNull(B.FollowSet);
-            //Assert.NotNull(S.FollowSet);
-            //Assert.NotNull(T.FollowSet);
-            //Assert.NotNull(F.FollowSet);
+            Assert.AreEqual(S[0].Count(), 1);
+            Assert.IsNull(S[1]);
+            Assert.AreEqual(S[2].Count(), 1);
 
-            //Assert.AreEqual(A.FollowSet.Count, 2);
-            //Assert.AreEqual(B.FollowSet.Count, 2);
-            //Assert.AreEqual(S.FollowSet.Count, 3);
-            //Assert.AreEqual(T.FollowSet.Count, 3);
-            //Assert.AreEqual(F.FollowSet.Count, 4);
+            Assert.AreEqual(T[0].Count(), 1);
+            Assert.IsNull(T[1]);
+            Assert.AreEqual(T[2].Count(), 1);
 
-            //Assert.Contains(null, A.FollowSet);
-            //Assert.Contains(new RuleToken(RuleTokenType.Token, ")"), A.FollowSet);
+            Assert.AreEqual(F[0].Count(), 1);
+            Assert.IsNull(F[1]);
+            Assert.AreEqual(F[2].Count(), 1);
+            Assert.AreEqual(F[3].Count(), 1);
 
-            //Assert.Contains(null, B.FollowSet);
-            //Assert.Contains(new RuleToken(RuleTokenType.Token, ")"), B.FollowSet);
+            Assert.AreEqual(new RuleToken(RuleTokenType.Token, ")"), A[1][0]);
+            
+            Assert.AreEqual(new RuleToken(RuleTokenType.Token, ")"), B[1][0]);
+            
+            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "+"), S[0][0]);
+            Assert.AreEqual(new RuleToken(RuleTokenType.Token, ")"), S[2][0]);
+            
+            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "+"), T[0][0]);
+            Assert.AreEqual(new RuleToken(RuleTokenType.Token, ")"), T[2][0]);
 
-            //Assert.Contains(null, S.FollowSet);
-            //Assert.Contains(new RuleToken(RuleTokenType.Token, "+"), S.FollowSet);
-            //Assert.Contains(new RuleToken(RuleTokenType.Token, ")"), S.FollowSet);
-
-            //Assert.Contains(null, T.FollowSet);
-            //Assert.Contains(new RuleToken(RuleTokenType.Token, "+"), T.FollowSet);
-            //Assert.Contains(new RuleToken(RuleTokenType.Token, ")"), T.FollowSet);
-
-            //Assert.Contains(null, F.FollowSet);
-            //Assert.Contains(new RuleToken(RuleTokenType.Token, "+"), F.FollowSet);
-            //Assert.Contains(new RuleToken(RuleTokenType.Token, "*"), F.FollowSet);
-            //Assert.Contains(new RuleToken(RuleTokenType.Token, ")"), F.FollowSet);
+            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "*"), F[0][0]);
+            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "+"), F[2][0]);
+            Assert.AreEqual(new RuleToken(RuleTokenType.Token, ")"), F[3][0]);
         }
 
         string Test_Source_2 =

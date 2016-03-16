@@ -38,7 +38,7 @@ namespace PML.TD
         public class Entry
         {
             public Rule Rule;
-            public RuleToken Token;
+            public RuleLookahead Lookahead;
         }
 
         Dictionary<RuleGroup, List<Entry>> _Table = new Dictionary<RuleGroup, List<Entry>>();
@@ -48,7 +48,7 @@ namespace PML.TD
             _Table.Clear();
         }
 
-        public void Set(RuleGroup grp, RuleToken token, Rule rule)
+        public void Set(RuleGroup grp, RuleLookahead lookahead, Rule rule)
         {
             if (!_Table.ContainsKey(grp))
                 _Table[grp] = new List<Entry>();
@@ -57,7 +57,7 @@ namespace PML.TD
             Entry entry = null;
             foreach(var e in l)
             {
-                if (e.Token == token)
+                if (e.Lookahead == lookahead)
                 {
                     entry = e;
                     break;
@@ -67,7 +67,7 @@ namespace PML.TD
             if(entry == null)
             {
                 entry = new Entry();
-                entry.Token = token;
+                entry.Lookahead = lookahead;
 
                 l.Add(entry);
             }
@@ -75,7 +75,7 @@ namespace PML.TD
             entry.Rule = rule;
         }
 
-        public Entry Get(RuleGroup grp, RuleToken token)
+        public Entry Get(RuleGroup grp, RuleLookahead lookahead)
         {
             if (!_Table.ContainsKey(grp))
                 return null;
@@ -83,7 +83,7 @@ namespace PML.TD
             var l = _Table[grp];
             foreach (var e in l)
             {
-                if (e.Token == token)
+                if (e.Lookahead == lookahead)
                     return e;
             }
 
@@ -91,5 +91,22 @@ namespace PML.TD
         }
 
         public IEnumerable<RuleGroup> Rows { get { return _Table.Keys; } }
+        public IEnumerable<RuleLookahead> Colums//TODO: We can cache it!
+        {
+            get
+            {
+                List<RuleLookahead> columns = new List<RuleLookahead>();
+                foreach (var p in _Table)
+                {
+                    foreach (var e in p.Value)
+                    {
+                        if (!columns.Contains(e.Lookahead))
+                            columns.Add(e.Lookahead);
+                    }
+                }
+
+                return columns;
+            }
+        }
     }
 }

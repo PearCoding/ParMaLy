@@ -80,26 +80,27 @@ namespace PML.Parser
                     }
                     else if(conf.IsLast)//The only difference to LR0 is here!
                     {
-                        var follow = conf.Rule.Group.FollowSet;
-                        foreach(var t in follow)
+                        var follow = env.FollowCache.Get(conf.Rule.Group, 1);
+                        foreach(var look in follow)
                         {
-                            var a = _ActionTable.Get(state, t);
+                            var a = _ActionTable.Get(state, look);
                             if (a != null)
                             {
                                 if (a.Action != ActionTable.Action.Shift && a.State != state)
                                     Statistics.BU.Conflicts.Add(
-                                        new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ReduceReduce, state, t));
+                                        new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ReduceReduce, state, look));
                                 else if (a.Action == ActionTable.Action.Shift)
                                     Statistics.BU.Conflicts.Add(
-                                        new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftReduce, state, t));
+                                        new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftReduce, state, look));
                             }
 
-                            _ActionTable.Set(state, t, ActionTable.Action.Reduce, state);
+                            _ActionTable.Set(state, look, ActionTable.Action.Reduce, state);
                         }
                     }
                     else if(conf.GetNext().Type == RuleTokenType.Token)
                     {
                         RuleToken next = conf.GetNext();
+                        RuleLookahead look = new RuleLookahead(next);
                         RuleState found = null;
                         foreach(RuleState.Connection c in state.Production)
                         {
@@ -107,24 +108,24 @@ namespace PML.Parser
                             {
                                 if (found != null)
                                     Statistics.BU.Conflicts.Add(
-                                        new BUStatistics.ConflictEntry(BUStatistics.ConflictType.Internal, state, next));
+                                        new BUStatistics.ConflictEntry(BUStatistics.ConflictType.Internal, state, look));
                                 else
                                     found = c.State;
                             }
                         }
 
-                        var a = _ActionTable.Get(state, next);
+                        var a = _ActionTable.Get(state, look);
                         if (a != null)
                         {
                             if (a.Action != ActionTable.Action.Shift)
                                 Statistics.BU.Conflicts.Add(
-                                    new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftReduce, state, next));
+                                    new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftReduce, state, look));
                             else if (a.Action == ActionTable.Action.Shift && a.State != found)
                                 Statistics.BU.Conflicts.Add(
-                                    new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftShift, state, next));
+                                    new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftShift, state, look));
                         }
 
-                        _ActionTable.Set(state, next, ActionTable.Action.Shift, found);
+                        _ActionTable.Set(state, look, ActionTable.Action.Shift, found);
                     }
                 }
             }

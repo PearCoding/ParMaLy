@@ -28,13 +28,13 @@ namespace PML.Statistics
         {
             public ConflictType Type;
             public BU.RuleState State;
-            public RuleToken Token;
+            public RuleLookahead Lookahead;
 
-            public ConflictEntry(ConflictType type, BU.RuleState state, RuleToken token = null)
+            public ConflictEntry(ConflictType type, BU.RuleState state, RuleLookahead lookahead = null)
             {
                 Type = type;
                 State = state;
-                Token = token;
+                Lookahead = lookahead;
             }
         }
 
@@ -74,14 +74,14 @@ namespace PML.Statistics
             public ConflictType Type;
             public RuleGroup Group;
             public Rule Rule;
-            public RuleToken Token;
+            public RuleLookahead Lookahead;
 
-            public ConflictEntry(ConflictType type, RuleGroup grp, RuleToken token, Rule rule)
+            public ConflictEntry(ConflictType type, RuleGroup grp, RuleLookahead lookahead, Rule rule)
             {
                 Type = type;
                 Group = grp;
                 Rule = rule;
-                Token = token;
+                Lookahead = lookahead;
             }
         }
 

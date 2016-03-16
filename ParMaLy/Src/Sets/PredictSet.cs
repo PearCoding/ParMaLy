@@ -35,29 +35,16 @@ namespace PML
 {
     public static class PredictSet
     {
-        public static IEnumerable<RuleToken> Generate(Environment env, RuleGroup grp, IEnumerable<RuleToken> tokens)
-        {
-            var l = env.FirstCache.Generate(tokens, 1);
-            if (l.Contains((RuleLookahead)null))
-            {
-                return l.Where(v => v != null).Select(v => v[0]).Union(grp.FollowSet);
-            }
-            else
-                return l.Select(v => v[0]);
-        }
-
         public static RuleLookaheadSet Generate(Environment env, RuleGroup grp, IEnumerable<RuleToken> tokens, int k)
         {
             if (k == 0)
                 return null;//Empty
-            else if (k == 1)
-                return new RuleLookaheadSet(Generate(env, grp, tokens));
             else
             {//TODO
                 var l = env.FirstCache.Generate(tokens, k);
                 if (l.Contains((RuleLookahead)null))
                 {
-                    return new RuleLookaheadSet(l.Where(v => v != null).Union(FollowSet.Generate(grp, k)));
+                    return new RuleLookaheadSet(l.Where(v => v != null).Union(env.FollowCache.Get(grp, k)));
                 }
                 else
                     return l;

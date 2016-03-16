@@ -66,7 +66,7 @@ namespace PML.Parser
             {
                 foreach (var r in grp.Rules)
                 {
-                    var predict = PredictSet.Generate(env, grp, r.Tokens);
+                    var predict = PredictSet.Generate(env, grp, r.Tokens, 1);
                     foreach (var s in predict)
                     {
                         if (_Lookup.Get(grp, s) != null)
