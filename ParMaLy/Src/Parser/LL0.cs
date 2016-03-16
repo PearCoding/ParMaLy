@@ -54,6 +54,11 @@ namespace PML.Parser
             GenerateTable(env, logger);
         }
 
+        /*
+         The LL(0) parser does not use these tables, but due to the framework design,
+         we do generate a useless one.
+         A LL(0) would only need the current Non-Terminal to make decisions. 
+         */
         public void GenerateTable(Environment env, Logger logger)
         {
             _Lookup.Clear();
@@ -71,7 +76,7 @@ namespace PML.Parser
                 {
                     foreach (var s in tokens)
                     {
-                        var look = new RuleLookahead(s);
+                        var look = (s == null ? null : new RuleLookahead(s));
                         if (_Lookup.Get(grp, look) != null)
                         {
                             _Statistics.TD.Conflicts.Add(

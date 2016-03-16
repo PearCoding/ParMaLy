@@ -7,7 +7,7 @@ namespace PML.Tests
     using NUnit.Framework;
 
     [TestFixture]
-    public class FirstSet_Test
+    public class Set_Test
     {
         string Test_Source =
             @"%token ID;
