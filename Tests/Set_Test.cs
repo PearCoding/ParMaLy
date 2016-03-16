@@ -132,9 +132,6 @@ namespace PML.Tests
             var A = env.FirstCache.Get(env.GroupByName("A"), 2);
             var B = env.FirstCache.Get(env.GroupByName("B"), 2);
             var C = env.FirstCache.Get(env.GroupByName("C"), 2);
-            Assert.IsNotNull(A);
-            Assert.IsNotNull(B);
-            Assert.IsNotNull(C);
 
             Assert.AreEqual(A.Count(), 3);
             Assert.AreEqual(B.Count(), 2);
@@ -161,6 +158,33 @@ namespace PML.Tests
             Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), C[0][0]);
         }
         
+        [Test]
+        public void Follow2()
+        {
+            Environment env = new Environment(new Logger(false));
+            env.Parse(Test_Source_2);
+            env.FirstCache.Setup(env, 2);
+            env.FollowCache.Setup(env, 2);
+
+            var A = env.FollowCache.Get(env.GroupByName("A"), 2);
+            var B = env.FollowCache.Get(env.GroupByName("B"), 2);
+            var C = env.FollowCache.Get(env.GroupByName("C"), 2);
+
+            Assert.AreEqual(A.Count(), 1);
+            Assert.AreEqual(B.Count(), 1);
+            Assert.AreEqual(C.Count(), 1);
+
+            Assert.IsNull(A[0]);
+            Assert.AreEqual(B[0].Count(), 2);
+            Assert.AreEqual(C[0].Count(), 2);
+
+            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), B[0][0]);
+            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), B[0][1]);
+
+            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), C[0][0]);
+            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), C[0][1]);
+        }
+
         string Test_Source_3 =
             @"%start A;
             A:	B 'b' 'a' | 'b' B 'a' 'a' ;
@@ -176,11 +200,7 @@ namespace PML.Tests
             var A = env.FirstCache.Get(env.GroupByName("A"), 3);
             var B = env.FirstCache.Get(env.GroupByName("B"), 3);
             var C = env.FirstCache.Get(env.GroupByName("C"), 3);
-
-            Assert.IsNotNull(A);
-            Assert.IsNotNull(B);
-            Assert.IsNotNull(C);
-
+            
             Assert.AreEqual(A.Count(), 5);
             Assert.AreEqual(B.Count(), 4);
             Assert.AreEqual(C.Count(), 6);
@@ -251,6 +271,40 @@ namespace PML.Tests
 
             Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), C[4][0]);
             Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), C[4][1]);
+        }
+
+        [Test]
+        public void Follow3()
+        {
+            Environment env = new Environment(new Logger(false));
+            env.Parse(Test_Source_3);
+            env.FirstCache.Setup(env, 3);
+            env.FollowCache.Setup(env, 3);
+
+            var A = env.FollowCache.Get(env.GroupByName("A"), 3);
+            var B = env.FollowCache.Get(env.GroupByName("B"), 3);
+            var C = env.FollowCache.Get(env.GroupByName("C"), 3);
+
+            Assert.AreEqual(A.Count(), 1);
+            Assert.AreEqual(B.Count(), 2);
+            Assert.AreEqual(C.Count(), 2);
+
+
+            Assert.IsNull(A[0]);
+            Assert.AreEqual(B[0].Count(), 2);
+            Assert.AreEqual(B[1].Count(), 2);
+            Assert.AreEqual(C[0].Count(), 2);
+            Assert.AreEqual(C[1].Count(), 2);
+
+            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), B[0][0]);
+            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), B[0][1]);
+            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), B[1][0]);
+            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), B[1][1]);
+
+            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), C[0][0]);
+            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), C[0][1]);
+            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), C[1][0]);
+            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), C[1][1]);
         }
     }
 }
