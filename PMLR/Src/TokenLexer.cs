@@ -30,16 +30,11 @@
 
 using System.Collections.Generic;
 
-namespace PML.Parser
+namespace PML
 {
-    public interface IParser
+    class TokenLexer
     {
-        string Name { get; }
-
-        Statistics.Statistics Statistics { get; }
-
-        int K { get; }
-
-        void Generate(Environment env, Logger logger);
+        List<string> _Input = new List<string>();
+        int _Position = 0;
     }
 }

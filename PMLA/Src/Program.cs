@@ -61,6 +61,9 @@ namespace PML
         public string FirstSetFile;
         public string FollowSetFile;
         public string PredictSetFile;
+
+        public string PMLFile;
+
         public int K = 1;
 
         public bool ShowHelp = false;
@@ -138,8 +141,11 @@ namespace PML
                 { "predictset=",
                     "Generate a {FILE} with all entries in the predict sets. Makes use of the -k option.",
                     (string s) => { opts.PredictSetFile = s; } },
+                { "pml=",
+                    "Generate a {FILE} to be used by PMLR.",
+                    (string s) => { opts.PMLFile = s; opts.Parse = true; } },
                 { "k|lookahead=",
-                    "The used {MAX} amount of lookahead. Default is " + opts.K + ". Not every parser consider this option.",
+                    "The used {MAX} amount of lookahead. Default is " + opts.K + ". Not every parser will consider this option.",
                     (int k) => opts.K = k },
                 { "h|help", "Show this message and exit.",
                     v => opts.ShowHelp = v != null },
@@ -314,6 +320,11 @@ namespace PML
                         if(!String.IsNullOrEmpty(opts.LookupHtmlFile))
                         {
                             Output.HtmlTable.PrintLookupTable(File.CreateText(opts.LookupHtmlFile), ((Parser.ITDParser)parser).Lookup, env, style.LookupTableHtml);
+                        }
+
+                        if(!String.IsNullOrEmpty(opts.PMLFile))
+                        {
+                            Output.PMLWriter.WriteLL(File.CreateText(opts.PMLFile), ((Parser.ITDParser)parser), env);
                         }
                     }
                     else if(type == 2)//RParser

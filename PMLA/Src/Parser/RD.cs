@@ -50,6 +50,8 @@ namespace PML.Parser
 
         int MaxK;
 
+        public int K { get { return MaxK; } }
+
         public RD(int maxK)
         {
             MaxK = maxK;

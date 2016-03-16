@@ -47,10 +47,13 @@ namespace PML.Parser
         Statistics _Statistics;
         public Statistics Statistics { get { return _Statistics; } }
 
-        int K;
+        int _K;
+
+        public int K { get { return _K; } }
+
         public LLK(int k)
         {
-            K = k;
+            _K = k;
         }
 
         public void Generate(Environment env, Logger logger)

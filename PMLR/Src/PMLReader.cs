@@ -28,18 +28,43 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
-using System.Collections.Generic;
+using System.IO;
 
-namespace PML.Parser
+namespace PML
 {
-    public interface IParser
+    public static class PMLReader
     {
-        string Name { get; }
+        public static Runner.IRunner Read(TextReader reader, Environment env, Logger logger)
+        {
+            var header = reader.ReadLine().Split(' ');
+            if(header.Length != 3)
+            {
+                logger.Log(1, 1, LogLevel.Error, "Invalid header");
+                return null;
+            }
 
-        Statistics.Statistics Statistics { get; }
+            if(header[0] != "PML")
+            {
+                logger.Log(1, 1, LogLevel.Error, "Invalid magic");
+                return null;
+            }
 
-        int K { get; }
+            int k = int.Parse(header[2]);
 
-        void Generate(Environment env, Logger logger);
+            if (header[1] == "LL")
+            {
+                return ReadLL(reader, env, logger);
+            }
+            else
+            {
+                logger.Log(1, 4, LogLevel.Error, "Unknown parser type");
+                return null;
+            }
+        }
+
+        public static Runner.LLRunner ReadLL(TextReader reader, Environment env, Logger logger)
+        {
+            return null;
+        }
     }
 }

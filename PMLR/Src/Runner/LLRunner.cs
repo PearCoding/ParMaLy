@@ -28,18 +28,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
-using System.Collections.Generic;
 
-namespace PML.Parser
+namespace PML.Runner
 {
-    public interface IParser
+    public class LLRunner : IRunner
     {
-        string Name { get; }
-
-        Statistics.Statistics Statistics { get; }
-
-        int K { get; }
-
-        void Generate(Environment env, Logger logger);
+        public TD.LookupTable Table = new TD.LookupTable();
     }
 }

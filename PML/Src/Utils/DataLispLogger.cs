@@ -28,18 +28,25 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
-using System.Collections.Generic;
-
-namespace PML.Parser
+namespace PML
 {
-    public interface IParser
+    public class DataLispLogger : DataLisp.Logger
     {
-        string Name { get; }
+        Logger _Logger;
 
-        Statistics.Statistics Statistics { get; }
+        public DataLispLogger(Logger logger)
+        {
+            _Logger = logger;
+        }
 
-        int K { get; }
+        public override void Log(DataLisp.LogLevel level, string str)
+        {
+            _Logger.Log((LogLevel)level, str);
+        }
 
-        void Generate(Environment env, Logger logger);
+        public override void Log(int line, int column, DataLisp.LogLevel level, string str)
+        {
+            _Logger.Log(line, column, (LogLevel)level, str);
+        }
     }
 }

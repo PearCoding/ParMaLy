@@ -38,7 +38,38 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Src\Environment.cs" />
+    <Compile Include="Src\Grammar\Lexer.cs" />
+    <Compile Include="Src\Grammar\Parser.cs" />
+    <Compile Include="Src\Grammar\ParserError.cs" />
+    <Compile Include="Src\Grammar\Statements.cs" />
+    <Compile Include="Src\Grammar\SyntaxTree.cs" />
+    <Compile Include="Src\Grammar\Token.cs" />
     <Compile Include="Src\Logger.cs" />
+    <Compile Include="Src\Sets\FirstSet.cs" />
+    <Compile Include="Src\Sets\FirstSetCache.cs" />
+    <Compile Include="Src\Sets\FollowSet.cs" />
+    <Compile Include="Src\Sets\FollowSetCache.cs" />
+    <Compile Include="Src\Sets\PredictSet.cs" />
+    <Compile Include="Src\Utils\BU\ActionTable.cs" />
+    <Compile Include="Src\Utils\BU\GotoTable.cs" />
+    <Compile Include="Src\Utils\BU\RuleConfiguration.cs" />
+    <Compile Include="Src\Utils\BU\RuleState.cs" />
+    <Compile Include="Src\Utils\DataLispLogger.cs" />
+    <Compile Include="Src\Utils\EnumeratorUtils.cs" />
+    <Compile Include="Src\Utils\Rule.cs" />
+    <Compile Include="Src\Utils\RuleGroup.cs" />
+    <Compile Include="Src\Utils\RuleLookahead.cs" />
+    <Compile Include="Src\Utils\RuleLookaheadSet.cs" />
+    <Compile Include="Src\Utils\RuleToken.cs" />
+    <Compile Include="Src\Utils\R\RState.cs" />
+    <Compile Include="Src\Utils\TD\LookupTable.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\datalisp\DL-Library.csproj">
+      <Project>{0362048a-7482-4552-bd1d-41ae85ab20b0}</Project>
+      <Name>DL-Library</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

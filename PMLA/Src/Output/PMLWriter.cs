@@ -28,25 +28,40 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
-namespace PML
+using System;
+using System.Linq;
+using System.IO;
+
+namespace PML.Output
 {
-    class DataLispLogger : DataLisp.Logger
+    static class PMLWriter
     {
-        Logger _Logger;
-
-        public DataLispLogger(Logger logger)
+        public static void WriteLL(TextWriter writer, Parser.ITDParser parser, Environment env)
         {
-            _Logger = logger;
-        }
+            writer.WriteLine("PML LL " + parser.K);
+            writer.WriteLine(String.Join(" ", parser.Lookup.Colums.Select(v => v == null ? "$" : "'" +
+                v.Join(";", t => t.Name.Replace("\\", "\\\\").Replace(";", "\\;").Replace("'", "\\'")) + "'" ).ToArray()));
 
-        public override void Log(DataLisp.LogLevel level, string str)
-        {
-            _Logger.Log((LogLevel)level, str);
-        }
+            foreach (var grp in parser.Lookup.Rows)
+            {
+                writer.Write(grp.Name + " ");
+                foreach(var column in parser.Lookup.Colums)
+                {
+                    var entry = parser.Lookup.Get(grp, column);
+                    if(entry != null && entry.Rule != null)
+                    {
+                        writer.Write("" + entry.Rule.ID);
+                    }
+                    else
+                    {
+                        writer.Write("-");
+                    }
 
-        public override void Log(int line, int column, DataLisp.LogLevel level, string str)
-        {
-            _Logger.Log(line, column, (LogLevel)level, str);
+                    writer.Write(" ");
+                }
+                writer.WriteLine();
+            }
+            writer.Flush();
         }
     }
 }

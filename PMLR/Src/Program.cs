@@ -30,6 +30,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace PML
 {
@@ -45,7 +46,7 @@ namespace PML
     {
         static void ShowHelp(OptionSet p)
         {
-            Console.WriteLine("Usage: PMLR pmlr_file input_file [OPTIONS]+");
+            Console.WriteLine("Usage: PMLR pml_file grammar_file input_file [OPTIONS]+");
             Console.WriteLine();
             Console.WriteLine("Options:");
             p.WriteOptionDescriptions(Console.Out);
@@ -80,14 +81,41 @@ namespace PML
                 return 0;
             }
 
-            if (input.Count != 2)
+            if (input.Count != 3)
             {
-                Console.WriteLine("No pml file and/or input file given.");
+                Console.WriteLine("Not enough input given.");
                 Console.WriteLine("Try 'PMLR --help' for more information.");
                 return -2;
             }
 
             Logger logger = new Logger(!opts.NoLog);
+            Environment env = new Environment(logger);
+
+            try
+            {
+                string source = File.ReadAllText(input[1]);
+                env.Parse(source);
+            }
+            catch (Grammar.ParserError err)
+            {
+                Console.Error.Write(err.Type.ToString());
+                return 2;
+            }
+            catch (FileNotFoundException ex)
+            {
+                Console.Error.Write(ex.Message);
+                return -2;
+            }
+
+            try
+            {
+                Runner.IRunner runner = PMLReader.Read(File.OpenText(input[0]), env, logger);
+            }
+            catch (FileNotFoundException ex)
+            {
+                Console.Error.Write(ex.Message);
+                return -2;
+            }
 
             return 0;
         }

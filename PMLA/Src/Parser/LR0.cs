@@ -46,6 +46,8 @@ namespace PML.Parser
 
         public string Name { get { return "LR(0)"; } }
 
+        public int K { get { return 0; } }
+
         public List<RuleState> States { get { return _States; } }
 
         public RuleState StartState { get { return _StartState; } }

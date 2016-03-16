@@ -44,6 +44,8 @@ namespace PML.Parser
 
         public string Name { get { return "LL(0)"; } }
 
+        public int K { get { return 0; } }
+
         public LookupTable Lookup { get { return _Lookup; } }
 
         Statistics _Statistics;

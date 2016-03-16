@@ -42,6 +42,8 @@ namespace PML.Parser
         Statistics _Statistics;
         public string Name { get { return "SLR(1)"; } }
 
+        public int K { get { return 1; } }
+
         public List<RuleState> States { get { return _LR0.States; } }
 
         public RuleState StartState { get { return _LR0.StartState; } }
