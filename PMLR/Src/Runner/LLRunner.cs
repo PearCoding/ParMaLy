@@ -28,6 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
+using System.Collections.Generic;
 
 namespace PML.Runner
 {
@@ -39,6 +40,18 @@ namespace PML.Runner
         public LLRunner(int k)
         {
             K = k;
+        }
+
+        public IEnumerable<Events.IEvent> Run(TokenLexer lexer, Environment env, Logger logger)
+        {
+            List<Events.IEvent> events = new List<Events.IEvent>();
+
+            Stack<RuleToken> stack = new Stack<RuleToken>();
+            stack.Push(new RuleToken(0, RuleTokenType.Rule, env.Start.Name));
+
+            events.Add(new Events.LLEvent(stack, new RuleLookahead(lexer.Current(env)), 0));
+            //TODO: Start!
+            return events;
         }
     }
 }

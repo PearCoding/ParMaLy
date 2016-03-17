@@ -28,10 +28,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
+using System.Collections.Generic;
 
 namespace PML.Runner
 {
     public interface IRunner
     {
+        IEnumerable<Events.IEvent> Run(TokenLexer lexer, Environment env, Logger logger);
     }
 }

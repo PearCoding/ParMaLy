@@ -32,10 +32,12 @@ using System.Collections.Generic;
 
 namespace PML
 {
-    class TokenLexer
+    public class TokenLexer
     {
         List<string> _Input = new List<string>();
         int _Position = 0;
+
+        public int Position { get { return _Position; } }
 
         public void Parse(string source)
         {
