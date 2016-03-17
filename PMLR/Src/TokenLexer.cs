@@ -36,5 +36,88 @@ namespace PML
     {
         List<string> _Input = new List<string>();
         int _Position = 0;
+
+        public void Parse(string source)
+        {
+            _Input.Clear();
+            _Position = 0;
+
+            string tmp = "";
+            bool isString = false;
+            bool isEscape = false;
+            foreach(var c in source)
+            {
+                if(!isEscape && c == '\\')
+                {
+                    isEscape = true;
+                }
+                else
+                {
+                    if(!isEscape && c == '"')
+                    {
+                        if (isString)
+                        {
+                            isString = false;
+                            if (tmp != "")
+                            {
+                                _Input.Add(tmp);
+                                tmp = "";
+                            }
+                        }
+                        else
+                        {
+                            isString = true;
+                        }
+                    }
+                    else if(c == '\t' || c == '\n' || c == '\r' || c == ' ')
+                    {
+                        if(tmp != "")
+                        {
+                            _Input.Add(tmp);
+                            tmp = "";
+                        }
+                    }
+                    else
+                    {
+                        tmp += c;
+                    }
+                    isEscape = false;
+                }
+            }
+
+            if (tmp != "")
+            {
+                _Input.Add(tmp);
+            }
+        }
+
+        public void Reset()
+        {
+            _Position = 0;
+        }
+
+        public int Left { get { return _Input.Count - _Position - 1; } }
+
+        public bool IsValid(int lookahead = 0)
+        {
+            return Left >= (lookahead + 1);
+        }
+
+        public RuleToken Current(Environment env, int lookahead = 0)
+        {
+            string str = _Input[_Position + lookahead];
+            foreach(var t in env.Tokens)
+            {
+                if (t.Name == str)
+                    return t;
+            }
+
+            return null;
+        }
+
+        public void Step(int lookahead = 0)
+        {
+            _Position += lookahead;
+        }
     }
 }

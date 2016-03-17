@@ -90,6 +90,8 @@ namespace PML
 
             Logger logger = new Logger(!opts.NoLog);
             Environment env = new Environment(logger);
+            Runner.IRunner runner = null;
+            TokenLexer lexer = new TokenLexer();
 
             try
             {
@@ -109,7 +111,17 @@ namespace PML
 
             try
             {
-                Runner.IRunner runner = PMLReader.Read(File.OpenText(input[0]), env, logger);
+                 runner = PMLReader.Read(File.OpenText(input[0]), env, logger);
+            }
+            catch (FileNotFoundException ex)
+            {
+                Console.Error.Write(ex.Message);
+                return -2;
+            }
+
+            try
+            {
+                lexer.Parse(File.ReadAllText(input[2]));
             }
             catch (FileNotFoundException ex)
             {
