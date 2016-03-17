@@ -48,6 +48,21 @@ namespace PML.TD
             _Table.Clear();
         }
 
+        public bool Has(RuleGroup grp, RuleLookahead lookahead)
+        {
+            if (!_Table.ContainsKey(grp))
+                return false;
+
+            var l = _Table[grp];
+            foreach (var e in l)
+            {
+                if (e.Lookahead == lookahead)
+                    return true;
+            }
+
+            return false;
+        }
+
         public void Set(RuleGroup grp, RuleLookahead lookahead, Rule rule)
         {
             if (!_Table.ContainsKey(grp))

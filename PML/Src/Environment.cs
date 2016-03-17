@@ -96,7 +96,6 @@ namespace PML
                         }
 
                         Rule rule = new Rule(_Rules.Count + 1, grp);
-
                         foreach (Grammar.RuleDefToken t in def.Tokens)
                         {
                             if (t.WasString)

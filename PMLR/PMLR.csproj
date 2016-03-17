@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Src\Events\LLEvent.cs" />
     <Compile Include="Src\Events\Event.cs" />
+    <Compile Include="Src\Output\EventFile.cs" />
     <Compile Include="Src\TokenLexer.cs" />
     <Compile Include="Src\PMLReader.cs" />
     <Compile Include="Src\Program.cs" />

@@ -1,23 +1,21 @@
 %token NUM;
 %start in;
 
-in:	add_expr
+in:	prefix
 	;
 
+prefix:		literal add_expr
+			;
+
 add_expr:	mul_expr
-			| mul_expr '+' add_expr
-			| mul_expr '-' add_expr
+			| '+' prefix
+			| '-' prefix
 			;
 			
-mul_expr:	unary_expr
-			| unary_expr '*' mul_expr
-			| unary_expr '/' mul_expr
-			| unary_expr '%' mul_expr
-			| unary_expr '**' mul_expr
-			;
-			
-unary_expr:	'(' add_expr ')'
-			| literal
+mul_expr:	'*' prefix
+			| '/' prefix
+			| '%' prefix
+			| '**' prefix
 			;
 			
 literal:	NUM

@@ -91,6 +91,7 @@ namespace PML
             {
                 _Input.Add(tmp);
             }
+            
         }
 
         public void Reset()
@@ -98,19 +99,38 @@ namespace PML
             _Position = 0;
         }
 
-        public int Left { get { return _Input.Count - _Position - 1; } }
+        public int Left { get { return _Input.Count - _Position; } }
 
         public bool IsValid(int lookahead = 0)
         {
-            return Left >= (lookahead + 1);
+            return Left > lookahead;
         }
 
-        public RuleToken Current(Environment env, int lookahead = 0)
+        public RuleLookahead Current(Environment env, int lookahead = 0, int offset = 0)
         {
-            return env.TokenByName(_Input[_Position + lookahead]);
+            if (Left < 0)
+                return null;
+            else
+            {
+                RuleLookahead look = new RuleLookahead();
+                for (int i = offset; i < System.Math.Min(lookahead + 1, Left); ++i)
+                {
+                    var t = env.TokenByName(_Input[_Position + i]);
+                    if (t == null)
+                        return null;
+
+                    look.Add(t);
+                }
+                return look;
+            }
+        }
+
+        public RuleLookahead Look(Environment env, int lookahead = 1)
+        {
+            return Current(env, lookahead, 1);
         }
         
-        public void Step(int lookahead = 0)
+        public void Step(int lookahead = 1)
         {
             _Position += lookahead;
         }

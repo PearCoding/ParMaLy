@@ -38,6 +38,7 @@ namespace PML
 
     class Options
     {
+        public string EventFile;
         public bool ShowHelp = false;
         public bool NoLog = false;
     }
@@ -57,6 +58,8 @@ namespace PML
             Options opts = new Options();
             OptionSet p = new OptionSet()
             {
+                { "events=", "Print out all events to {FILE}.",
+                    (string v) => opts.EventFile = v },
                 { "h|help", "Show this message and exit.",
                     v => opts.ShowHelp = v != null },
                 { "nl|no-log", "Do not produce any log file.",
@@ -129,6 +132,15 @@ namespace PML
                 return -2;
             }
 
+            if (runner == null || lexer == null)
+                return -3;
+
+            var events = runner.Run(lexer, env, logger);
+
+            if(!String.IsNullOrEmpty(opts.EventFile))
+            {
+                Output.EventFile.PrintEvents(File.CreateText(opts.EventFile), events);
+            }
             return 0;
         }
     }
