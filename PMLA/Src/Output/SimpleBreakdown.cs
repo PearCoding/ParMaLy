@@ -40,8 +40,9 @@ namespace PML.Output
     {
         public static void Print(TextWriter writer, Environment env, Parser.IParser parser)
         {
-            writer.WriteLine("Tokens: " + String.Join(", ", env.Tokens.Select(s => s.IsComplex ? s.Name : "'" + s.Name + "'").ToArray()));
-            writer.WriteLine("Groups: " + String.Join(", ", env.Groups.Select(s => s.Name).ToArray()));
+            writer.WriteLine("Tokens: " + String.Join(", ",
+                env.Tokens.Select(s => (s.IsComplex ? s.Name : "'" + s.Name + "'") + "(" + s.ID + ")").ToArray()));
+            writer.WriteLine("Groups: " + String.Join(", ", env.Groups.Select(s => s.Name + "(" + s.ID + ")").ToArray()));
             writer.WriteLine("Start: " + (env.Start == null ? "NOT SET!" : env.Start.Name));
 
             writer.WriteLine("Rules:");

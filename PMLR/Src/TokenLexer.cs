@@ -105,16 +105,9 @@ namespace PML
 
         public RuleToken Current(Environment env, int lookahead = 0)
         {
-            string str = _Input[_Position + lookahead];
-            foreach(var t in env.Tokens)
-            {
-                if (t.Name == str)
-                    return t;
-            }
-
-            return null;
+            return env.TokenByName(_Input[_Position + lookahead]);
         }
-
+        
         public void Step(int lookahead = 0)
         {
             _Position += lookahead;

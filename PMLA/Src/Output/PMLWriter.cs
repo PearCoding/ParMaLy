@@ -29,6 +29,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 
@@ -39,12 +40,11 @@ namespace PML.Output
         public static void WriteLL(TextWriter writer, Parser.ITDParser parser, Environment env)
         {
             writer.WriteLine("PML LL " + parser.K);
-            writer.WriteLine(String.Join(" ", parser.Lookup.Colums.Select(v => v == null ? "$" : "'" +
-                v.Join(";", t => t.Name.Replace("\\", "\\\\").Replace(";", "\\;").Replace("'", "\\'")) + "'" ).ToArray()));
+            WriteLookaheads(writer, parser.Lookup.Colums);
 
             foreach (var grp in parser.Lookup.Rows)
             {
-                writer.Write(grp.Name + " ");
+                writer.Write(grp.ID + " ");
                 foreach(var column in parser.Lookup.Colums)
                 {
                     var entry = parser.Lookup.Get(grp, column);
@@ -62,6 +62,12 @@ namespace PML.Output
                 writer.WriteLine();
             }
             writer.Flush();
+        }
+
+        static void WriteLookaheads(TextWriter writer, IEnumerable<RuleLookahead> lookaheads)
+        {
+            writer.WriteLine(String.Join(" ", lookaheads.Select(v => v == null ? "-" : "[" +
+                v.Join(",", t => t.ID.ToString()) + "]").ToArray()));
         }
     }
 }

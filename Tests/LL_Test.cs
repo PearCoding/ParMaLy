@@ -27,12 +27,12 @@ namespace PML.Tests
             Assert.AreEqual(ll0.Statistics.TD.Conflicts.Count, 0);
             var lookup = ll0.Lookup;
 
-            Assert.AreEqual(lookup.Get(env.GroupByName("A"), new RuleLookahead(new RuleToken(RuleTokenType.Token, "a"))).Rule,
+            Assert.AreEqual(lookup.Get(env.GroupByName("A"), new RuleLookahead(env.TokenByName("a"))).Rule,
                 env.GroupByName("A").Rules.First());
             Assert.AreEqual(lookup.Get(env.GroupByName("A"), null).Rule,
                 env.GroupByName("A").Rules.First());
 
-            Assert.AreEqual(lookup.Get(env.GroupByName("B"), new RuleLookahead(new RuleToken(RuleTokenType.Token, "a"))).Rule,
+            Assert.AreEqual(lookup.Get(env.GroupByName("B"), new RuleLookahead(env.TokenByName("a"))).Rule,
                 env.GroupByName("B").Rules.First());
             Assert.AreEqual(lookup.Get(env.GroupByName("B"), null).Rule,
                 env.GroupByName("B").Rules.First());

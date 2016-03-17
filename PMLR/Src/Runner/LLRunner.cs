@@ -34,5 +34,11 @@ namespace PML.Runner
     public class LLRunner : IRunner
     {
         public TD.LookupTable Table = new TD.LookupTable();
+        public int K;
+
+        public LLRunner(int k)
+        {
+            K = k;
+        }
     }
 }

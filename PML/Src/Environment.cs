@@ -69,7 +69,7 @@ namespace PML
                 {
                     Grammar.TokenDefStatement tds = stmt as Grammar.TokenDefStatement;
 
-                    RuleToken token = new RuleToken(RuleTokenType.Token, tds.Token);
+                    RuleToken token = new RuleToken(_Tokens.Count, RuleTokenType.Token, tds.Token);
                     token.IsComplex = true;
 
                     if (_Tokens.Contains(token))
@@ -101,7 +101,7 @@ namespace PML
                         {
                             if (t.WasString)
                             {
-                                var token = new RuleToken(RuleTokenType.Token, t.Name);
+                                var token = new RuleToken(_Tokens.Count, RuleTokenType.Token, t.Name);
                                 if (!_Tokens.Contains(token))
                                     _Tokens.Add(token);
 
@@ -109,17 +109,15 @@ namespace PML
                             }
                             else
                             {
-                                var token = new RuleToken(RuleTokenType.Token, t.Name);
-                                int index = _Tokens.IndexOf(token);
-
-                                if (index < 0)
+                                var token = TokenByName(t.Name);
+                                if (token == null)
                                 {
-                                    token = new RuleToken(RuleTokenType.Rule, t.Name);
+                                    token = new RuleToken(-1, RuleTokenType.Rule, t.Name);
                                     token.Parent = rule;
                                     rule.Tokens.Add(token);
                                 }
                                 else
-                                    rule.Tokens.Add(_Tokens[index]);
+                                    rule.Tokens.Add(token);
                             }
                         }
 
@@ -185,12 +183,42 @@ namespace PML
             return null;
         }
 
+        public RuleGroup GroupByID(int id)
+        {
+            foreach (RuleGroup grp in _Groups)
+            {
+                if (grp.ID == id)
+                    return grp;
+            }
+            return null;
+        }
+
         public Rule RuleByID(int id)
         {
             foreach(Rule r in _Rules)
             {
                 if (r.ID == id)
                     return r;
+            }
+            return null;
+        }
+
+        public RuleToken TokenByName(string str)
+        {
+            foreach(var t in _Tokens)
+            {
+                if (t.Name == str)
+                    return t;
+            }
+            return null;
+        }
+
+        public RuleToken TokenByID(int id)
+        {
+            foreach (var t in _Tokens)
+            {
+                if (t.ID == id)
+                    return t;
             }
             return null;
         }

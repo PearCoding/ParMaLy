@@ -44,6 +44,9 @@ namespace PML
         RuleTokenType _Type;
         public RuleTokenType Type { get { return _Type; } }
 
+        int _ID;
+        public int ID { get { return _ID; } }
+
         string _String;
         public string Name { get { return _String; } }
 
@@ -54,8 +57,9 @@ namespace PML
         //Token
         public bool IsComplex = false;
 
-        public RuleToken(RuleTokenType type, string str)
+        public RuleToken(int id, RuleTokenType type, string str)
         {
+            _ID = id;
             _Type = type;
             _String = str;
         }

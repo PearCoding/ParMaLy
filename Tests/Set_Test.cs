@@ -48,18 +48,18 @@ namespace PML.Tests
             Assert.AreEqual(F[0].Count(), 1);
             Assert.AreEqual(F[1].Count(), 1);
 
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "("), A[0][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "ID"), A[1][0]);
+            Assert.AreEqual(env.TokenByName("("), A[0][0]);
+            Assert.AreEqual(env.TokenByName("ID"), A[1][0]);
 
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "+"), B[0][0]);
+            Assert.AreEqual(env.TokenByName("+"), B[0][0]);
         
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "("), S[0][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "ID"), S[1][0]);
+            Assert.AreEqual(env.TokenByName("("), S[0][0]);
+            Assert.AreEqual(env.TokenByName("ID"), S[1][0]);
 
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "*"), T[0][0]);
+            Assert.AreEqual(env.TokenByName("*"), T[0][0]);
 
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "("), F[0][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "ID"), F[1][0]);
+            Assert.AreEqual(env.TokenByName("("), F[0][0]);
+            Assert.AreEqual(env.TokenByName("ID"), F[1][0]);
         }
 
         [Test]
@@ -101,19 +101,19 @@ namespace PML.Tests
             Assert.AreEqual(F[2].Count(), 1);
             Assert.AreEqual(F[3].Count(), 1);
 
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, ")"), A[1][0]);
+            Assert.AreEqual(env.TokenByName(")"), A[1][0]);
             
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, ")"), B[1][0]);
+            Assert.AreEqual(env.TokenByName(")"), B[1][0]);
             
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "+"), S[0][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, ")"), S[2][0]);
+            Assert.AreEqual(env.TokenByName("+"), S[0][0]);
+            Assert.AreEqual(env.TokenByName(")"), S[2][0]);
             
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "+"), T[0][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, ")"), T[2][0]);
+            Assert.AreEqual(env.TokenByName("+"), T[0][0]);
+            Assert.AreEqual(env.TokenByName(")"), T[2][0]);
 
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "*"), F[0][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "+"), F[2][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, ")"), F[3][0]);
+            Assert.AreEqual(env.TokenByName("*"), F[0][0]);
+            Assert.AreEqual(env.TokenByName("+"), F[2][0]);
+            Assert.AreEqual(env.TokenByName(")"), F[3][0]);
         }
 
         string Test_Source_2 =
@@ -147,15 +147,15 @@ namespace PML.Tests
             Assert.AreEqual(C[0].Count(), 1);
             Assert.IsNull(C[1]);
 
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), A[0][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), A[0][1]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), A[1][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), A[1][1]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), A[2][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), A[2][1]);
+            Assert.AreEqual(env.TokenByName("a"), A[0][0]);
+            Assert.AreEqual(env.TokenByName("b"), A[0][1]);
+            Assert.AreEqual(env.TokenByName("a"), A[1][0]);
+            Assert.AreEqual(env.TokenByName("a"), A[1][1]);
+            Assert.AreEqual(env.TokenByName("b"), A[2][0]);
+            Assert.AreEqual(env.TokenByName("b"), A[2][1]);
 
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), B[0][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), C[0][0]);
+            Assert.AreEqual(env.TokenByName("b"), B[0][0]);
+            Assert.AreEqual(env.TokenByName("b"), C[0][0]);
         }
         
         [Test]
@@ -178,11 +178,11 @@ namespace PML.Tests
             Assert.AreEqual(B[0].Count(), 2);
             Assert.AreEqual(C[0].Count(), 2);
 
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), B[0][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), B[0][1]);
+            Assert.AreEqual(env.TokenByName("a"), B[0][0]);
+            Assert.AreEqual(env.TokenByName("a"), B[0][1]);
 
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), C[0][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), C[0][1]);
+            Assert.AreEqual(env.TokenByName("b"), C[0][0]);
+            Assert.AreEqual(env.TokenByName("a"), C[0][1]);
         }
 
         string Test_Source_3 =
@@ -223,54 +223,54 @@ namespace PML.Tests
             Assert.AreEqual(C[4].Count(), 2);
             Assert.IsNull(C[5]);
 
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), A[0][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), A[0][1]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), A[0][2]);
+            Assert.AreEqual(env.TokenByName("b"), A[0][0]);
+            Assert.AreEqual(env.TokenByName("a"), A[0][1]);
+            Assert.AreEqual(env.TokenByName("b"), A[0][2]);
 
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), A[1][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), A[1][1]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), A[1][2]);
+            Assert.AreEqual(env.TokenByName("b"), A[1][0]);
+            Assert.AreEqual(env.TokenByName("b"), A[1][1]);
+            Assert.AreEqual(env.TokenByName("a"), A[1][2]);
 
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), A[2][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), A[2][1]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), A[2][2]);
+            Assert.AreEqual(env.TokenByName("b"), A[2][0]);
+            Assert.AreEqual(env.TokenByName("b"), A[2][1]);
+            Assert.AreEqual(env.TokenByName("b"), A[2][2]);
 
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), A[3][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), A[3][1]);
+            Assert.AreEqual(env.TokenByName("b"), A[3][0]);
+            Assert.AreEqual(env.TokenByName("a"), A[3][1]);
 
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), A[4][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), A[4][1]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), A[4][2]);
+            Assert.AreEqual(env.TokenByName("b"), A[4][0]);
+            Assert.AreEqual(env.TokenByName("a"), A[4][1]);
+            Assert.AreEqual(env.TokenByName("a"), A[4][2]);
 
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), B[0][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), B[0][1]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), B[0][2]);
+            Assert.AreEqual(env.TokenByName("b"), B[0][0]);
+            Assert.AreEqual(env.TokenByName("a"), B[0][1]);
+            Assert.AreEqual(env.TokenByName("b"), B[0][2]);
 
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), B[1][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), B[1][1]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), B[1][2]);
+            Assert.AreEqual(env.TokenByName("b"), B[1][0]);
+            Assert.AreEqual(env.TokenByName("b"), B[1][1]);
+            Assert.AreEqual(env.TokenByName("a"), B[1][2]);
 
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), B[2][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), B[2][1]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), B[2][2]);
+            Assert.AreEqual(env.TokenByName("b"), B[2][0]);
+            Assert.AreEqual(env.TokenByName("b"), B[2][1]);
+            Assert.AreEqual(env.TokenByName("b"), B[2][2]);
 
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), C[0][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), C[0][1]);
+            Assert.AreEqual(env.TokenByName("a"), C[0][0]);
+            Assert.AreEqual(env.TokenByName("b"), C[0][1]);
 
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), C[1][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), C[1][1]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), C[1][2]);
+            Assert.AreEqual(env.TokenByName("b"), C[1][0]);
+            Assert.AreEqual(env.TokenByName("a"), C[1][1]);
+            Assert.AreEqual(env.TokenByName("b"), C[1][2]);
 
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), C[2][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), C[2][1]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), C[2][2]);
+            Assert.AreEqual(env.TokenByName("b"), C[2][0]);
+            Assert.AreEqual(env.TokenByName("b"), C[2][1]);
+            Assert.AreEqual(env.TokenByName("b"), C[2][2]);
 
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), C[3][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), C[3][1]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), C[3][2]);
+            Assert.AreEqual(env.TokenByName("b"), C[3][0]);
+            Assert.AreEqual(env.TokenByName("b"), C[3][1]);
+            Assert.AreEqual(env.TokenByName("a"), C[3][2]);
 
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), C[4][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), C[4][1]);
+            Assert.AreEqual(env.TokenByName("b"), C[4][0]);
+            Assert.AreEqual(env.TokenByName("b"), C[4][1]);
         }
 
         [Test]
@@ -296,15 +296,15 @@ namespace PML.Tests
             Assert.AreEqual(C[0].Count(), 2);
             Assert.AreEqual(C[1].Count(), 2);
 
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), B[0][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), B[0][1]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), B[1][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), B[1][1]);
+            Assert.AreEqual(env.TokenByName("b"), B[0][0]);
+            Assert.AreEqual(env.TokenByName("a"), B[0][1]);
+            Assert.AreEqual(env.TokenByName("a"), B[1][0]);
+            Assert.AreEqual(env.TokenByName("a"), B[1][1]);
 
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "b"), C[0][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), C[0][1]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), C[1][0]);
-            Assert.AreEqual(new RuleToken(RuleTokenType.Token, "a"), C[1][1]);
+            Assert.AreEqual(env.TokenByName("b"), C[0][0]);
+            Assert.AreEqual(env.TokenByName("a"), C[0][1]);
+            Assert.AreEqual(env.TokenByName("a"), C[1][0]);
+            Assert.AreEqual(env.TokenByName("a"), C[1][1]);
         }
     }
 }

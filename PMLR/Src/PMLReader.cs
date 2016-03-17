@@ -29,6 +29,8 @@
  */
 
 using System.IO;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PML
 {
@@ -53,7 +55,7 @@ namespace PML
 
             if (header[1] == "LL")
             {
-                return ReadLL(reader, env, logger);
+                return ReadLL(reader, k, env, logger);
             }
             else
             {
@@ -62,9 +64,63 @@ namespace PML
             }
         }
 
-        public static Runner.LLRunner ReadLL(TextReader reader, Environment env, Logger logger)
+        public static Runner.LLRunner ReadLL(TextReader reader, int k, Environment env, Logger logger)
         {
-            return null;
+            var lookaheads = ReadLookahead(reader, env);
+
+            Runner.LLRunner runner = new Runner.LLRunner(k);
+            foreach(var grp in env.Groups)
+            {
+                var line = reader.ReadLine().Trim().Split(' ');
+
+                if(line[0] == grp.ID.ToString())
+                {
+                    for(int i = 1; i < line.Length; ++i)
+                    {
+                        if (line[i] != "-")
+                            runner.Table.Set(grp, lookaheads[i - 1], env.RuleByID(int.Parse(line[i])));
+                    }
+                }
+                else
+                {
+                    logger.Log(LogLevel.Error, "Invalid PML");
+                    return null;
+                }
+            }
+
+            return runner;
+        }
+
+        static List<RuleLookahead> ReadLookahead(TextReader reader, Environment env)
+        {
+            List<RuleLookahead> list = new List<RuleLookahead>();
+
+            var line = reader.ReadLine();
+
+            foreach(var s in line.Split(' '))
+            {
+                if(s == "-")
+                {
+                    if(!list.Contains(null))
+                        list.Add(null);
+                }
+                else
+                {
+                    var n = s.Remove(s.Length - 1, 1).Remove(0, 1);
+
+                    RuleLookahead lookahead = new RuleLookahead();
+                    foreach (var t in n.Split(','))
+                    {
+                        int i = int.Parse(t);
+                        lookahead.Add(env.TokenByID(i));
+                    }
+
+                    if (!list.Contains(lookahead))
+                        list.Add(lookahead);
+                }
+            }
+
+            return list;
         }
     }
 }
