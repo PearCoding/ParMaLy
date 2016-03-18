@@ -68,6 +68,7 @@ namespace PML.Output
 
             writer.Flush();
         }
+
         public static void PrintFollowSets(TextWriter writer, FollowSetCache cache, Environment env)
         {
             for (int i = 1; i <= cache.MaxK; ++i)
@@ -91,6 +92,39 @@ namespace PML.Output
                 }
 
                 if (i != cache.MaxK)
+                {
+                    for (int j = 0; j < 80; ++j)
+                        writer.Write("-");
+                    writer.WriteLine();
+                }
+            }
+
+            writer.Flush();
+        }
+        public static void PrintPredictSets(TextWriter writer, Environment env)
+        {
+            for (int i = 1; i <= env.FirstCache.MaxK; ++i)
+            {
+                writer.WriteLine("K = " + i);
+                foreach (RuleGroup grp in env.Groups)
+                {
+                    writer.WriteLine("  " + grp.Name + ":");
+                    foreach (Rule rule in grp.Rules)
+                    {
+                        var set = PredictSet.Generate(env, grp, rule.Tokens, i);
+                        writer.WriteLine("    [" + rule.ID + "]:");
+                        foreach (var l in set)
+                        {
+                            if (l == null)
+                                writer.WriteLine("      $");
+                            else
+                                writer.WriteLine("      " + l.Join(",",
+                                    v => (v.Type == RuleTokenType.Token && !v.IsComplex ? "'" + v.Name + "'" : v.Name)));
+                        }
+                    }
+                }
+
+                if (i != env.FirstCache.MaxK)
                 {
                     for (int j = 0; j < 80; ++j)
                         writer.Write("-");

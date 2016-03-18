@@ -47,6 +47,10 @@ namespace PML
         public string FollowSetFile;
         public string PredictSetFile;
 
+        public string OutputFile;
+
+        public bool FixLeftRecursion = false;
+
         public int K = 1;
 
         public bool ShowHelp = false;
@@ -86,6 +90,12 @@ namespace PML
                 { "predictset=",
                     "Generate a {FILE} with all entries in the predict sets. Makes use of the -k option.",
                     (string s) => { opts.PredictSetFile = s; } },
+                { "o|output=",
+                    "Print out preprocessed grammar file into {FILE}.",
+                    (string s) => { opts.OutputFile = s; } },
+                { "left-recursion",
+                    "Fix left recursion.",
+                    v => opts.FixLeftRecursion = true },
                 { "k|lookahead=",
                     "The used {MAX} amount of lookahead. Default is " + opts.K + ". Not every parser will consider this option.",
                     (int k) => opts.K = k },
@@ -169,10 +179,21 @@ namespace PML
                 Output.SetFile.PrintFollowSets(File.CreateText(opts.FollowSetFile), env.FollowCache, env);
             }
 
+            if (!String.IsNullOrEmpty(opts.PredictSetFile))
+            {
+                for (int i = 1; i <= (opts.K < 1 ? 1 : opts.K); ++i)
+                {
+                    env.FirstCache.Setup(env, i);//We can't assume that first sets are already created. The cache will not do it twice ;)
+                    env.FollowCache.Setup(env, i);
+                }
+
+                Output.SetFile.PrintPredictSets(File.CreateText(opts.PredictSetFile), env);
+            }
+
             if (!String.IsNullOrEmpty(opts.BreakdownFile))
                 Output.SimpleBreakdown.Print(File.CreateText(opts.BreakdownFile), env);
 
-            return logger.ErrorCount != 0 ? 1 : 0;
+            return logger.ErrorCount;
         }
     }
 }

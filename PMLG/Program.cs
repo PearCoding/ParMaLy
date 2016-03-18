@@ -290,7 +290,7 @@ namespace PML
                 }
             }
 
-            return logger.ErrorCount != 0 ? 1 : 0;
+            return logger.ErrorCount;
         }
     }
 }

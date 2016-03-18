@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // Allgemeine Informationen über eine Assembly werden über die folgenden 
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die einer Assembly zugeordnet sind.
-[assembly: AssemblyTitle("ParMaLy Runner")]
+[assembly: AssemblyTitle("ParMaLy - Runner")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ParMaLy Runner")]
+[assembly: AssemblyProduct("ParMaLy - Runner")]
 [assembly: AssemblyCopyright("Copyright ©  2016, Ömercan Yazici <omercan@pearcoding.eu>")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

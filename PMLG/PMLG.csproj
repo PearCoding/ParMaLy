@@ -7,7 +7,7 @@
     <ProjectGuid>{DBF29C4A-464E-4E2F-8F70-7D0E90D70836}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PMLG</RootNamespace>
+    <RootNamespace>PML</RootNamespace>
     <AssemblyName>PMLG</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -32,6 +32,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>PML.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="NDesk.Options, Version=0.2.1.0, Culture=neutral, processorArchitecture=MSIL">

@@ -141,7 +141,8 @@ namespace PML
             {
                 Output.EventFile.PrintEvents(File.CreateText(opts.EventFile), events);
             }
-            return 0;
+
+            return logger.ErrorCount;
         }
     }
 }
