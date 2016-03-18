@@ -34,8 +34,6 @@ using System.IO;
 
 namespace PML.Output
 {
-    using Statistics;
-
     public static class SetFile
     {
         public static void PrintFirstSets(TextWriter writer, FirstSetCache cache, Environment env)

@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PMLR", "PMLR\PMLR.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PML", "PML\PML.csproj", "{C6391D62-417D-4EA6-A313-0E63C66E2754}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PMLG", "PMLG\PMLG.csproj", "{DBF29C4A-464E-4E2F-8F70-7D0E90D70836}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,10 @@ Global
 		{C6391D62-417D-4EA6-A313-0E63C66E2754}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C6391D62-417D-4EA6-A313-0E63C66E2754}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C6391D62-417D-4EA6-A313-0E63C66E2754}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DBF29C4A-464E-4E2F-8F70-7D0E90D70836}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBF29C4A-464E-4E2F-8F70-7D0E90D70836}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBF29C4A-464E-4E2F-8F70-7D0E90D70836}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBF29C4A-464E-4E2F-8F70-7D0E90D70836}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

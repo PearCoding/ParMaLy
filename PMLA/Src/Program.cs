@@ -43,26 +43,9 @@ namespace PML
         public string GroupDotFile;
         public string BreakdownFile;
 
-        public string Parser;
-        public bool Parse = false;
-
-        public string StateFile;
-        public string StateDotFile;
-
-        public string ActionHtmlFile;
-        public string GotoHtmlFile;
-        public string TransitionHtmlFile;
-        public string LookupHtmlFile;
-
-        public string CodeFile;
-
-        public string ProceedingCSVFile;
-
         public string FirstSetFile;
         public string FollowSetFile;
         public string PredictSetFile;
-
-        public string PMLFile;
 
         public int K = 1;
 
@@ -78,17 +61,6 @@ namespace PML
             Console.WriteLine();
             Console.WriteLine("Options:");
             p.WriteOptionDescriptions(Console.Out);
-            Console.WriteLine();
-            Console.WriteLine("PARSER=");
-            Console.WriteLine("\tlr0\t\t[LR(0)](LR)");
-            Console.WriteLine("\tslr1\t\t[SLR(1)](LR)");
-            Console.WriteLine("\tlalr1\t\t[LALR(1)](LR)");
-            Console.WriteLine("\tlr1\t\t[LR(1)](LR)");
-            Console.WriteLine("\tlr2, lr3...\t[LR(k)](LR)");
-            Console.WriteLine("\tll0\t\t[LL(0)](LL)");
-            Console.WriteLine("\tll1\t\t[LL(1)](LL)");
-            Console.WriteLine("\tll\t\t[LL(k)](LL)");
-            Console.WriteLine("\trd\t\t[Recursive-Descent](Recursive)");
         }
 
         static int Main(string[] args)
@@ -96,36 +68,9 @@ namespace PML
             Options opts = new Options();
             OptionSet p = new OptionSet()
             {
-                { "parser=",
-                    "Choose underlying {PARSER}.",
-                    (string s) => opts.Parser = s },
-                { "states=",
-                    "Generate a state {FILE} based on the chosen parser. Only usable with LR parsers.",
-                    (string s) => { opts.StateFile = s; opts.Parse = true; } },
                 { "group-dot=",
                     "Generate a dot {FILE} from the calculated group graph.",
                     (string s) => opts.GroupDotFile = s },
-                { "state-dot=",
-                    "Generate a dot {FILE} from the calculated state graph. Only usable with LR parsers.",
-                    (string s) => { opts.StateDotFile = s; opts.Parse = true; } },
-                { "action-html=",
-                    "Generate a html {FILE} from the calculated ACTION table. Only usable with LR parsers.",
-                    (string s) => { opts.ActionHtmlFile = s; opts.Parse = true; } },
-                { "goto-html=",
-                    "Generate a html {FILE} from the calculated GOTO table. Only usable with LR parsers.",
-                    (string s) => { opts.GotoHtmlFile = s; opts.Parse = true; } },
-                { "transition-html=",
-                    "Generate a html {FILE} from the calculated ACTION and GOTO table. Only usable with LR parsers.",
-                    (string s) => { opts.TransitionHtmlFile = s; opts.Parse = true; } },
-                { "lookup-html=",
-                    "Generate a html {FILE} from the calculated LOOKUP table. Only usable with LL parsers.",
-                    (string s) => { opts.LookupHtmlFile = s; opts.Parse = true; } },
-                { "proceeding-csv=",
-                    "Generate a csv {FILE} from generation process.",
-                    (string s) => { opts.ProceedingCSVFile = s; opts.Parse = true; } },
-                { "code=",
-                    "Generate a pseudo code file. Currently only available for recursive parsers.",
-                    (string s) => { opts.CodeFile = s; opts.Parse = true; } },
                 { "breakdown=",
                     "Generate a general breakdown text {FILE}.",
                     (string s) => opts.BreakdownFile = s },
@@ -141,9 +86,6 @@ namespace PML
                 { "predictset=",
                     "Generate a {FILE} with all entries in the predict sets. Makes use of the -k option.",
                     (string s) => { opts.PredictSetFile = s; } },
-                { "pml=",
-                    "Generate a {FILE} to be used by PMLR.",
-                    (string s) => { opts.PMLFile = s; opts.Parse = true; } },
                 { "k|lookahead=",
                     "The used {MAX} amount of lookahead. Default is " + opts.K + ". Not every parser will consider this option.",
                     (int k) => opts.K = k },
@@ -197,8 +139,6 @@ namespace PML
                 return -2;
             }
             
-            Parser.IParser parser = null;
-
             Style.Style style = null;
             if (opts.StyleFile == null)
                 style = new Style.Style();
@@ -229,116 +169,8 @@ namespace PML
                 Output.SetFile.PrintFollowSets(File.CreateText(opts.FollowSetFile), env.FollowCache, env);
             }
 
-            if (!String.IsNullOrEmpty(opts.Parser))
-            {
-                int type = 0;
-                if (opts.Parser.ToLower() == "lr0")
-                    parser = new Parser.LR0();
-                else if (opts.Parser.ToLower() == "slr1")
-                    parser = new Parser.SLR1();
-                else if (opts.Parser.ToLower() == "lalr1")
-                    parser = new Parser.LALR1();
-                else if (opts.Parser.ToLower() == "lr1")
-                    parser = new Parser.LR1();
-                else if (opts.Parser.ToLower() == "ll0")
-                {
-                    parser = new Parser.LL0();
-                    type = 1;
-                }
-                else if (opts.Parser.ToLower() == "ll1")
-                {
-                    parser = new Parser.LLK(1);
-                    type = 1;
-                }
-                else if (opts.Parser.ToLower() == "ll")
-                {
-                    if (opts.K == 0)
-                        parser = new Parser.LL0();
-                    else
-                        parser = new Parser.LLK(opts.K < 1 ? 1 : opts.K);
-
-                    type = 1;
-                }
-                else if (opts.Parser.ToLower() == "rd")
-                {
-                    parser = new Parser.RD(opts.K < 1 ? 1 : opts.K);
-                    type = 2;
-                }
-                else
-                {
-                    Console.WriteLine("Unknown parser selected.");
-                    Console.WriteLine("Try 'PMLA --help' for more information.");
-                    return -1;
-                }
-
-                if (opts.Parse && parser != null)
-                {
-                    parser.Generate(env, logger);
-
-                    if (type == 0)
-                    {
-                        Parser.IBUParser buParser = parser as Parser.IBUParser;
-
-                        if (!String.IsNullOrEmpty(opts.StateFile))
-                        {
-                            Output.StateFile.PrintStates(File.CreateText(opts.StateFile),
-                                        buParser.States, env, false);
-                        }
-
-                        if (!String.IsNullOrEmpty(opts.StateDotFile))
-                        {
-                            Output.DotGraph.PrintStateGraph(File.CreateText(opts.StateDotFile),
-                                env, buParser.StartState, style.StateDot);
-                        }
-
-                        if (!String.IsNullOrEmpty(opts.ActionHtmlFile))
-                        {
-                            Output.HtmlTable.PrintActionTable(File.CreateText(opts.ActionHtmlFile), buParser.States,
-                                buParser.ActionTable, env, style.ActionTableHtml);
-                        }
-
-                        if (!String.IsNullOrEmpty(opts.GotoHtmlFile))
-                        {
-                            Output.HtmlTable.PrintGotoTable(File.CreateText(opts.GotoHtmlFile), buParser.States,
-                                buParser.GotoTable, env, style.GotoTableHtml);
-                        }
-
-                        if (!String.IsNullOrEmpty(opts.TransitionHtmlFile))
-                        {
-                            Output.HtmlTable.PrintTransitionTable(File.CreateText(opts.TransitionHtmlFile), buParser.States,
-                                buParser.ActionTable, buParser.GotoTable, env, style.TransitionTableHtml);
-                        }
-
-                        if (!String.IsNullOrEmpty(opts.ProceedingCSVFile))
-                        {
-                            Output.CSV.PrintProceedings(File.CreateText(opts.ProceedingCSVFile), parser.Statistics.BU.Proceedings,
-                                style.ProceedingCSV);
-                        }
-                    }
-                    else if(type == 1)//LLParser
-                    {
-                        if(!String.IsNullOrEmpty(opts.LookupHtmlFile))
-                        {
-                            Output.HtmlTable.PrintLookupTable(File.CreateText(opts.LookupHtmlFile), ((Parser.ITDParser)parser).Lookup, env, style.LookupTableHtml);
-                        }
-
-                        if(!String.IsNullOrEmpty(opts.PMLFile))
-                        {
-                            Output.PMLWriter.WriteLL(File.CreateText(opts.PMLFile), ((Parser.ITDParser)parser), env);
-                        }
-                    }
-                    else if(type == 2)//RParser
-                    {
-                        if (!String.IsNullOrEmpty(opts.CodeFile))
-                        {
-                            Output.PseudoCode.PrintRD(File.CreateText(opts.CodeFile), ((Parser.IRParser)parser).States, env, style.RDCode);
-                        }
-                    }
-                }
-            }
-
             if (!String.IsNullOrEmpty(opts.BreakdownFile))
-                Output.SimpleBreakdown.Print(File.CreateText(opts.BreakdownFile), env, parser);
+                Output.SimpleBreakdown.Print(File.CreateText(opts.BreakdownFile), env);
 
             return logger.ErrorCount != 0 ? 1 : 0;
         }

@@ -56,6 +56,14 @@
       <Project>{0362048a-7482-4552-bd1d-41ae85ab20b0}</Project>
       <Name>DL-Library</Name>
     </ProjectReference>
+    <ProjectReference Include="..\PMLG\PMLG.csproj">
+      <Project>{dbf29c4a-464e-4e2f-8f70-7d0e90d70836}</Project>
+      <Name>PMLG</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PMLR\PMLR.csproj">
+      <Project>{3e443352-8a89-4608-959d-de9d152900a1}</Project>
+      <Name>PMLR</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PML\PML.csproj">
       <Project>{c6391d62-417d-4ea6-a313-0e63c66e2754}</Project>
       <Name>PML</Name>
