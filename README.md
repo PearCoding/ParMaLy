@@ -4,7 +4,7 @@
 
 The "Parser gramMar anaLyzer", short ParMaLy, is an analyzer and generator tool for context-free grammars. It can generate the needed tables to write your own parser or validate and help you understand the theory behind those parsers.
 
-For more information and how-to get started visit to the [Wiki](https://github.com/PearCoding/ParMaLy/wiki/Home).
+For more information and how-to get started visit the [Wiki](https://github.com/PearCoding/ParMaLy/wiki/Home).
 
 ### License
 
