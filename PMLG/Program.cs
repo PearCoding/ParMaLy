@@ -55,6 +55,8 @@ namespace PML
 
         public string ProceedingCSVFile;
 
+        public string ErrorFile;
+
         public string PMLFile;
 
         public int K = 1;
@@ -114,8 +116,11 @@ namespace PML
                     "Generate a csv {FILE} from generation process.",
                     (string s) => { opts.ProceedingCSVFile = s; opts.Parse = true; } },
                 { "code=",
-                    "Generate a pseudo code file. Currently only available for recursive parsers.",
+                    "Generate a pseudo code {FILE}. Currently only available for recursive parsers.",
                     (string s) => { opts.CodeFile = s; opts.Parse = true; } },
+                { "errors=",
+                    "Generate a error {FILE} listing all errors.",
+                    (string s) => { opts.ErrorFile = s; opts.Parse = true; } },
                 { "style=",
                     "The underlying style {FILE}.",
                     (string s) => opts.StyleFile = s },
@@ -286,6 +291,11 @@ namespace PML
                         {
                             Output.PseudoCode.PrintRD(File.CreateText(opts.CodeFile), ((Parser.IRParser)parser).States, env, style.RDCode);
                         }
+                    }
+
+                    if(!String.IsNullOrEmpty(opts.ErrorFile))
+                    {
+                        Output.ErrorFile.Print(File.CreateText(opts.ErrorFile), parser.Statistics);
                     }
                 }
             }

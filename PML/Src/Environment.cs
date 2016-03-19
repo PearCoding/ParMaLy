@@ -43,6 +43,7 @@ namespace PML
         FirstSetCache _FirstCache = new FirstSetCache();
         FollowSetCache _FollowCache = new FollowSetCache();
 
+        public Logger Logger { get { return _Logger; } }
         public List<Rule> Rules { get { return _Rules; } }
         public List<RuleGroup> Groups { get { return _Groups; } }
         public List<RuleToken> Tokens { get { return _Tokens; } }
@@ -50,7 +51,11 @@ namespace PML
         public FirstSetCache FirstCache { get { return _FirstCache; } }
         public FollowSetCache FollowCache { get { return _FollowCache; } }
 
-        public RuleGroup Start { get { return _Start; } }
+        public RuleGroup Start
+        {
+            get { return _Start; }
+            set { _Start = value; }
+        }
 
         public Environment(Logger logger)
         {

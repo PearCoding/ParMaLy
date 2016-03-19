@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Src\Output\ErrorFile.cs" />
     <Compile Include="Src\Output\CSV.cs" />
     <Compile Include="Src\Output\DotGraph.cs" />
     <Compile Include="Src\Output\HtmlTable.cs" />

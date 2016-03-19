@@ -58,6 +58,7 @@
     <Compile Include="Src\Output\DotGraph.cs" />
     <Compile Include="Src\Output\SetFile.cs" />
     <Compile Include="Src\Output\SimpleBreakdown.cs" />
+    <Compile Include="Src\Preprocess\LeftRecursion.cs" />
     <Compile Include="Src\Program.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -70,9 +71,7 @@
       <Name>PML</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Src\Preprocess\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

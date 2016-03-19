@@ -74,83 +74,12 @@ namespace PML.Output
                 }
             }
 
-            //if (parser != null)
-            //{
-            //    writer.WriteLine("Parser: " + parser.Name);
-            //    writer.WriteLine("Statistics:");
-            //    var statistics = parser.Statistics;
-            //    writer.WriteLine("  Elapsed: " + statistics.TimeElapsed + "ms");
-
-            //    if (statistics.BU != null)
-            //    {
-            //        if (statistics.BU.Proceedings.Count > 0)
-            //        {
-            //            var process = statistics.BU.Proceedings.Aggregate((l, r) => l.TimeElapsed > r.TimeElapsed ? l : r);
-            //            writer.WriteLine("  Longest process: State " + process.Job.ID + " with " + process.TimeElapsed + "ms");
-            //        }
-
-            //        writer.WriteLine("  Conflict count: " + statistics.BU.Conflicts.Count);
-
-            //        if (statistics.BU.Conflicts.Count != 0)
-            //        {
-            //            writer.WriteLine("  Conflicts:");
-            //            foreach (var e in statistics.BU.Conflicts)
-            //            {
-            //                string special = "";
-            //                string token = "";
-            //                switch (e.Type)
-            //                {
-            //                    case BUStatistics.ConflictType.ShiftReduce:
-            //                        special = "SRC";
-            //                        token = " with lookahead " + (e.Lookahead != null ? e.Lookahead.ToString() : "$");
-            //                        break;
-            //                    case BUStatistics.ConflictType.ReduceReduce:
-            //                        special = "RRC";
-            //                        token = " with lookahead " + (e.Lookahead != null ? e.Lookahead.ToString() : "$");
-            //                        break;
-            //                    case BUStatistics.ConflictType.ShiftShift:
-            //                        special = "SSC";
-            //                        token = " with lookahead " + (e.Lookahead != null ? e.Lookahead.ToString() : "$");
-            //                        break;
-            //                    case BUStatistics.ConflictType.Accept:
-            //                        special = "AC";
-            //                        break;
-            //                    case BUStatistics.ConflictType.Internal:
-            //                        special = "Int";
-            //                        break;
-            //                }
-
-            //                writer.WriteLine("    [" + special + "] State (" + e.State.ID + ")" + token);
-            //            }
-            //        }
-            //    }
-            //    else if(statistics.TD != null)//TD
-            //    {
-            //        writer.WriteLine("  Conflict count: " + statistics.TD.Conflicts.Count);
-
-            //        if (statistics.TD.Conflicts.Count != 0)
-            //        {
-            //            writer.WriteLine("  Conflicts:");
-            //            foreach (var e in statistics.TD.Conflicts)
-            //            {
-            //                string special = "";
-            //                string token = "";
-            //                switch (e.Type)
-            //                {
-            //                    case TDStatistics.ConflictType.Lookup:
-            //                        special = "LC";
-            //                        token = " with lookahead " + (e.Lookahead != null ? e.Lookahead.ToString() : "$");
-            //                        break;
-            //                    case TDStatistics.ConflictType.Internal:
-            //                        special = "Int";
-            //                        break;
-            //                }
-
-            //                writer.WriteLine("    [" + special + "] Rule (" + e.Rule.ID + ") in " + e.Group.Name + token);
-            //            }
-            //        }
-            //    }
-            //}
+            writer.WriteLine("Left Recursion:");
+            env.FirstCache.Setup(env, 1);
+            foreach (var grp in env.Groups)
+            {
+                writer.WriteLine("  " + grp.Name + ": " + (Preprocess.LeftRecursion.HasLeftRecursion(grp, env.FirstCache) ? "YES" : "NO"));
+            }   
 
             writer.Flush();
         }

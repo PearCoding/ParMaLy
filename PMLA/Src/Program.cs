@@ -148,7 +148,11 @@ namespace PML
                 Console.Error.Write(ex.Message);
                 return -2;
             }
-            
+
+            // Preprocess stuff:
+            if (opts.FixLeftRecursion)
+                env = Preprocess.LeftRecursion.FixLeftRecursion(env);
+
             // Analyze stuff:
             Style.Style style = null;
             if (opts.StyleFile == null)
