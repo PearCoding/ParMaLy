@@ -65,7 +65,7 @@
     <Compile Include="Src\Parser\Parser.cs" />
     <Compile Include="Src\Parser\RD.cs" />
     <Compile Include="Src\Parser\RParser.cs" />
-    <Compile Include="Src\Parser\SLR1.cs" />
+    <Compile Include="Src\Parser\SLR.cs" />
     <Compile Include="Src\Parser\TDParser.cs" />
     <Compile Include="Src\Statistics\Statistics.cs" />
   </ItemGroup>

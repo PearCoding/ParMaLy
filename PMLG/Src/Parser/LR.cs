@@ -65,7 +65,7 @@ namespace PML.Parser
             _K = k;
         }
 
-        public void GenerateStates(Environment env, Logger logger)
+        void GenerateStates(Environment env, Logger logger)
         {
             _States.Clear();
             _StartState = null;
@@ -230,7 +230,7 @@ namespace PML.Parser
             }
         }
 
-        public void GenerateActionTable(Environment env, Logger logger)
+        void GenerateActionTable(Environment env, Logger logger)
         {
             _ActionTable.Clear();
 
@@ -300,7 +300,7 @@ namespace PML.Parser
             }
         }
 
-        public void GenerateGotoTable(Environment env, Logger logger)
+        void GenerateGotoTable(Environment env, Logger logger)
         {
             _GotoTable.Clear();
 

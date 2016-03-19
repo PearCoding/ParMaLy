@@ -60,6 +60,7 @@ namespace PML
         public string PMLFile;
 
         public int K = 1;
+        public int D = 0;
 
         public bool ShowHelp = false;
         public bool NoLog = false;
@@ -76,11 +77,12 @@ namespace PML
             Console.WriteLine();
             Console.WriteLine("PARSER=");
             Console.WriteLine("\tlr0\t\t[LR(0)](LR)");
-            Console.WriteLine("\tslr1\t\t[SLR(1)](LR)");
-            Console.WriteLine("\tlalr1\t\t[LALR(1)](LR)");
-            Console.WriteLine("\tlalr\t\t[LALR(k)](LR)");
             Console.WriteLine("\tlr1\t\t[LR(1)](LR)");
             Console.WriteLine("\tlr\t[LR(k)](LR)");
+            Console.WriteLine("\tslr1\t\t[SLR(1, 0)](LR)");
+            Console.WriteLine("\tslr\t\t[SLR(k, d)](LR)");
+            Console.WriteLine("\tlalr1\t\t[LALR(1)](LR)");
+            Console.WriteLine("\tlalr\t\t[LALR(k)](LR)");
             Console.WriteLine("\tll0\t\t[LL(0)](LL)");
             Console.WriteLine("\tll1\t\t[LL(1)](LL)");
             Console.WriteLine("\tll\t\t[LL(k)](LL)");
@@ -131,6 +133,9 @@ namespace PML
                 { "k|lookahead=",
                     "The used {MAX} amount of lookahead. Default is " + opts.K + ". Not every parser will consider this option.",
                     (int k) => opts.K = k },
+                { "d=",
+                    "Some parser types need another parameter. Default is " + opts.D + ".",
+                    (int d) => opts.D = d },
                 { "h|help", "Show this message and exit.",
                     v => opts.ShowHelp = v != null },
                 { "nl|no-log", "Do not produce any log file.",
@@ -191,20 +196,26 @@ namespace PML
             if (!String.IsNullOrEmpty(opts.Parser))
             {
                 int type = 0;
+                //LR
                 if (opts.Parser.ToLower() == "lr0")
                     parser = new Parser.LR0();
-                else if (opts.Parser.ToLower() == "slr1")
-                    parser = new Parser.SLR1();
-                else if (opts.Parser.ToLower() == "lalr1")
-                    parser = new Parser.LALR(1);
-                else if (opts.Parser.ToLower() == "lalr")
-                    parser = new Parser.LALR(opts.K < 1 ? 1 : opts.K);
                 else if (opts.Parser.ToLower() == "lr1")
                     parser = new Parser.LR(1);
                 else if (opts.Parser.ToLower() == "lr")
                 {
                     parser = (opts.K < 1 ? (Parser.IParser)new Parser.LR0() : new Parser.LR(opts.K));
                 }
+                //SLR
+                else if (opts.Parser.ToLower() == "slr1")
+                    parser = new Parser.SLR();
+                else if (opts.Parser.ToLower() == "slr")
+                    parser = new Parser.SLR(opts.K < 1 ? 1 : opts.K, opts.D < 0 ? 0 : opts.D);
+                //LARL
+                else if (opts.Parser.ToLower() == "lalr1")
+                    parser = new Parser.LALR(1);
+                else if (opts.Parser.ToLower() == "lalr")
+                    parser = new Parser.LALR(opts.K < 1 ? 1 : opts.K);
+                //LL
                 else if (opts.Parser.ToLower() == "ll0")
                 {
                     parser = new Parser.LL0();
@@ -217,13 +228,14 @@ namespace PML
                 }
                 else if (opts.Parser.ToLower() == "ll")
                 {
-                    if (opts.K == 0)
+                    if (opts.K <= 0)
                         parser = new Parser.LL0();
                     else
-                        parser = new Parser.LLK(opts.K < 1 ? 1 : opts.K);
+                        parser = new Parser.LLK(opts.K);
 
                     type = 1;
                 }
+                //RD
                 else if (opts.Parser.ToLower() == "rd")
                 {
                     parser = new Parser.RD(opts.K < 1 ? 1 : opts.K);

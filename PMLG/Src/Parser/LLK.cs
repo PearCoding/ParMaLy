@@ -61,7 +61,7 @@ namespace PML.Parser
             GenerateTable(env, logger);
         }
 
-        public void GenerateTable(Environment env, Logger logger)
+        void GenerateTable(Environment env, Logger logger)
         {
             _Lookup.Clear();
             _Statistics = new Statistics();

@@ -57,7 +57,7 @@ namespace PML.Parser
             MaxK = maxK;
         }
 
-        public void Generate(Environment env, Logger logger)//Currently only a LL(1) parser...
+        public void Generate(Environment env, Logger logger)
         {
             _States.Clear();
             _Statistics = new Statistics();

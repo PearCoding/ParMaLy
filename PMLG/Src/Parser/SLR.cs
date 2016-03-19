@@ -35,41 +35,42 @@ namespace PML.Parser
     using Statistics;
     using BU;
 
-    public class SLR1 : IBUParser
+    public class SLR : IBUParser
     {
-        LR0 _LR0 = new Parser.LR0();
+        IBUParser _BUP = null;
         ActionTable _ActionTable = new ActionTable();
         Statistics _Statistics;
-        public string Name { get { return "SLR(1)"; } }
+        public string Name { get { return "SLR(" + K + ", " + D + ")"; } }
 
-        public int K { get { return 1; } }
+        int _K = 1;
+        public int K { get { return _K; } }
 
-        public List<RuleState> States { get { return _LR0.States; } }
+        int _D = 0;
+        public int D { get { return _D; } }
 
-        public RuleState StartState { get { return _LR0.StartState; } }
+        public List<RuleState> States { get { return _BUP.States; } }
+
+        public RuleState StartState { get { return _BUP.StartState; } }
 
         public ActionTable ActionTable { get { return _ActionTable; } }
 
-        public GotoTable GotoTable { get { return _LR0.GotoTable; } }
+        public GotoTable GotoTable { get { return _BUP.GotoTable; } }
 
         public Statistics Statistics { get { return _Statistics; } }
 
-        public SLR1()
+        public SLR(int k = 1, int d = 0)
         {
+            _K = 1;
+
+            if (d <= 0)
+                _BUP = new Parser.LR0();
+            else
+                _BUP = new Parser.LR(d);
         }
 
-        public void GenerateStates(Environment env, Logger logger)
-        {
-            _LR0.GenerateStates(env, logger);
-            _Statistics = _LR0.Statistics;
-        }
-        
-        public void GenerateActionTable(Environment env, Logger logger)
+        void GenerateActionTable(Environment env, Logger logger)
         {
             _ActionTable.Clear();
-
-            env.FirstCache.Setup(env, 1);
-            env.FollowCache.Setup(env, 1);
 
             foreach (RuleState state in States)
             {
@@ -83,9 +84,9 @@ namespace PML.Parser
 
                         _ActionTable.Set(state, null, ActionTable.Action.Accept, null);
                     }
-                    else if(conf.IsLast)//The only difference to LR0 is here!
+                    else if(conf.IsLast)
                     {
-                        var follow = env.FollowCache.Get(conf.Rule.Group, 1);
+                        var follow = env.FollowCache.Get(conf.Rule.Group, K);
                         foreach(var look in follow)
                         {
                             var a = _ActionTable.Get(state, look);
@@ -135,17 +136,17 @@ namespace PML.Parser
                 }
             }
         }
-
-        public void GenerateGotoTable(Environment env, Logger logger)
-        {
-            _LR0.GenerateGotoTable(env, logger);
-        }
-
+        
         public void Generate(Environment env, Logger logger)
         {
-            GenerateStates(env, logger);
+            env.FirstCache.Setup(env, K);
+            env.FollowCache.Setup(env, K);
+
+            _BUP.Generate(env, logger);
+            _Statistics = _BUP.Statistics;
+            _Statistics.BU.Conflicts.Clear();
+
             GenerateActionTable(env, logger);
-            GenerateGotoTable(env, logger);
         }
     }
 }
