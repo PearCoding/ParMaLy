@@ -47,7 +47,7 @@ namespace PML
             else
             {
                 RuleLookaheadSet set = new RuleLookaheadSet();
-                set.Add(null);
+                set.Add((RuleLookahead)null);
 
                 bool hasTerminals = true;
                 foreach(var t in tokens)

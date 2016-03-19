@@ -29,15 +29,15 @@
  */
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-    using System.Diagnostics;
 
 namespace PML.Parser
 {
     using Statistics;
     using BU;
 
-    public class LALR1 : IBUParser
+    public class LR : IBUParser
     {
         List<RuleState> _States = new List<RuleState>();
         RuleState _StartState;
@@ -45,9 +45,10 @@ namespace PML.Parser
         GotoTable _GotoTable = new GotoTable();
         Statistics _Statistics;
 
-        public string Name { get { return "LALR(1)"; } }
+        public string Name { get { return "LR(" + K + ")"; } }
 
-        public int K { get { return 1; } }
+        int _K = 1;
+        public int K { get { return _K; } }
 
         public List<RuleState> States { get { return _States; } }
 
@@ -59,8 +60,9 @@ namespace PML.Parser
 
         public Statistics Statistics { get { return _Statistics; } }
 
-        public LALR1()
+        public LR(int k = 1)
         {
+            _K = k;
         }
 
         public void GenerateStates(Environment env, Logger logger)
@@ -74,13 +76,13 @@ namespace PML.Parser
             if (env.Start == null || env.Start.Rules.Count == 0)
                 return;
 
-            env.FirstCache.Setup(env, 1);
-            env.FollowCache.Setup(env, 1);
+            env.FirstCache.Setup(env, K);
+            env.FollowCache.Setup(env, K);
 
             RuleState state = new RuleState(_States.Count);
             foreach (Rule r in env.Start.Rules)
             {
-                state.Header.Add(new RuleConfiguration(r, 0, new RuleLookahead((RuleToken)null)));
+                state.Header.Add(new RuleConfiguration(r, 0, (RuleLookahead)null));
             }
             _StartState = state;
             _States.Add(state);
@@ -107,7 +109,7 @@ namespace PML.Parser
             }
         }
 
-        void GenerateClosure(RuleState state, FirstSetCache firstCache, Logger logger)//Same as LR1
+        void GenerateClosure(RuleState state, FirstSetCache firstCache, Logger logger)
         {
             for (int i = 0; i < state.Count; ++i)
             {
@@ -128,8 +130,9 @@ namespace PML.Parser
                         foreach (var look in c.Lookaheads.Lookaheads)
                         {
                             var tmpL = new List<RuleToken>(tmp);
-                            tmpL.Add(look[0]);//This is the point why we have LR(1) not LR(k)
-                            var delta = firstCache.Generate(tmpL, 1);
+                            if(look != null)
+                                tmpL.AddRange(look.Take(System.Math.Min(look.Count, K)));
+                            var delta = firstCache.Generate(tmpL, K);
                                                             
                             foreach (var r in t.Group.Rules)
                             {
@@ -164,32 +167,20 @@ namespace PML.Parser
                 if (!c.IsLast)
                 {
                     RuleState newState = new RuleState(_States.Count);
-                    newState.Header.Add(new RuleConfiguration(c.Rule, c.Pos + 1, c.Lookaheads));//c.Lookaheads
+                    newState.Header.Add(new RuleConfiguration(c.Rule, c.Pos + 1, c.Lookaheads));
 
                     var t = c.GetNext();
                     foreach (var c2 in state.All)
                     {
-                        if (!c2.IsLast && c2.GetNext().Type == t.Type && c2.GetNext().Name == t.Name /*&&
-                            c.Lookahead == c2.Lookahead*/ /*c.Lookaheads == c2.Lookaheads*/)
+                        if (!c2.IsLast && c2.GetNext().Type == t.Type && c2.GetNext().Name == t.Name)
                         {
-                            var n = new RuleConfiguration(c2.Rule, c2.Pos + 1, c2.Lookaheads);//c. Lookaheads
+                            var n = new RuleConfiguration(c2.Rule, c2.Pos + 1, c2.Lookaheads);
                             if (!newState.Header.Contains(n))
                                 newState.Header.Add(n);
                         }
                     }
 
-                    // The merge state, which is different to LR(1)
-                    RuleState mergeState = null;
-                    foreach (var s in _States)
-                    {
-                        if (s.SemiEquals(newState))
-                        {
-                            mergeState = s;
-                            break;
-                        }
-                    }
-
-                    if (mergeState == null)//Didn't found anything... Add new
+                    if (!_States.Contains(newState))//Check only header!
                     {
                         _States.Add(newState);
 
@@ -215,28 +206,12 @@ namespace PML.Parser
                     }
                     else
                     {
-                        if(mergeState.Closure.Count != 0)
-                            GenerateClosure(newState, firstCache, logger);
-
-                        foreach (var c2 in newState.All)
-                        {
-                            foreach(var c3 in mergeState.All)
-                            {
-                                if(c2.SemiEquals(c3))
-                                {
-                                    foreach(var l in c2.Lookaheads)
-                                    {
-                                        if (!c3.Lookaheads.Contains(l))
-                                            c3.Lookaheads.Add(l);
-                                    }
-                                }
-                            }
-                        }
+                        var oldState = _States[_States.IndexOf(newState)];
 
                         RuleState.Connection con = null;
                         foreach (var con2 in state.Production)
                         {
-                            if (con2.State == mergeState && con2.Token == t)
+                            if (con2.State == oldState && con2.Token == t)
                             {
                                 con = con2;
                                 break;
@@ -246,7 +221,7 @@ namespace PML.Parser
                         if (con == null)
                         {
                             con = new RuleState.Connection();
-                            con.State = mergeState;
+                            con.State = oldState;
                             con.Token = t;
                             state.Production.Add(con);
                         }
@@ -265,7 +240,7 @@ namespace PML.Parser
                 {
                     if(conf.Rule.Group == env.Start &&
                         conf.IsLast &&
-                        conf.Lookaheads.Contains((RuleToken)null))//Accept
+                        conf.Lookaheads.Contains((RuleLookahead)null))//Accept
                     {
                         var a = _ActionTable.Get(state, null);
                         if (a != null && a.Action != ActionTable.Action.Accept)
@@ -283,7 +258,7 @@ namespace PML.Parser
                                 if (a.Action != ActionTable.Action.Shift && a.State != state)
                                     Statistics.BU.Conflicts.Add(
                                         new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ReduceReduce, state, l));
-                                else if(a.Action == ActionTable.Action.Shift)
+                                else if (a.Action == ActionTable.Action.Shift)
                                     Statistics.BU.Conflicts.Add(
                                         new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftReduce, state, l));
                             }
@@ -314,10 +289,11 @@ namespace PML.Parser
                             if (a.Action != ActionTable.Action.Shift)
                                 Statistics.BU.Conflicts.Add(
                                     new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftReduce, state, look));
-                            else if(a.Action == ActionTable.Action.Shift && a.State != found)
+                            else if (a.Action == ActionTable.Action.Shift && a.State != found)
                                 Statistics.BU.Conflicts.Add(
                                     new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftShift, state, look));
                         }
+
                         _ActionTable.Set(state, look, ActionTable.Action.Shift, found);
                     }
                 }

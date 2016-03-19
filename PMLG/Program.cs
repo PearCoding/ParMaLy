@@ -78,8 +78,9 @@ namespace PML
             Console.WriteLine("\tlr0\t\t[LR(0)](LR)");
             Console.WriteLine("\tslr1\t\t[SLR(1)](LR)");
             Console.WriteLine("\tlalr1\t\t[LALR(1)](LR)");
+            Console.WriteLine("\tlalr\t\t[LALR(k)](LR)");
             Console.WriteLine("\tlr1\t\t[LR(1)](LR)");
-            Console.WriteLine("\tlr2, lr3...\t[LR(k)](LR)");
+            Console.WriteLine("\tlr\t[LR(k)](LR)");
             Console.WriteLine("\tll0\t\t[LL(0)](LL)");
             Console.WriteLine("\tll1\t\t[LL(1)](LL)");
             Console.WriteLine("\tll\t\t[LL(k)](LL)");
@@ -195,9 +196,15 @@ namespace PML
                 else if (opts.Parser.ToLower() == "slr1")
                     parser = new Parser.SLR1();
                 else if (opts.Parser.ToLower() == "lalr1")
-                    parser = new Parser.LALR1();
+                    parser = new Parser.LALR(1);
+                else if (opts.Parser.ToLower() == "lalr")
+                    parser = new Parser.LALR(opts.K < 1 ? 1 : opts.K);
                 else if (opts.Parser.ToLower() == "lr1")
-                    parser = new Parser.LR1();
+                    parser = new Parser.LR(1);
+                else if (opts.Parser.ToLower() == "lr")
+                {
+                    parser = (opts.K < 1 ? (Parser.IParser)new Parser.LR0() : new Parser.LR(opts.K));
+                }
                 else if (opts.Parser.ToLower() == "ll0")
                 {
                     parser = new Parser.LL0();

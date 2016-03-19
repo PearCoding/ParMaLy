@@ -43,9 +43,6 @@ namespace PML.BU
         RuleLookaheadSet _Lookaheads = new RuleLookaheadSet();
         public RuleLookaheadSet Lookaheads { get { return _Lookaheads; } }
 
-        //RuleLookahead _Lookahead;
-        //public RuleLookahead Lookahead { get { return _Lookahead; } }
-
         public RuleConfiguration(Rule rule, int pos)
         {
             _Rule = rule;
@@ -65,7 +62,6 @@ namespace PML.BU
             _Pos = pos;
 
             _Lookaheads.Add(lookahead);
-            //_Lookahead = lookahead;
         }
 
         public bool IsFirst { get { return Pos == 0; } }
@@ -104,7 +100,7 @@ namespace PML.BU
         
         public bool Equals(RuleConfiguration p)
         {
-            return SemiEquals(p) && _Lookaheads.Equals(p._Lookaheads); // _Lookaheads.Equals(p._Lookaheads);
+            return SemiEquals(p) && _Lookaheads.Equals(p._Lookaheads);
         }
 
         public override int GetHashCode()

@@ -31,6 +31,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PML
 {
@@ -125,7 +126,10 @@ namespace PML
             if (_Lookaheads.Count != p._Lookaheads.Count)
                 return false;
 
-            return EnumeratorUtils.ScrambledEquals(_Lookaheads, p._Lookaheads);
+            if (_Lookaheads.Contains(null) != p._Lookaheads.Contains(null))
+                return false;
+
+            return EnumeratorUtils.ScrambledEquals(_Lookaheads.Where(v => v != null), p._Lookaheads.Where(v => v != null));
         }
 
         public override int GetHashCode()
