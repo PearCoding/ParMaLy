@@ -76,7 +76,7 @@ namespace PML
                             {
                                 var look = new RuleLookahead();
                                 if (l != null)
-                                    look.Add(l);
+                                    look.AddRange(l);
 
                                 look.Add(t);
                                 preSet.AddUnique(look);
@@ -103,12 +103,12 @@ namespace PML
                                         var look = new RuleLookahead();
 
                                         if (l != null)
-                                            look.Add(l);
+                                            look.AddRange(l);
 
                                         if (o.Count < (k - look.Count))
-                                            look.Add(o);
+                                            look.AddRange(o);
                                         else
-                                            look.Add(o.Take(k - look.Count));
+                                            look.AddRange(o.Take(k - look.Count));
 
                                         newSet.AddUnique(look);
                                     }
@@ -183,7 +183,7 @@ namespace PML
                             {
                                 var look = new RuleLookahead();
                                 if (l != null)
-                                    look.Add(l);
+                                    look.AddRange(l);
 
                                 look.Add(t);
                                 preSet.AddUnique(look);
@@ -222,12 +222,12 @@ namespace PML
                                     {
                                         var look = new RuleLookahead();
                                         if (l != null)
-                                            look.Add(l);
+                                            look.AddRange(l);
 
                                         if (o.Count <= (maxLength - look.Count))
-                                            look.Add(o);
+                                            look.AddRange(o);
                                         else
-                                            look.Add(o.Take(maxLength - look.Count));
+                                            look.AddRange(o.Take(maxLength - look.Count));
 
                                         newSet.AddUnique(look);
                                     }

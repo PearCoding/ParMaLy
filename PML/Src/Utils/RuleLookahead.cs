@@ -68,7 +68,7 @@ namespace PML
             _Tokens.Add(token);
         }
 
-        public void Add(IEnumerable<RuleToken> tokens)
+        public void AddRange(IEnumerable<RuleToken> tokens)
         {
             _Tokens.AddRange(tokens);
         }
@@ -144,6 +144,6 @@ namespace PML
         }
 
         //System
-        private string DebuggerDisplay { get { return "[" + Join(",", v => (v == null ? "$" : "'" + v.Name + "'")) + "]"; } }
+        private string DebuggerDisplay { get { return ToString(); } }
     }
 }

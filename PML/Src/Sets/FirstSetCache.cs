@@ -104,7 +104,7 @@ namespace PML
                 if(Has(r, k))
                 {
                     var s = Get(r, k);
-                    set.AddUnique(s);
+                    set.AddRangeUnique(s);
                 }
             }
             return set;

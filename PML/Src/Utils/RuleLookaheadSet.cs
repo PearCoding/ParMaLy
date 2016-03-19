@@ -57,29 +57,14 @@ namespace PML
                 _Lookaheads.Add(s);
         }
 
-        public RuleLookaheadSet(IEnumerable<RuleToken> tokens)
-        {
-            foreach(var s in tokens)
-                _Lookaheads.Add(new RuleLookahead(s));
-        }
-
         public void Add(RuleLookahead lookahead)
         {
             _Lookaheads.Add(lookahead);
         }
 
-        public void AddUnique(IEnumerable<RuleLookahead> looks)
+        public void AddRange(IEnumerable<RuleLookahead> looks)
         {
-            foreach(var l in looks)
-            {
-                if (!_Lookaheads.Contains(l))
-                    _Lookaheads.Add(l);
-            }
-        }
-
-        public void AddUnique(RuleLookaheadSet set)
-        {
-            AddUnique(set._Lookaheads);
+            _Lookaheads.AddRange(looks);
         }
 
         public void AddUnique(RuleLookahead l)
@@ -88,20 +73,18 @@ namespace PML
                 _Lookaheads.Add(l);
         }
 
+        public void AddRangeUnique(IEnumerable<RuleLookahead> looks)
+        {
+            foreach(var l in looks)
+            {
+                if (!_Lookaheads.Contains(l))
+                    _Lookaheads.Add(l);
+            }
+        }
+
         public bool Contains(RuleLookahead lookahead)
         {
             return _Lookaheads.Contains(lookahead);
-        }
-
-        public bool Contains(RuleToken str)
-        {
-            foreach(var l in _Lookaheads)
-            {
-                if (l[0] == str)
-                    return true;
-            }
-
-            return false;
         }
 
         public bool Empty { get { return _Lookaheads.Count == 0; } }

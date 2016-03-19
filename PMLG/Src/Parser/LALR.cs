@@ -76,9 +76,6 @@ namespace PML.Parser
             if (env.Start == null || env.Start.Rules.Count == 0)
                 return;
 
-            env.FirstCache.Setup(env, K);
-            env.FollowCache.Setup(env, K);
-
             RuleState state = new RuleState(_States.Count);
             foreach (Rule r in env.Start.Rules)
             {
@@ -150,7 +147,7 @@ namespace PML.Parser
                                 }
 
                                 if ((object)other != null)
-                                    other.Lookaheads.AddUnique(set);
+                                    other.Lookaheads.AddRangeUnique(set);
                                 else
                                     state.Closure.Add(conf2);
                             }
@@ -344,6 +341,9 @@ namespace PML.Parser
 
         public void Generate(Environment env, Logger logger)
         {
+            env.FirstCache.Setup(env, K);
+            env.FollowCache.Setup(env, K);
+
             GenerateStates(env, logger);
             GenerateActionTable(env, logger);
             GenerateGotoTable(env, logger);

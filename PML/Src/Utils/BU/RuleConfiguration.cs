@@ -29,6 +29,8 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PML.BU
 {
@@ -74,6 +76,14 @@ namespace PML.BU
                 return null;
 
             return Rule.Tokens[Pos];
+        }
+
+        public IEnumerable<RuleToken> GetAllNext()
+        {
+            if (Rule.Tokens.Count == Pos)
+                return null;
+
+            return Rule.Tokens.Skip(Pos);
         }
 
         public bool SemiEquals(RuleConfiguration other)
