@@ -37,6 +37,9 @@
   <PropertyGroup>
     <StartupObject>PML.Program</StartupObject>
   </PropertyGroup>
+  <PropertyGroup>
+    <NoWin32Manifest>true</NoWin32Manifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="NDesk.Options, Version=0.2.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NDesk.Options.0.2.1\lib\NDesk.Options.dll</HintPath>
@@ -51,6 +54,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Src\Graph\GroupGraph.cs" />
     <Compile Include="Src\Graph\GroupNode.cs" />
+    <Compile Include="Src\Output\Grammar.cs" />
     <Compile Include="Src\Output\DotGraph.cs" />
     <Compile Include="Src\Output\SetFile.cs" />
     <Compile Include="Src\Output\SimpleBreakdown.cs" />
@@ -65,6 +69,9 @@
       <Project>{c6391d62-417d-4ea6-a313-0e63c66e2754}</Project>
       <Name>PML</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Src\Preprocess\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -149,6 +149,7 @@ namespace PML
                 return -2;
             }
             
+            // Analyze stuff:
             Style.Style style = null;
             if (opts.StyleFile == null)
                 style = new Style.Style();
@@ -192,6 +193,9 @@ namespace PML
 
             if (!String.IsNullOrEmpty(opts.BreakdownFile))
                 Output.SimpleBreakdown.Print(File.CreateText(opts.BreakdownFile), env);
+
+            if (!String.IsNullOrEmpty(opts.OutputFile))
+                Output.Grammar.PrintGrammar(File.CreateText(opts.OutputFile), env);
 
             return logger.ErrorCount;
         }
