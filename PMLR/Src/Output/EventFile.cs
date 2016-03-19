@@ -71,6 +71,32 @@ namespace PML.Output
                 writer.WriteLine("  Current lookahead: " + (te.Lookahead == null ? "$" : te.Lookahead.ToString()));
                 writer.WriteLine("  Matched token: '" + te.Match.Name + "'");
             }
+            else if (e is Events.LRAcceptEvent)
+            {
+                var ae = e as Events.LRAcceptEvent;
+                writer.WriteLine("  Current position: " + ae.Position);
+                writer.WriteLine("  Current stack: " + string.Join(", ", ae.Stack.Select(v => v.ToString()).ToArray()));
+                writer.WriteLine("  Current lookahead: " + (ae.Lookahead == null ? "$" : ae.Lookahead.ToString()));
+                writer.WriteLine("  Current state: " + ae.CurrentState);
+            }
+            else if (e is Events.LRShiftEvent)
+            {
+                var se = e as Events.LRShiftEvent;
+                writer.WriteLine("  Current position: " + se.Position);
+                writer.WriteLine("  Current stack: " + string.Join(", ", se.Stack.Select(v => v.ToString()).ToArray()));
+                writer.WriteLine("  Current lookahead: " + (se.Lookahead == null ? "$" : se.Lookahead.ToString()));
+                writer.WriteLine("  Current state: " + se.CurrentState);
+                writer.WriteLine("  Next state: " + se.NextState);
+            }
+            else if (e is Events.LRReduceEvent)
+            {
+                var re = e as Events.LRReduceEvent;
+                writer.WriteLine("  Current position: " + re.Position);
+                writer.WriteLine("  Current stack: " + string.Join(", ", re.Stack.Select(v => v.ToString()).ToArray()));
+                writer.WriteLine("  Current lookahead: " + (re.Lookahead == null ? "$" : re.Lookahead.ToString()));
+                writer.WriteLine("  Current state: " + re.CurrentState);
+                writer.WriteLine("  Rule: " + re.Rule.Group.Name + "[" + re.Rule.ID + "]");
+            }
         }
     }
 }

@@ -37,6 +37,13 @@ namespace PML.Output
 {
     static class PMLWriter
     {
+        static void WriteLookaheads(TextWriter writer, IEnumerable<RuleLookahead> lookaheads)
+        {
+            writer.WriteLine(String.Join(" ", lookaheads.Select(v => v == null ? "-" : "[" +
+                v.Join(",", t => t.ID.ToString()) + "]").ToArray()));
+        }
+
+        //LL
         public static void WriteLL(TextWriter writer, Parser.ITDParser parser, Environment env)
         {
             writer.WriteLine("PML LL " + parser.K);
@@ -45,10 +52,10 @@ namespace PML.Output
             foreach (var grp in parser.Lookup.Rows)
             {
                 writer.Write(grp.ID + " ");
-                foreach(var column in parser.Lookup.Colums)
+                foreach (var column in parser.Lookup.Colums)
                 {
                     var entry = parser.Lookup.Get(grp, column);
-                    if(entry != null && entry.Rule != null)
+                    if (entry != null && entry.Rule != null)
                     {
                         writer.Write("" + entry.Rule.ID);
                     }
@@ -64,10 +71,58 @@ namespace PML.Output
             writer.Flush();
         }
 
-        static void WriteLookaheads(TextWriter writer, IEnumerable<RuleLookahead> lookaheads)
+        //LR
+        public static void WriteLR(TextWriter writer, Parser.IBUParser parser, Environment env)
         {
-            writer.WriteLine(String.Join(" ", lookaheads.Select(v => v == null ? "-" : "[" +
-                v.Join(",", t => t.ID.ToString()) + "]").ToArray()));
+            writer.WriteLine("PML LR " + parser.K);
+            WriteLookaheads(writer, parser.ActionTable.Colums);
+            writer.WriteLine("" + parser.States.Count);
+
+            foreach (var state in parser.ActionTable.Rows)
+            {
+                writer.Write(state + " ");
+                foreach (var column in parser.ActionTable.Colums)
+                {
+                    var entry = parser.ActionTable.Get(state, column);
+                    if (entry != null)
+                    {
+                        if (entry.Action == BU.ActionTable.Action.Accept)
+                            writer.Write("a");
+                        else if (entry.Action == BU.ActionTable.Action.Reduce)
+                            writer.Write("r" + entry.StateID);
+                        else
+                            writer.Write("s" + entry.StateID);
+                    }
+                    else
+                    {
+                        writer.Write("-");
+                    }
+
+                    writer.Write(" ");
+                }
+                writer.WriteLine();
+            }
+            writer.WriteLine();
+            foreach (var state in parser.ActionTable.Rows)//Yes, action table ;)
+            {
+                writer.Write(state + " ");
+                foreach (var grp in env.Groups)
+                {
+                    var entry = parser.GotoTable.Get(state, grp);
+                    if (entry != null)
+                    {
+                        writer.Write("" + entry.StateID);
+                    }
+                    else
+                    {
+                        writer.Write("-");
+                    }
+
+                    writer.Write(" ");
+                }
+                writer.WriteLine();
+            }
+            writer.Flush();
         }
     }
 }

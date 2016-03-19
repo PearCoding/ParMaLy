@@ -36,7 +36,7 @@ namespace PML.Output
 {
     public static class HtmlTable
     {
-        public static void PrintActionTable(TextWriter writer, List<BU.RuleState> rows, BU.ActionTable table, Environment env, Style.HtmlStyle style)
+        public static void PrintActionTable(TextWriter writer, BU.ActionTable table, Environment env, Style.HtmlStyle style)
         {
             AddHeader(writer, style);
             writer.WriteLine("<table class='" + style.Table_Class + " " + style.TableAction_Class + "' id='" + style.Table_ID + "'>");
@@ -49,7 +49,7 @@ namespace PML.Output
             AddActionHeader(0, writer, tokens, style);
             writer.WriteLine("</tr>");
 
-            foreach(var state in rows)
+            foreach(var state in table.Rows)
             {
                 writer.WriteLine("<tr class='" + style.TableTr_Class + "' id='" + style.TableTr_ID_Prefix + tr + "'>");
                 tr++;
@@ -70,7 +70,7 @@ namespace PML.Output
             writer.Flush();
         }
 
-        public static void PrintGotoTable(TextWriter writer, List<BU.RuleState> rows, BU.GotoTable table, Environment env, Style.HtmlStyle style)
+        public static void PrintGotoTable(TextWriter writer, BU.GotoTable table, Environment env, Style.HtmlStyle style)
         {
             AddHeader(writer, style);
             writer.WriteLine("<table class='" + style.Table_Class + " " + style.TableGoto_Class + "' id='" + style.Table_ID + "'>");
@@ -81,7 +81,7 @@ namespace PML.Output
             AddGotoHeader(0, writer, env.Groups, style);
             writer.WriteLine("</tr>");
 
-            foreach (var state in rows)
+            foreach (var state in table.Rows)
             {
                 writer.WriteLine("<tr class='" + style.TableTr_Class + "' id='" + style.TableTr_ID_Prefix + tr + "'>");
                 tr++;
@@ -102,8 +102,7 @@ namespace PML.Output
             writer.Flush();
         }
 
-        public static void PrintTransitionTable(TextWriter writer, List<BU.RuleState> rows,
-            BU.ActionTable actionTable, BU.GotoTable gotoTable, Environment env, Style.HtmlStyle style)
+        public static void PrintTransitionTable(TextWriter writer, BU.ActionTable actionTable, BU.GotoTable gotoTable, Environment env, Style.HtmlStyle style)
         {
             AddHeader(writer, style);
             writer.WriteLine("<table class='" + style.Table_Class + " " + style.TableTransition_Class + "' id='" + style.Table_ID + "'>");
@@ -116,7 +115,7 @@ namespace PML.Output
             AddGotoHeader(tokens.Count(), writer, env.Groups, style);
             writer.WriteLine("</tr>");
 
-            foreach (var state in rows)
+            foreach (var state in actionTable.Rows)
             {
                 writer.WriteLine("<tr class='" + style.TableTr_Class + "' id='" + style.TableTr_ID_Prefix + tr + "'>");
                 tr++;
@@ -200,10 +199,10 @@ namespace PML.Output
             }
         }
 
-        static void AddFirstColumn(TextWriter writer, BU.RuleState state, Style.HtmlStyle style)
+        static void AddFirstColumn(TextWriter writer, int state, Style.HtmlStyle style)
         {
             writer.WriteLine("<td class='" + style.TableTd_Class + "' id='" + style.TableTd_ID_Prefix + "0'>"
-                    + state.ID + "</td>");
+                    + state + "</td>");
         }
 
         static void AddFirstColumn(TextWriter writer, RuleGroup group, Style.HtmlStyle style)
@@ -244,10 +243,10 @@ namespace PML.Output
             {
                 if (e.Action == BU.ActionTable.Action.Accept)
                     writer.Write(style.TableActionAccept_Content);
-                else if (e.Action == BU.ActionTable.Action.Reduce && e.State != null)
-                    writer.Write(style.TableActionReduce_Prefix + e.State.ID);
-                else if (e.Action == BU.ActionTable.Action.Shift && e.State != null)
-                    writer.Write(style.TableActionShift_Prefix + e.State.ID);
+                else if (e.Action == BU.ActionTable.Action.Reduce)
+                    writer.Write(style.TableActionReduce_Prefix + e.StateID);
+                else if (e.Action == BU.ActionTable.Action.Shift)
+                    writer.Write(style.TableActionShift_Prefix + e.StateID);
                 else if (!string.IsNullOrEmpty(style.TableActionEmpty_Content))
                     writer.Write(style.TableActionEmpty_Content);
             }
@@ -278,7 +277,7 @@ namespace PML.Output
             writer.Write("<td class='" + style.TableTd_Class + " " + special + "' id='" + style.TableTd_ID_Prefix + td + "'>");
 
             if (e != null)
-                writer.Write(style.TableGotoState_Prefix + e.State.ID);
+                writer.Write(style.TableGotoState_Prefix + e.StateID);
             else if (!string.IsNullOrEmpty(style.TableGotoEmpty_Content))
                 writer.Write(style.TableGotoEmpty_Content);
 

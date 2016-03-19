@@ -57,6 +57,10 @@ namespace PML
             {
                 return ReadLL(reader, k, env, logger);
             }
+            else if (header[1] == "LR")
+            {
+                return ReadLR(reader, k, env, logger);
+            }
             else
             {
                 logger.Log(1, 4, LogLevel.Error, "Unknown parser type");
@@ -64,6 +68,7 @@ namespace PML
             }
         }
 
+        // LL
         public static Runner.LLRunner ReadLL(TextReader reader, int k, Environment env, Logger logger)
         {
             var lookaheads = ReadLookahead(reader, env);
@@ -91,6 +96,71 @@ namespace PML
             return runner;
         }
 
+        // LR
+        public static Runner.LRRunner ReadLR(TextReader reader, int k, Environment env, Logger logger)
+        {
+            var lookaheads = ReadLookahead(reader, env);
+            Runner.LRRunner runner = new Runner.LRRunner(k);
+            int stateCount = int.Parse(reader.ReadLine());
+            
+            for(int state = 0; state < stateCount; ++state)//Action
+            {
+                var line = reader.ReadLine().Trim().Split(' ');
+
+                if (line[0] == state.ToString())
+                {
+                    for (int i = 1; i < line.Length; ++i)
+                    {
+                        if (line[i] != "-")
+                        {
+                            if (line[i] == "a")
+                                runner.ActionTable.Set(state, lookaheads[i - 1], BU.ActionTable.Action.Accept, -1);
+                            else if (line[i].First() == 's')
+                                runner.ActionTable.Set(state, lookaheads[i - 1], BU.ActionTable.Action.Shift,
+                                    int.Parse(line[i].Substring(1)));
+                            else if (line[i].First() == 'r')
+                                runner.ActionTable.Set(state, lookaheads[i - 1], BU.ActionTable.Action.Reduce,
+                                    int.Parse(line[i].Substring(1)));
+                            else
+                            {
+                                logger.Log(LogLevel.Error, "Invalid PML");
+                                return null;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    logger.Log(LogLevel.Error, "Invalid PML");
+                    return null;
+                }
+            }
+            
+            reader.ReadLine();
+
+            for (int state = 0; state < stateCount; ++state)//Goto
+            {
+                var line = reader.ReadLine().Trim().Split(' ');
+
+                if (line[0] == state.ToString())
+                {
+                    for (int i = 1; i < line.Length; ++i)
+                    {
+                        if (line[i] != "-")
+                            runner.GotoTable.Set(state, env.Groups[i - 1], int.Parse(line[i]));
+                    }
+                }
+                else
+                {
+                    logger.Log(LogLevel.Error, "Invalid PML");
+                    return null;
+                }
+            }
+
+            return runner;
+        }
+
+        // Utils
         static List<RuleLookahead> ReadLookahead(TextReader reader, Environment env)
         {
             List<RuleLookahead> list = new List<RuleLookahead>();

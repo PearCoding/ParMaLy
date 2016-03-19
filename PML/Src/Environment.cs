@@ -107,9 +107,12 @@ namespace PML
                             {
                                 var token = new RuleToken(_Tokens.Count, RuleTokenType.Token, t.Name);
                                 if (!_Tokens.Contains(token))
+                                {
                                     _Tokens.Add(token);
-
-                                rule.Tokens.Add(token);
+                                    rule.Tokens.Add(token);
+                                }
+                                else
+                                    rule.Tokens.Add(_Tokens[_Tokens.IndexOf(token)]);
                             }
                             else
                             {

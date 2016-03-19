@@ -44,18 +44,18 @@ namespace PML.BU
         public class Entry
         {
             public Action Action;
-            public RuleState State;
+            public int StateID;
             public RuleLookahead Lookahead;
         }
 
-        Dictionary<RuleState, List<Entry>> _Table = new Dictionary<RuleState, List<Entry>>();
+        Dictionary<int, List<Entry>> _Table = new Dictionary<int, List<Entry>>();
 
         public void Clear()
         {
             _Table.Clear();
         }
 
-        public void Set(RuleState state, RuleLookahead lookahead, Action act, RuleState n)
+        public void Set(int state, RuleLookahead lookahead, Action act, int n)
         {
             if (!_Table.ContainsKey(state))
                 _Table[state] = new List<Entry>();
@@ -79,11 +79,11 @@ namespace PML.BU
                 l.Add(entry);
             }
 
-            entry.State = n;
+            entry.StateID = n;
             entry.Action = act;
         }
 
-        public Entry Get(RuleState state, RuleLookahead lookahead)
+        public Entry Get(int state, RuleLookahead lookahead)
         {
             if (!_Table.ContainsKey(state))
                 return null;
@@ -98,7 +98,7 @@ namespace PML.BU
             return null;
         }
 
-        public IEnumerable<RuleState> Rows { get { return _Table.Keys; } }
+        public IEnumerable<int> Rows { get { return _Table.Keys; } }
 
         public IEnumerable<RuleLookahead> Colums//TODO: We can cache it!
         {

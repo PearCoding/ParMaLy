@@ -269,20 +269,20 @@ namespace PML.Parser
                         conf.IsLast &&
                         conf.Lookaheads.Contains((RuleLookahead)null))//Accept
                     {
-                        var a = _ActionTable.Get(state, null);
+                        var a = _ActionTable.Get(state.ID, null);
                         if (a != null && a.Action != ActionTable.Action.Accept)
                             Statistics.BU.Conflicts.Add(new BUStatistics.ConflictEntry(BUStatistics.ConflictType.Accept, state));
 
-                        _ActionTable.Set(state, null, ActionTable.Action.Accept, null);
+                        _ActionTable.Set(state.ID, null, ActionTable.Action.Accept, -1);
                     }
                     else if(conf.IsLast)//Reduce
                     {
                         foreach (var l in conf.Lookaheads.Lookaheads)
                         {
-                            var a = _ActionTable.Get(state, l);
+                            var a = _ActionTable.Get(state.ID, l);
                             if (a != null)
                             {
-                                if (a.Action != ActionTable.Action.Shift && a.State != state)
+                                if (a.Action != ActionTable.Action.Shift && a.StateID != conf.Rule.ID)
                                     Statistics.BU.Conflicts.Add(
                                         new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ReduceReduce, state, l));
                                 else if(a.Action == ActionTable.Action.Shift)
@@ -290,7 +290,7 @@ namespace PML.Parser
                                         new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftReduce, state, l));
                             }
 
-                            _ActionTable.Set(state, l, ActionTable.Action.Reduce, state);
+                            _ActionTable.Set(state.ID, l, ActionTable.Action.Reduce, conf.Rule.ID);
                         }
                     }
                     else if(conf.GetNext().Type == RuleTokenType.Token)//Shift
@@ -310,17 +310,17 @@ namespace PML.Parser
                             }
                         }
 
-                        var a = _ActionTable.Get(state, look);
+                        var a = _ActionTable.Get(state.ID, look);
                         if (a != null)
                         {
                             if (a.Action != ActionTable.Action.Shift)
                                 Statistics.BU.Conflicts.Add(
                                     new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftReduce, state, look));
-                            else if(a.Action == ActionTable.Action.Shift && a.State != found)
+                            else if(a.Action == ActionTable.Action.Shift && a.StateID != found.ID)
                                 Statistics.BU.Conflicts.Add(
                                     new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftShift, state, look));
                         }
-                        _ActionTable.Set(state, look, ActionTable.Action.Shift, found);
+                        _ActionTable.Set(state.ID, look, ActionTable.Action.Shift, found.ID);
                     }
                 }
             }
@@ -336,7 +336,7 @@ namespace PML.Parser
                 {
                     if(c.Token.Type == RuleTokenType.Rule)
                     {
-                        _GotoTable.Set(state, c.Token.Group, c.State);
+                        _GotoTable.Set(state.ID, c.Token.Group, c.State.ID);
                     }
                 }
             }

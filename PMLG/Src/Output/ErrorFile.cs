@@ -43,11 +43,11 @@ namespace PML.Output
         {
             if (stats.BU != null)
             {
-                writer.WriteLine("  Conflict count: " + stats.BU.Conflicts.Count);
+                writer.WriteLine("Conflict count: " + stats.BU.Conflicts.Count);
 
                 if (stats.BU.Conflicts.Count != 0)
                 {
-                    writer.WriteLine("  Conflicts:");
+                    writer.WriteLine("Conflicts:");
                     foreach (var e in stats.BU.Conflicts)
                     {
                         string special = "";
@@ -74,17 +74,17 @@ namespace PML.Output
                                 break;
                         }
 
-                        writer.WriteLine("    [" + special + "] State (" + e.State.ID + ")" + token);
+                        writer.WriteLine("  [" + special + "] State (" + e.State.ID + ")" + token);
                     }
                 }
             }
             else if (stats.TD != null)//TD
             {
-                writer.WriteLine("  Conflict count: " + stats.TD.Conflicts.Count);
+                writer.WriteLine("Conflict count: " + stats.TD.Conflicts.Count);
 
                 if (stats.TD.Conflicts.Count != 0)
                 {
-                    writer.WriteLine("  Conflicts:");
+                    writer.WriteLine("Conflicts:");
                     foreach (var e in stats.TD.Conflicts)
                     {
                         string special = "";
@@ -100,7 +100,7 @@ namespace PML.Output
                                 break;
                         }
 
-                        writer.WriteLine("    [" + special + "] Rule (" + e.Rule.ID + ") in " + e.Group.Name + token);
+                        writer.WriteLine("  [" + special + "] Rule (" + e.Rule.ID + ") in " + e.Group.Name + token);
                     }
                 }
             }

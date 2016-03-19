@@ -37,18 +37,18 @@ namespace PML.BU
     {
         public class Entry
         {
-            public RuleState State;
+            public int StateID;
             public RuleGroup Group;
         }
 
-        Dictionary<RuleState, List<Entry>> _Table = new Dictionary<RuleState, List<Entry>>();
+        Dictionary<int, List<Entry>> _Table = new Dictionary<int, List<Entry>>();
 
         public void Clear()
         {
             _Table.Clear();
         }
 
-        public void Set(RuleState state, RuleGroup grp, RuleState n)
+        public void Set(int state, RuleGroup grp, int n)
         {
             if (!_Table.ContainsKey(state))
                 _Table[state] = new List<Entry>();
@@ -72,10 +72,10 @@ namespace PML.BU
                 l.Add(entry);
             }
 
-            entry.State = n;
+            entry.StateID = n;
         }
 
-        public Entry Get(RuleState state, RuleGroup grp)
+        public Entry Get(int state, RuleGroup grp)
         {
             if (!_Table.ContainsKey(state))
                 return null;
@@ -92,6 +92,6 @@ namespace PML.BU
             return null;
         }
 
-        public IEnumerable<RuleState> Rows { get { return _Table.Keys; } }
+        public IEnumerable<int> Rows { get { return _Table.Keys; } }
     }
 }

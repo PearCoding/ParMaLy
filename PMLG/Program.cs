@@ -270,19 +270,19 @@ namespace PML
 
                         if (!String.IsNullOrEmpty(opts.ActionHtmlFile))
                         {
-                            Output.HtmlTable.PrintActionTable(File.CreateText(opts.ActionHtmlFile), buParser.States,
+                            Output.HtmlTable.PrintActionTable(File.CreateText(opts.ActionHtmlFile),
                                 buParser.ActionTable, env, style.ActionTableHtml);
                         }
 
                         if (!String.IsNullOrEmpty(opts.GotoHtmlFile))
                         {
-                            Output.HtmlTable.PrintGotoTable(File.CreateText(opts.GotoHtmlFile), buParser.States,
+                            Output.HtmlTable.PrintGotoTable(File.CreateText(opts.GotoHtmlFile),
                                 buParser.GotoTable, env, style.GotoTableHtml);
                         }
 
                         if (!String.IsNullOrEmpty(opts.TransitionHtmlFile))
                         {
-                            Output.HtmlTable.PrintTransitionTable(File.CreateText(opts.TransitionHtmlFile), buParser.States,
+                            Output.HtmlTable.PrintTransitionTable(File.CreateText(opts.TransitionHtmlFile),
                                 buParser.ActionTable, buParser.GotoTable, env, style.TransitionTableHtml);
                         }
 
@@ -290,6 +290,11 @@ namespace PML
                         {
                             Output.CSV.PrintProceedings(File.CreateText(opts.ProceedingCSVFile), parser.Statistics.BU.Proceedings,
                                 style.ProceedingCSV);
+                        }
+
+                        if (!String.IsNullOrEmpty(opts.PMLFile))
+                        {
+                            Output.PMLWriter.WriteLR(File.CreateText(opts.PMLFile), ((Parser.IBUParser)parser), env);
                         }
                     }
                     else if (type == 1)//LLParser
