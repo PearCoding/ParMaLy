@@ -77,7 +77,6 @@ namespace PML.Output
                 writer.WriteLine("  Current position: " + ae.Position);
                 writer.WriteLine("  Current stack: " + string.Join(", ", ae.Stack.Select(v => v.ToString()).ToArray()));
                 writer.WriteLine("  Current lookahead: " + (ae.Lookahead == null ? "$" : ae.Lookahead.ToString()));
-                writer.WriteLine("  Current state: " + ae.CurrentState);
             }
             else if (e is Events.LRShiftEvent)
             {
@@ -85,7 +84,6 @@ namespace PML.Output
                 writer.WriteLine("  Current position: " + se.Position);
                 writer.WriteLine("  Current stack: " + string.Join(", ", se.Stack.Select(v => v.ToString()).ToArray()));
                 writer.WriteLine("  Current lookahead: " + (se.Lookahead == null ? "$" : se.Lookahead.ToString()));
-                writer.WriteLine("  Current state: " + se.CurrentState);
                 writer.WriteLine("  Next state: " + se.NextState);
             }
             else if (e is Events.LRReduceEvent)
@@ -94,7 +92,6 @@ namespace PML.Output
                 writer.WriteLine("  Current position: " + re.Position);
                 writer.WriteLine("  Current stack: " + string.Join(", ", re.Stack.Select(v => v.ToString()).ToArray()));
                 writer.WriteLine("  Current lookahead: " + (re.Lookahead == null ? "$" : re.Lookahead.ToString()));
-                writer.WriteLine("  Current state: " + re.CurrentState);
                 writer.WriteLine("  Rule: " + re.Rule.Group.Name + "[" + re.Rule.ID + "]");
             }
         }

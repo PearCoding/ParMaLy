@@ -77,19 +77,19 @@ namespace PML.Runner
                 }
                 else if(action.Action == BU.ActionTable.Action.Accept)
                 {
-                    events.Add(new Events.LRAcceptEvent(stack.Peek(), stack, look, lexer.Position));
+                    events.Add(new Events.LRAcceptEvent(stack, look, lexer.Position));
                     break;
                 }
                 else if(action.Action == BU.ActionTable.Action.Shift)
                 {
-                    events.Add(new Events.LRShiftEvent(stack.Peek(), action.StateID, stack, look, lexer.Position));
+                    events.Add(new Events.LRShiftEvent(action.StateID, stack, look, lexer.Position));
                     stack.Push(action.StateID);
                     lexer.Step();
                 }
                 else//Reduce
                 {
                     var rule = env.RuleByID(action.StateID);
-                    events.Add(new Events.LRReduceEvent(rule, stack.Peek(), stack, look, lexer.Position));
+                    events.Add(new Events.LRReduceEvent(rule, stack, look, lexer.Position));
 
                     for (int i = 0; i < rule.Tokens.Count; ++i)
                         stack.Pop();

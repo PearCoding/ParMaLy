@@ -39,11 +39,9 @@ namespace PML.Events
         public List<int> Stack = new List<int>();
         public RuleLookahead Lookahead;
         public int Position;
-        public int CurrentState;
 
-        public LRAcceptEvent(int currentstate, IEnumerable<int> stack, RuleLookahead lookahead, int position)
+        public LRAcceptEvent(IEnumerable<int> stack, RuleLookahead lookahead, int position)
         {
-            CurrentState = currentstate;
             Stack.AddRange(stack);
             Lookahead = lookahead;
             Position = position;
@@ -57,13 +55,11 @@ namespace PML.Events
         public List<int> Stack = new List<int>();
         public RuleLookahead Lookahead;
         public int Position;
-        public int CurrentState;
         public int NextState;
 
-        public LRShiftEvent(int currentstate, int nextstate, IEnumerable<int> stack,
+        public LRShiftEvent(int nextstate, IEnumerable<int> stack,
             RuleLookahead lookahead, int position)
         {
-            CurrentState = currentstate;
             NextState = nextstate;
             Stack.AddRange(stack);
             Lookahead = lookahead;
@@ -78,13 +74,11 @@ namespace PML.Events
         public List<int> Stack = new List<int>();
         public RuleLookahead Lookahead;
         public int Position;
-        public int CurrentState;
         public Rule Rule;
 
-        public LRReduceEvent(Rule rule, int currentstate, IEnumerable<int> stack,
+        public LRReduceEvent(Rule rule, IEnumerable<int> stack,
             RuleLookahead lookahead, int position)
         {
-            CurrentState = currentstate;
             Rule = rule;
             Stack.AddRange(stack);
             Lookahead = lookahead;
