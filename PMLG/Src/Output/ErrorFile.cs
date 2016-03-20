@@ -43,69 +43,109 @@ namespace PML.Output
         {
             if (stats.BU != null)
             {
-                writer.WriteLine("Conflict count: " + stats.BU.Conflicts.Count);
-
-                if (stats.BU.Conflicts.Count != 0)
-                {
-                    writer.WriteLine("Conflicts:");
-                    foreach (var e in stats.BU.Conflicts)
-                    {
-                        string special = "";
-                        string token = "";
-                        switch (e.Type)
-                        {
-                            case BUStatistics.ConflictType.ShiftReduce:
-                                special = "SRC";
-                                token = " with lookahead " + (e.Lookahead != null ? e.Lookahead.ToString() : "$");
-                                break;
-                            case BUStatistics.ConflictType.ReduceReduce:
-                                special = "RRC";
-                                token = " with lookahead " + (e.Lookahead != null ? e.Lookahead.ToString() : "$");
-                                break;
-                            case BUStatistics.ConflictType.ShiftShift:
-                                special = "SSC";
-                                token = " with lookahead " + (e.Lookahead != null ? e.Lookahead.ToString() : "$");
-                                break;
-                            case BUStatistics.ConflictType.Accept:
-                                special = "AC";
-                                break;
-                            case BUStatistics.ConflictType.Internal:
-                                special = "Int";
-                                break;
-                        }
-
-                        writer.WriteLine("  [" + special + "] State (" + e.State.ID + ")" + token);
-                    }
-                }
+                PrintBU(writer, stats.BU);
             }
-            else if (stats.TD != null)//TD
+            else if (stats.TD != null)
             {
-                writer.WriteLine("Conflict count: " + stats.TD.Conflicts.Count);
-
-                if (stats.TD.Conflicts.Count != 0)
-                {
-                    writer.WriteLine("Conflicts:");
-                    foreach (var e in stats.TD.Conflicts)
-                    {
-                        string special = "";
-                        string token = "";
-                        switch (e.Type)
-                        {
-                            case TDStatistics.ConflictType.Lookup:
-                                special = "LC";
-                                token = " with lookahead " + (e.Lookahead != null ? e.Lookahead.ToString() : "$");
-                                break;
-                            case TDStatistics.ConflictType.Internal:
-                                special = "Int";
-                                break;
-                        }
-
-                        writer.WriteLine("  [" + special + "] Rule (" + e.Rule.ID + ") in " + e.Group.Name + token);
-                    }
-                }
+                PrintTD(writer, stats.TD);
+            }
+            else if (stats.R != null)
+            {
+                PrintR(writer, stats.R);
             }
 
             writer.Flush();
+        }
+
+        static void PrintBU(TextWriter writer, BUStatistics stats)
+        {
+            writer.WriteLine("Conflict count: " + stats.Conflicts.Count);
+
+            if (stats.Conflicts.Count != 0)
+            {
+                writer.WriteLine("Conflicts:");
+                foreach (var e in stats.Conflicts)
+                {
+                    string special = "";
+                    string token = "";
+                    switch (e.Type)
+                    {
+                        case BUStatistics.ConflictType.ShiftReduce:
+                            special = "SRC";
+                            token = " with lookahead " + (e.Lookahead != null ? e.Lookahead.ToString() : "$");
+                            break;
+                        case BUStatistics.ConflictType.ReduceReduce:
+                            special = "RRC";
+                            token = " with lookahead " + (e.Lookahead != null ? e.Lookahead.ToString() : "$");
+                            break;
+                        case BUStatistics.ConflictType.ShiftShift:
+                            special = "SSC";
+                            token = " with lookahead " + (e.Lookahead != null ? e.Lookahead.ToString() : "$");
+                            break;
+                        case BUStatistics.ConflictType.Accept:
+                            special = "AC";
+                            break;
+                        case BUStatistics.ConflictType.Internal:
+                            special = "Int";
+                            break;
+                    }
+
+                    writer.WriteLine("  [" + special + "] State (" + e.State.ID + ")" + token);
+                }
+            }
+        }
+
+        static void PrintTD(TextWriter writer, TDStatistics stats)
+        {
+            writer.WriteLine("Conflict count: " + stats.Conflicts.Count);
+
+            if (stats.Conflicts.Count != 0)
+            {
+                writer.WriteLine("Conflicts:");
+                foreach (var e in stats.Conflicts)
+                {
+                    string special = "";
+                    string token = "";
+                    switch (e.Type)
+                    {
+                        case TDStatistics.ConflictType.Lookup:
+                            special = "LC";
+                            token = " with lookahead " + (e.Lookahead != null ? e.Lookahead.ToString() : "$");
+                            break;
+                        case TDStatistics.ConflictType.Internal:
+                            special = "Int";
+                            break;
+                    }
+
+                    writer.WriteLine("  [" + special + "] Rule (" + e.Rule.ID + ") in " + e.Group.Name + token);
+                }
+            }
+        }
+
+        static void PrintR(TextWriter writer, RStatistics stats)
+        {
+            writer.WriteLine("Conflict count: " + stats.Conflicts.Count);
+
+            if (stats.Conflicts.Count != 0)
+            {
+                writer.WriteLine("Conflicts:");
+                foreach (var e in stats.Conflicts)
+                {
+                    string special = "";
+                    switch (e.Type)
+                    {
+                        case RStatistics.ConflictType.Decision:
+                            special = "Decision";
+                            break;
+                        case RStatistics.ConflictType.Internal:
+                            special = "Internal";
+                            break;
+                    }
+
+                    writer.WriteLine("  [" + special + "] State " + e.State.Group.Name 
+                        + " with lookahead " + e.State.Lookaheads.ToString());
+                }
+            }
         }
     }
 }

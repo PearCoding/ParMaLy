@@ -9,6 +9,7 @@ namespace PML.Statistics
     {
         public BUStatistics BU;
         public TDStatistics TD;
+        public RStatistics R;
 
         public long TimeElapsed = 0;//ms
     }
@@ -82,6 +83,30 @@ namespace PML.Statistics
                 Group = grp;
                 Rule = rule;
                 Lookahead = lookahead;
+            }
+        }
+
+        List<ConflictEntry> _Conflicts = new List<ConflictEntry>();
+        public List<ConflictEntry> Conflicts { get { return _Conflicts; } }
+    }
+
+    public class RStatistics
+    {
+        public enum ConflictType
+        {
+            Decision,
+            Internal
+        }
+
+        public class ConflictEntry
+        {
+            public ConflictType Type;
+            public R.RState State;
+
+            public ConflictEntry(ConflictType type, R.RState state)
+            {
+                Type = type;
+                State = state;
             }
         }
 

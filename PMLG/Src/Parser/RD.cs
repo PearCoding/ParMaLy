@@ -61,6 +61,7 @@ namespace PML.Parser
         {
             _States.Clear();
             _Statistics = new Statistics();
+            _Statistics.R = new RStatistics();
 
             // We can not start without a 'Start' token.
             if (env.Start == null || env.Start.Rules.Count == 0)
@@ -120,7 +121,8 @@ namespace PML.Parser
 
                         if (conflicts.Count != 0)
                         {
-                            logger.Log(LogLevel.Warning, "Couldn't solve conflict after " + MaxK + " lookahead");
+                            _Statistics.R.Conflicts.Add(
+                                new RStatistics.ConflictEntry(RStatistics.ConflictType.Decision, state));
                         }
                     }
 

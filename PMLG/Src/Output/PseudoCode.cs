@@ -108,7 +108,7 @@ namespace PML.Output
                                             ).ToArray()));
                         }
 
-                        writer.WriteLine("{");
+                        writer.WriteLine(") {");
                         PrintRDRule(writer, p.Key, style.Ident + style.Ident, style);
                         writer.WriteLine(style.Ident + "}");
                         ++i;
@@ -125,12 +125,19 @@ namespace PML.Output
 
         static void PrintRDRule(TextWriter writer, Rule rule, string prefix, Style.CodeStyle style)
         {
-            foreach(var t in rule.Tokens)
+            if (rule.IsEmpty)
             {
-                if (t.Type == RuleTokenType.Token)
-                    writer.WriteLine(prefix + "accept(" + style.StringBracket + t.Name + style.StringBracket + ");");
-                else
-                    writer.WriteLine(prefix + style.FunctionNamePrefix + t.Group.Name + "();");
+                writer.WriteLine(prefix + "/* EMPTY */");
+            }
+            else
+            {
+                foreach (var t in rule.Tokens)
+                {
+                    if (t.Type == RuleTokenType.Token)
+                        writer.WriteLine(prefix + "accept(" + style.StringBracket + t.Name + style.StringBracket + ");");
+                    else
+                        writer.WriteLine(prefix + style.FunctionNamePrefix + t.Group.Name + "();");
+                }
             }
         }
 
