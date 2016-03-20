@@ -33,7 +33,7 @@ using System.Collections.Generic;
 
 namespace PML
 {
-    [System.Diagnostics.DebuggerDisplay("{Name,nq} <{ID}>")]
+    [System.Diagnostics.DebuggerDisplay("<{ID}> {Name,nq}")]
     public class RuleGroup : IEquatable<RuleGroup>
     {
         int _ID;

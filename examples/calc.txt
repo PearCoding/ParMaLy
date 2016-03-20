@@ -17,8 +17,5 @@ mul_expr:	unary_expr
 			;
 			
 unary_expr:	'(' add_expr ')'
-			| literal
-			;
-			
-literal:	NUM
+			| NUM
 			;

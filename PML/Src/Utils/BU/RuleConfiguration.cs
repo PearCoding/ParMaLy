@@ -34,6 +34,7 @@ using System.Linq;
 
 namespace PML.BU
 {
+    [System.Diagnostics.DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class RuleConfiguration : IEquatable<RuleConfiguration>
     {
         Rule _Rule;
@@ -44,6 +45,9 @@ namespace PML.BU
 
         RuleLookaheadSet _Lookaheads = new RuleLookaheadSet();
         public RuleLookaheadSet Lookaheads { get { return _Lookaheads; } }
+
+        // Will be used when generating the closure.
+        public bool Dirty = true;
 
         public RuleConfiguration(Rule rule, int pos)
         {
@@ -133,5 +137,33 @@ namespace PML.BU
         {
             return !(a == b);
         }
+
+        public override string ToString()
+        {
+            string str = "";
+            int p = 0;
+            foreach (RuleToken t in _Rule.Tokens)
+            {
+                if (p == Pos)
+                    str += "\u2022 ";
+
+                if (t.Type == RuleTokenType.Rule || t.IsComplex)
+                {
+                    str += t.Name + " ";
+                }
+                else
+                    str += "'" + t.Name + "' ";
+
+                p++;
+            }
+            
+            if(p == Pos)
+                str += "\u2022 ";
+
+            return str + _Lookaheads.ToString();
+        }
+
+        //System
+        private string DebuggerDisplay { get { return ToString(); } }
     }
 }

@@ -118,7 +118,7 @@ namespace PML
         {
             get
             {
-                return _Group.Name + "[" + ID + "] " +
+                return "[" + ID + "] " + _Group.Name + " \u2192 " +
                     (IsEmpty ? "/* EMPTY */" : String.Join(" ",
                         Tokens.Select(v => (v.Type == RuleTokenType.Token ? "'" + v.Name + "'" : v.Name)).ToArray()));
             }

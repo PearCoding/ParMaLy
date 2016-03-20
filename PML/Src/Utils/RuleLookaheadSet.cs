@@ -35,7 +35,7 @@ using System.Linq;
 
 namespace PML
 {
-    [System.Diagnostics.DebuggerDisplay("Count = {_Lookaheads.Count}")]
+    [System.Diagnostics.DebuggerDisplay("Set {DebuggerDisplay,nq}")]
     public class RuleLookaheadSet : IEquatable<RuleLookaheadSet>, IEnumerable<RuleLookahead>
     {
         List<RuleLookahead> _Lookaheads = new List<RuleLookahead>();
@@ -67,19 +67,29 @@ namespace PML
             _Lookaheads.AddRange(looks);
         }
 
-        public void AddUnique(RuleLookahead l)
+        public bool AddUnique(RuleLookahead l)
         {
             if (!_Lookaheads.Contains(l))
+            {
                 _Lookaheads.Add(l);
+                return true;
+            }
+            else
+                return false;
         }
 
-        public void AddRangeUnique(IEnumerable<RuleLookahead> looks)
+        public bool AddRangeUnique(IEnumerable<RuleLookahead> looks)
         {
+            bool added = false;
             foreach(var l in looks)
             {
                 if (!_Lookaheads.Contains(l))
+                {
+                    added = true;
                     _Lookaheads.Add(l);
+                }
             }
+            return added;
         }
 
         public bool Contains(RuleLookahead lookahead)
@@ -88,6 +98,11 @@ namespace PML
         }
 
         public bool Empty { get { return _Lookaheads.Count == 0; } }
+
+        public override string ToString()
+        {
+            return "[" + String.Join(",", _Lookaheads.Select(v => v!= null ? v.ToString() : "$").ToArray()) + "]";
+        }
 
         public override bool Equals(Object obj)
         {
@@ -146,5 +161,8 @@ namespace PML
         {
             return ((IEnumerable<RuleLookahead>)_Lookaheads).GetEnumerator();
         }
+
+        //System
+        private string DebuggerDisplay { get { return ToString(); } }
     }
 }

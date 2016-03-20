@@ -79,7 +79,7 @@ namespace PML.Parser
             RuleState state = new RuleState(_States.Count);
             foreach (Rule r in env.Start.Rules)
             {
-                state.Header.Add(new RuleConfiguration(r, 0, (RuleLookahead)null));
+                state.Header.Add(new RuleConfiguration(r, 0, env.FollowCache.Get(env.Start, K)));
             }
             _StartState = state;
             _States.Add(state);
@@ -108,10 +108,12 @@ namespace PML.Parser
 
         void GenerateClosure(RuleState state, FirstSetCache firstCache, Logger logger)//Same as LR1
         {
-            for (int i = 0; i < state.Count; ++i)
+            int i = 0;
+            while (i >= 0)
             {
                 var c = state[i];
-                if(!c.IsLast)
+                c.Dirty = false;
+                if (!c.IsLast)
                 {
                     var t = c.GetNext();
 
@@ -123,23 +125,23 @@ namespace PML.Parser
                             tmp = c.Rule.Tokens.GetRange(newp, c.Rule.Tokens.Count - newp);
                         else
                             tmp = new List<RuleToken>();
-                            
-                        foreach (var look in c.Lookaheads.Lookaheads)
+
+                        for (int j = 0; j < c.Lookaheads.Count(); ++j)
                         {
-                            var tmpL = new List<RuleToken>(tmp);
-                            if(look != null)
-                                tmpL.AddRange(look.Take(System.Math.Min(look.Count, K)));
-                            var delta = firstCache.Generate(tmpL, K);
-                                                            
+                            var look = c.Lookaheads[j];
+                            var delta = firstCache.Generate(
+                                look == null ? tmp : tmp.Concat(look.Take(System.Math.Min(look.Count, K))),
+                                K);
+
                             foreach (var r in t.Group.Rules)
                             {
                                 RuleLookaheadSet set = new RuleLookaheadSet(delta);
                                 RuleConfiguration conf2 = new RuleConfiguration(r, 0, set);
 
                                 RuleConfiguration other = null;
-                                foreach(var c2 in state.All)
+                                foreach (var c2 in state.All)
                                 {
-                                    if(c2.Rule == r && c2.Pos == 0 && !object.ReferenceEquals(c2, c))
+                                    if (c2.SemiEquals(conf2))
                                     {
                                         other = c2;
                                         break;
@@ -147,11 +149,24 @@ namespace PML.Parser
                                 }
 
                                 if ((object)other != null)
-                                    other.Lookaheads.AddRangeUnique(set);
+                                {
+                                    if (other.Lookaheads.AddRangeUnique(set))
+                                        other.Dirty = true;
+                                }
                                 else
                                     state.Closure.Add(conf2);
                             }
                         }
+                    }
+                }
+
+                i = -1;
+                for (int j = 0; j < state.Count; j++)
+                {
+                    if (state[j].Dirty)
+                    {
+                        i = j;
+                        break;
                     }
                 }
             }

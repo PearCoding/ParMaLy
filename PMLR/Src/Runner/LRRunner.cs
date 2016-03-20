@@ -57,17 +57,17 @@ namespace PML.Runner
                 var look = (lexer.Left > 0 ? lexer.Current(env, K <= 1 ? 0 : (K - 1)) : null);
                 var action = ActionTable.Get(stack.Peek(), look);
 
-                if (look != null)
-                {
-                    for (int i = 1; i < K; ++i)
-                    {
-                        if (action == null)
-                        {
-                            look = new RuleLookahead(look.Take(look.Count - 1));
-                            action = ActionTable.Get(stack.Peek(), look);
-                        }
-                    }
-                }
+                //if (look != null)
+                //{
+                //    for (int i = 1; i < K; ++i)
+                //    {
+                //        if (action == null)
+                //        {
+                //            look = new RuleLookahead(look.Take(look.Count - 1));
+                //            action = ActionTable.Get(stack.Peek(), look);
+                //        }
+                //    }
+                //}
 
                 if(action == null)
                 {
