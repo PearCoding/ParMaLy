@@ -84,7 +84,7 @@ namespace PML.Parser
                 else
                 {
                     Dictionary<Rule, RuleLookaheadSet> tokens = new Dictionary<Rule, RuleLookaheadSet>();
-                    foreach (var r in grp.Rules)
+                    foreach (var r in grp.Rules)//TODO: Need a better and responsive approach
                     {
                         RuleLookaheadSet set = null;
                         var conflicts = new Dictionary<Rule, RuleLookaheadSet>(tokens);
@@ -104,7 +104,7 @@ namespace PML.Parser
                             {
                                 foreach (var o in other.Value)
                                 {
-                                    if (set.Contains(o))
+                                    if (set.HasIntersection(o))
                                     {
                                         var newSet = PredictSet.Generate(env, grp, other.Key.Tokens, k);
                                         newConflict.Add(other.Key, newSet);

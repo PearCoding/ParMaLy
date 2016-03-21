@@ -45,7 +45,7 @@ namespace PML.Output
                 if (t.IsComplex)
                 {
                     writer.WriteLine("function " + style.ComplexCheckPrefix + t.Name + "(c) {");
-                    writer.WriteLine(style.Ident + "// TODO");
+                    writer.WriteLine(style.Ident + "-- TODO");
                     writer.WriteLine(style.Ident + "return true;");
                     writer.WriteLine("}");
                     writer.WriteLine();
@@ -62,8 +62,18 @@ namespace PML.Output
                 else
                 {
                     int i = 0;
-                    foreach (var p in state.Lookaheads)
+                    var list = state.Lookaheads.ToList();
+                    list.Sort(
+                        delegate (KeyValuePair<Rule, RuleLookaheadSet> pair1,
+                            KeyValuePair<Rule, RuleLookaheadSet> pair2)
+                        {
+                            return pair2.Value.Max(v => v != null ? v.Count : 1)
+                                .CompareTo(pair1.Value.Max(v => v != null ? v.Count : 1));
+                        });
+
+                    foreach (var p in list)
                     {
+                        writer.WriteLine(style.Ident + "-- Rule: " + p.Key.ToString());
                         if (i != 0)
                             writer.Write(style.Ident + "else ");
                         else
@@ -127,7 +137,7 @@ namespace PML.Output
         {
             if (rule.IsEmpty)
             {
-                writer.WriteLine(prefix + "/* EMPTY */");
+                writer.WriteLine(prefix + "-- EMPTY");
             }
             else
             {
@@ -146,9 +156,9 @@ namespace PML.Output
             string s = "";
             for (int i = 0; i < lookahead.Count(); ++i)
             {
-                if (lookahead[0] != null && lookahead[0].IsComplex)
+                if (lookahead[i] != null && lookahead[i].IsComplex)
                 {
-                    s += style.ComplexCheckPrefix + lookahead[0].Name + "(";
+                    s += style.ComplexCheckPrefix + lookahead[i].Name + "(";
 
                     if (i == 0)
                         s += "current()";

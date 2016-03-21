@@ -97,6 +97,20 @@ namespace PML
             return _Lookaheads.Contains(lookahead);
         }
 
+        public bool HasIntersection(RuleLookahead lookahead)
+        {
+            foreach(var look in _Lookaheads)
+            {
+                if((look == null && lookahead == null) ||
+                    (look != null && lookahead != null && lookahead.HasIntersection(look)))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public bool Empty { get { return _Lookaheads.Count == 0; } }
 
         public override string ToString()

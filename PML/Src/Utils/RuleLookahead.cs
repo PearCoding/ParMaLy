@@ -88,6 +88,17 @@ namespace PML
             return "[" + Join(",", v => (v == null ? "$" : "'" + v.Name + "'")) + "]";
         }
 
+        public bool HasIntersection(RuleLookahead lookahead)
+        {
+            for(int i = 0; i < Math.Min(Count, lookahead.Count); ++i)
+            {
+                if (lookahead[i] != _Tokens[i])
+                    return false;
+            }
+
+            return true;
+        }
+
         public override bool Equals(Object obj)
         {
             if (obj == null)

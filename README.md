@@ -8,7 +8,7 @@ For more information and how-to get started visit the [Wiki](https://github.com/
 
 ### License
 
-Copyright (c) 2016, Ömercan Yazici <omercan AT pearcoding.eu>
+Copyright (c) 2016, Ömercan Yazici < omercan AT pearcoding.eu >
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,

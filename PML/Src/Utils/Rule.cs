@@ -113,15 +113,13 @@ namespace PML
             return !(a == b);
         }
 
-        //System
-        private string DebuggerDisplay
+        public override string ToString()
         {
-            get
-            {
-                return "[" + ID + "] " + _Group.Name + " \u2192 " +
+            return "[" + ID + "] " + _Group.Name + " \u2192 " +
                     (IsEmpty ? "/* EMPTY */" : String.Join(" ",
                         Tokens.Select(v => (v.Type == RuleTokenType.Token ? "'" + v.Name + "'" : v.Name)).ToArray()));
-            }
         }
+        //System
+        private string DebuggerDisplay { get { return ToString(); } }
     }
 }

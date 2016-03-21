@@ -143,7 +143,8 @@ namespace PML.Output
                     }
 
                     writer.WriteLine("  [" + special + "] State " + e.State.Group.Name 
-                        + " with lookahead " + e.State.Lookaheads.ToString());
+                        + " with lookahead " + String.Join("; ",
+                            e.State.Lookaheads.Select(v => v.Value.ToString()).ToArray()));
                 }
             }
         }
