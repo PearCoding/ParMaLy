@@ -43,12 +43,16 @@ namespace PML
         RuleGroup _Group;
         public RuleGroup Group { get { return _Group; } }
 
+        string _Code;
+        public string Code { get { return _Code; } }
+
         public List<RuleToken> Tokens = new List<RuleToken>();
 
-        public Rule(int id, RuleGroup grp)
+        public Rule(int id, RuleGroup grp, string code)
         {
             _ID = id;
             _Group = grp;
+            _Code = code;
         }
 
         public bool IsEmpty

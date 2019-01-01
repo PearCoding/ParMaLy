@@ -45,9 +45,9 @@ namespace PML.Preprocess
         {
             stack.Push(current);
 
-            foreach(var rule in current.Rules)
+            foreach (var rule in current.Rules)
             {
-                foreach(var t in rule.Tokens)
+                foreach (var t in rule.Tokens)
                 {
                     if (t.Type == RuleTokenType.Token)
                         break;
@@ -57,7 +57,7 @@ namespace PML.Preprocess
                             return true;
                         else
                         {
-                            if(!stack.Contains(t.Group))
+                            if (!stack.Contains(t.Group))
                             {
                                 if (HasLeftRecursionFor(t.Group, search, firstset, stack))
                                     return true;
@@ -79,9 +79,9 @@ namespace PML.Preprocess
             Environment output = new Environment(input.Logger);
             output.Tokens.AddRange(input.Tokens);
 
-            foreach(var oldGrp in input.Groups)
+            foreach (var oldGrp in input.Groups)
             {
-                var newGrp = new RuleGroup(output.Groups.Count, oldGrp.Name);
+                var newGrp = new RuleGroup(output.Groups.Count, oldGrp.Name, oldGrp.ReturnType);
                 output.Groups.Add(newGrp);
 
                 if (input.Start == oldGrp)
@@ -98,9 +98,9 @@ namespace PML.Preprocess
                         // We can not use the same ids... It can change in the future!
                         var otherGrp = input.GroupByName(oldRule.Tokens[0].Group.Name);
 
-                        foreach(var rule in otherGrp.Rules)
+                        foreach (var rule in otherGrp.Rules)
                         {
-                            var newRule = new Rule(output.Rules.Count, newGrp);
+                            var newRule = new Rule(output.Rules.Count, newGrp, rule.Code);
 
                             foreach (var t in rule.Tokens.Concat(beta))
                             {
@@ -108,7 +108,7 @@ namespace PML.Preprocess
                                     newRule.Tokens.Add(output.TokenByName(t.Name));
                                 else
                                 {
-                                    var nt = new RuleToken(0, t.Type, t.Name);
+                                    var nt = new RuleToken(0, t.Type, t.Name, t.ReturnType, t.CodeIdentifier);
                                     nt.Parent = newRule;
                                     newRule.Tokens.Add(nt);
                                 }
@@ -135,9 +135,9 @@ namespace PML.Preprocess
 
                 if (hasDirectRecursion)
                 {
-                    RuleGroup tail = new RuleGroup(output.Groups.Count, oldGrp.Name + "__tail");
+                    RuleGroup tail = new RuleGroup(output.Groups.Count, oldGrp.Name + "__tail", oldGrp.ReturnType);
                     output.Groups.Add(tail);
-                    Rule emptyRule = new Rule(output.Rules.Count, tail);
+                    Rule emptyRule = new Rule(output.Rules.Count, tail, "");
                     output.Rules.Add(emptyRule);
                     tail.Rules.Add(emptyRule);
 
@@ -149,20 +149,20 @@ namespace PML.Preprocess
                         {
                             var alpha = oldRule.Tokens.Skip(1);
 
-                            var newRule = new Rule(output.Rules.Count, tail);
+                            var newRule = new Rule(output.Rules.Count, tail, oldRule.Code);
                             foreach (var t in alpha)
                             {
                                 if (t.Type == RuleTokenType.Token)
                                     newRule.Tokens.Add(output.TokenByName(t.Name));
                                 else
                                 {
-                                    var nt = new RuleToken(0, t.Type, t.Name);
+                                    var nt = new RuleToken(0, t.Type, t.Name, t.ReturnType, t.CodeIdentifier);
                                     nt.Parent = newRule;
                                     newRule.Tokens.Add(nt);
                                 }
                             }
 
-                            var tailt = new RuleToken(0, RuleTokenType.Rule, tail.Name);
+                            var tailt = new RuleToken(0, RuleTokenType.Rule, tail.Name, "/*TODO*/", "");
                             tailt.Parent = newRule;
                             newRule.Tokens.Add(tailt);
 
@@ -178,20 +178,20 @@ namespace PML.Preprocess
                         }
                         else
                         {
-                            var newRule = new Rule(output.Rules.Count, newGrp);
+                            var newRule = new Rule(output.Rules.Count, newGrp, oldRule.Code);
                             foreach (var t in oldRule.Tokens)
                             {
                                 if (t.Type == RuleTokenType.Token)
                                     newRule.Tokens.Add(output.TokenByName(t.Name));
                                 else
                                 {
-                                    var nt = new RuleToken(0, t.Type, t.Name);
+                                    var nt = new RuleToken(0, t.Type, t.Name, t.ReturnType, t.CodeIdentifier);
                                     nt.Parent = newRule;
                                     newRule.Tokens.Add(nt);
                                 }
                             }
 
-                            var tailt = new RuleToken(0, RuleTokenType.Rule, tail.Name);
+                            var tailt = new RuleToken(0, RuleTokenType.Rule, tail.Name, "/*TODO*/", "");
                             tailt.Parent = newRule;
                             newRule.Tokens.Add(tailt);
 
@@ -204,14 +204,14 @@ namespace PML.Preprocess
                 {
                     foreach (var oldRule in oldGrp.Rules)
                     {
-                        var newRule = new Rule(output.Rules.Count, newGrp);
+                        var newRule = new Rule(output.Rules.Count, newGrp, oldRule.Code);
                         foreach (var t in oldRule.Tokens)
                         {
                             if (t.Type == RuleTokenType.Token)
                                 newRule.Tokens.Add(output.TokenByName(t.Name));
                             else
                             {
-                                var nt = new RuleToken(0, t.Type, t.Name);
+                                var nt = new RuleToken(0, t.Type, t.Name, t.ReturnType, t.CodeIdentifier);
                                 nt.Parent = newRule;
                                 newRule.Tokens.Add(nt);
                             }

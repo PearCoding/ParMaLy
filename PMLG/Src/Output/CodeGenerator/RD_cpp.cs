@@ -32,14 +32,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 
-namespace PML.Output
+namespace PML.Output.CodeGenerator
 {
     using R;
 
-    public static class PseudoCode
+    public class RD_CPP : ICodeGenerator
     {
-        public static void PrintRD(TextWriter writer, IEnumerable<RState> states, Environment env, Style.CodeStyle style)
+        public void Generate(TextWriter writer, Parser.IParser parser, Environment env, Style.CodeStyle style, CodeGeneratorSettings settings)
         {
+            if(!(parser is Parser.IRParser)) {
+                return;
+            }
+
+            var states = ((Parser.IRParser)parser).States;
+            
             foreach (var t in env.Tokens)
             {
                 if (t.IsComplex)

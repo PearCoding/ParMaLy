@@ -64,14 +64,14 @@ namespace PML.Grammar
         List<Statement> gr_stmt_list()
         {
             var list = new List<Statement>();
-            while(!IsEOF())
+            while (!IsEOF())
             {
                 list.Add(gr_stmt());
             };
-            
+
             return list;
         }
-        
+
         Statement gr_stmt()
         {
             if (Lookahead(TokenType.Token))
@@ -85,10 +85,11 @@ namespace PML.Grammar
         Statement gr_token_stmt()
         {
             Match(TokenType.Token);
+            string returnType = gr_return_type_specifier();
             Token token = Match(TokenType.Identifier);
             Match(TokenType.Semicolon);
 
-            return new TokenDefStatement(token.Value);
+            return new TokenDefStatement(token.Value, returnType);
         }
 
         Statement gr_start_stmt()
@@ -103,15 +104,19 @@ namespace PML.Grammar
         Statement gr_rule_stmt()
         {
             Token name = Match(TokenType.Identifier);
+            string returnType = gr_return_type_specifier();
             Match(TokenType.Colon);
 
-            RuleStatement stmt = new RuleStatement();
-            while (true)
+            RuleStatement stmt = new RuleStatement(returnType);
+            while (!IsEOF())
             {
                 RuleDef rule = new RuleDef(name.Value);
                 rule.Tokens = gr_rule_list();
+                if (Lookahead(TokenType.Code))
+                    rule.Code = Match(TokenType.Code).Value;
+
                 stmt.Rules.Add(rule);
-                if (!IsEOF() && !Lookahead(TokenType.Semicolon))
+                if (!Lookahead(TokenType.Semicolon))
                 {
                     Match(TokenType.Bar);
                 }
@@ -122,12 +127,12 @@ namespace PML.Grammar
 
             return stmt;
         }
-        
+
         List<RuleDefToken> gr_rule_list()
         {
             List<RuleDefToken> rules = new List<RuleDefToken>();
 
-            while(!Lookahead(TokenType.Bar) && !Lookahead(TokenType.Semicolon) && !IsEOF())
+            while (!Lookahead(TokenType.Bar) && !Lookahead(TokenType.Semicolon) && !Lookahead(TokenType.Code) && !IsEOF())
             {
                 RuleDefToken t = gr_rule_part();
                 rules.Add(t);
@@ -151,10 +156,33 @@ namespace PML.Grammar
 
         RuleDefToken gr_rule_part()
         {
+            RuleDefToken token;
             if (Lookahead(TokenType.String))
-                return new RuleDefToken(Match(TokenType.String).Value, true);
+                token = new RuleDefToken(Match(TokenType.String).Value, true);
             else
-                return new RuleDefToken(Match(TokenType.Identifier).Value, false);
+                token = new RuleDefToken(Match(TokenType.Identifier).Value, false);
+
+            if(Lookahead(TokenType.OpenBracket)) {
+                Match(TokenType.OpenBracket);
+                token.CodeIdentifier = Match(TokenType.Identifier).Value;
+                Match(TokenType.CloseBracket);
+            }
+            return token;
+        }
+
+        string gr_return_type_specifier()
+        {
+            if (Lookahead(TokenType.OpenBrokets))
+            {
+                Match(TokenType.OpenBrokets);
+                string ret = Match(TokenType.Identifier).Value;
+                Match(TokenType.CloseBrokets);
+                return ret;
+            }
+            else
+            {
+                return "";
+            }
         }
 
         // Utils
@@ -173,10 +201,10 @@ namespace PML.Grammar
             Token token = _Lexer.Look();
             return token.Type == type;
         }
-        
+
         bool IsEOF()
         {
             return _Lexer.Look().Type == TokenType.EOF;
-        }      
+        }
     }
 }

@@ -1,0 +1,14 @@
+# Example from "Engineering a compiler"
+
+%start goal;
+
+goal: list
+    ;
+
+list: list pair
+    | pair
+    ;
+
+pair: '(' pair ')'
+    | '(' ')'
+    ;

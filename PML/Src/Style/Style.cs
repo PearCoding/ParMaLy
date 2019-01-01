@@ -40,7 +40,7 @@ namespace PML.Style
         public HtmlStyle TransitionTableHtml = new HtmlStyle();
         public HtmlStyle LookupTableHtml = new HtmlStyle();
 
-        public CodeStyle RDCode = new CodeStyle();
+        public CodeStyle Code = new CodeStyle();
 
         public CSVStyle ProceedingCSV = new CSVStyle();
     }

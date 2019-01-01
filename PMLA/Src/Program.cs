@@ -140,7 +140,15 @@ namespace PML
             }
             catch(Grammar.ParserError err)
             {
-                Console.Error.Write(err.Type.ToString());
+				if(err.Type == PML.Grammar.ErrorType.Parser_WrongToken)
+				{
+					Console.Error.WriteLine("Error at {0}[{1}] while parsing grammer file:", err.Value(0), err.Value(1));
+					Console.Error.WriteLine("  Expected '{0}' but got '{1}'", err.Value(2), err.Value(3));
+				}
+				else
+				{
+					Console.Error.Write(err.Type.ToString());
+				}
                 return 2;
             }
             catch(FileNotFoundException ex)

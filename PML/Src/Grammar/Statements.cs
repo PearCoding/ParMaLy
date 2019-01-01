@@ -48,11 +48,13 @@ namespace PML.Grammar
     internal class TokenDefStatement : Statement
     {
         public string Token;
+        public string ReturnType;
 
-        public TokenDefStatement(string token)
+        public TokenDefStatement(string token, string returnType = "")
         {
             _Type = StatementType.TokenDef;
             Token = token;
+            ReturnType = returnType;
         }
     }
 
@@ -70,17 +72,20 @@ namespace PML.Grammar
     internal class RuleStatement : Statement
     {
         public List<RuleDef> Rules = new List<RuleDef>();
+        public string ReturnType;
 
-        public RuleStatement()
+        public RuleStatement(string returnType = "")
         {
             _Type = StatementType.Rule;
+            ReturnType = returnType;
         }
     }
-    
+
     internal class RuleDef
     {
         public string Name;
         public List<RuleDefToken> Tokens = new List<RuleDefToken>();
+        public string Code = "";
 
         public RuleDef(string name)
         {
@@ -92,6 +97,8 @@ namespace PML.Grammar
     {
         public string Name;
         public bool WasString;
+
+        public string CodeIdentifier = "";
 
         public RuleDefToken(string name, bool wasstring)
         {

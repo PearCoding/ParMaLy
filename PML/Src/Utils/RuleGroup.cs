@@ -42,12 +42,16 @@ namespace PML
         string _Name;
         public string Name { get { return _Name; } }
 
+        string _ReturnType;
+        public string ReturnType { get { return _ReturnType; } }
+
         public List<Rule> Rules = new List<Rule>();
-        
-        public RuleGroup(int id, string name)
+
+        public RuleGroup(int id, string name, string returnType)
         {
             _ID = id;
             _Name = name;
+            _ReturnType = returnType;
         }
 
         public override bool Equals(object obj)

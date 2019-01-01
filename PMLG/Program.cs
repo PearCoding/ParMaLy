@@ -39,7 +39,7 @@ namespace PML
     class Options
     {
         public string StyleFile;
-        
+
         public string Parser;
         public bool Parse = false;
 
@@ -51,7 +51,10 @@ namespace PML
         public string TransitionHtmlFile;
         public string LookupHtmlFile;
 
-        public string CodeFile;
+        public string CodeType;
+        public string CodeFile = "a.txt";
+
+        public string CodeLanguage = "cpp";
 
         public string ProceedingCSVFile;
 
@@ -64,10 +67,21 @@ namespace PML
 
         public bool ShowHelp = false;
         public bool NoLog = false;
+
+        public bool OmitCustomCode = false;
+        public bool EnableTraceCode = false;
     }
 
     class Program
     {
+        private static Dictionary<string, Dictionary<string, Output.CodeGenerator.ICodeGenerator>> _CodeGenerators = new Dictionary<string, Dictionary<string, Output.CodeGenerator.ICodeGenerator>>
+        {
+            {"rd", new Dictionary<string, Output.CodeGenerator.ICodeGenerator>{
+                {"cpp", new Output.CodeGenerator.RD_CPP()}}},
+            {"t_lr", new Dictionary<string, Output.CodeGenerator.ICodeGenerator>{
+                {"cpp", new Output.CodeGenerator.TableLR1_CPP()}}},
+        };
+
         static void ShowHelp(OptionSet p)
         {
             Console.WriteLine("Usage: PMLG grammar_file --parser=[PARSER] [OPTIONS]+");
@@ -87,6 +101,12 @@ namespace PML
             Console.WriteLine("\tll1\t\t[LL(1)](LL)");
             Console.WriteLine("\tll\t\t[LL(k)](LL)");
             Console.WriteLine("\trd\t\t[Recursive-Descent](Recursive)");
+            Console.WriteLine("CODE TYPE=");
+            Console.WriteLine("\trd\t\t[Recursive-Descent](rd)");
+            Console.WriteLine("\tt_lr\t\t[Table LR](lr0,lr1,lr,slr1,slr,lalr1,lalr)");
+            Console.WriteLine("\tr_lr\t\t[Recursive LR](lr0,lr1,lr,slr1,slr,lalr1,lalr)");
+            Console.WriteLine("CODE LANGUAGE=");
+            Console.WriteLine("\tcpp\t\t[C++])");
         }
 
         static int Main(string[] args)
@@ -118,9 +138,21 @@ namespace PML
                 { "proceeding-csv=",
                     "Generate a csv {FILE} from generation process.",
                     (string s) => { opts.ProceedingCSVFile = s; opts.Parse = true; } },
-                { "code=",
-                    "Generate a pseudo code {FILE}. Currently only available for recursive parsers.",
+                { "code-type=",
+                    "Generate code based on {CODE TYPE}.",
+                    (string s) => { opts.CodeType = s; opts.Parse = true; } },
+                { "code-file=",
+                    "Generate a pseudo code {FILE}.",
                     (string s) => { opts.CodeFile = s; opts.Parse = true; } },
+                { "code-language=",
+                    "Choose underlying {CODE LANGUAGE}.",
+                    (string s) => opts.CodeLanguage = s },
+                { "disable-custom-code",
+                    "Disable user given code inside generated code.",
+                     v => opts.OmitCustomCode = v != null },
+                { "enable-trace-code",
+                    "Enable debug trace code for the parser.",
+                     v => opts.EnableTraceCode = v != null },
                 { "errors=",
                     "Generate a error {FILE} listing all errors.",
                     (string s) => { opts.ErrorFile = s; opts.Parse = true; } },
@@ -185,7 +217,7 @@ namespace PML
                 Console.Error.Write(ex.Message);
                 return -2;
             }
-            
+
             Style.Style style = null;
             if (opts.StyleFile == null)
                 style = new Style.Style();
@@ -309,15 +341,36 @@ namespace PML
                             Output.PMLWriter.WriteLL(File.CreateText(opts.PMLFile), ((Parser.ITDParser)parser), env);
                         }
                     }
-                    else if (type == 2)//RParser
+
+                    if (!String.IsNullOrEmpty(opts.CodeType))
                     {
-                        if (!String.IsNullOrEmpty(opts.CodeFile))
+                        if (_CodeGenerators.ContainsKey(opts.CodeType))
                         {
-                            Output.PseudoCode.PrintRD(File.CreateText(opts.CodeFile), ((Parser.IRParser)parser).States, env, style.RDCode);
+                            if (_CodeGenerators[opts.CodeType].ContainsKey(opts.CodeLanguage))
+                            {
+                                Output.CodeGenerator.ICodeGenerator gen = _CodeGenerators[opts.CodeType][opts.CodeLanguage];
+                                Output.CodeGenerator.CodeGeneratorSettings settings = new Output.CodeGenerator.CodeGeneratorSettings();
+                                settings.EmbedCustomCode = !opts.OmitCustomCode;
+                                settings.EmbedTraceCode = opts.EnableTraceCode;
+
+                                gen.Generate(File.CreateText(opts.CodeFile), parser, env, style.Code, settings);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Unknown code language selected.");
+                                Console.WriteLine("Try 'PMLA --help' for more information.");
+                                return -1;
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Unknown code type selected.");
+                            Console.WriteLine("Try 'PMLA --help' for more information.");
+                            return -1;
                         }
                     }
 
-                    if(!String.IsNullOrEmpty(opts.ErrorFile))
+                    if (!String.IsNullOrEmpty(opts.ErrorFile))
                     {
                         Output.ErrorFile.Print(File.CreateText(opts.ErrorFile), parser.Statistics);
                     }

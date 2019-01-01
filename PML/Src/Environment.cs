@@ -64,6 +64,9 @@ namespace PML
 
         public void Parse(string source)
         {
+            // TODO: Default return type?
+            const string unqualifiedTokenReturnType = "";
+
             Grammar.Parser parser = new Grammar.Parser(source, _Logger);
             var tree = parser.Parse();
 
@@ -74,7 +77,7 @@ namespace PML
                 {
                     Grammar.TokenDefStatement tds = stmt as Grammar.TokenDefStatement;
 
-                    RuleToken token = new RuleToken(_Tokens.Count, RuleTokenType.Token, tds.Token);
+                    RuleToken token = new RuleToken(_Tokens.Count, RuleTokenType.Token, tds.Token, tds.ReturnType, "");
                     token.IsComplex = true;
 
                     if (_Tokens.Contains(token))
@@ -96,16 +99,16 @@ namespace PML
                         RuleGroup grp = GroupByName(def.Name);
                         if (grp == null)
                         {
-                            grp = new RuleGroup(_Groups.Count + 1, def.Name);
+                            grp = new RuleGroup(_Groups.Count, def.Name, rs.ReturnType);
                             _Groups.Add(grp);
                         }
 
-                        Rule rule = new Rule(_Rules.Count + 1, grp);
+                        Rule rule = new Rule(_Rules.Count, grp, def.Code);
                         foreach (Grammar.RuleDefToken t in def.Tokens)
                         {
                             if (t.WasString)
                             {
-                                var token = new RuleToken(_Tokens.Count, RuleTokenType.Token, t.Name);
+                                var token = new RuleToken(_Tokens.Count, RuleTokenType.Token, t.Name, unqualifiedTokenReturnType, t.CodeIdentifier);
                                 if (!_Tokens.Contains(token))
                                 {
                                     _Tokens.Add(token);
@@ -119,7 +122,7 @@ namespace PML
                                 var token = TokenByName(t.Name);
                                 if (token == null)
                                 {
-                                    token = new RuleToken(-1, RuleTokenType.Rule, t.Name);
+                                    token = new RuleToken(-1, RuleTokenType.Rule, t.Name, unqualifiedTokenReturnType, t.CodeIdentifier);
                                     token.Parent = rule;
                                     rule.Tokens.Add(token);
                                 }
@@ -157,14 +160,14 @@ namespace PML
             }
 
             // Fourth pass: Set groups in tokens
-            foreach(var r in _Rules)
+            foreach (var r in _Rules)
             {
-                foreach(var t in r.Tokens)
+                foreach (var t in r.Tokens)
                 {
-                    if(t.Type == RuleTokenType.Rule)
+                    if (t.Type == RuleTokenType.Rule)
                     {
                         RuleGroup grp = GroupByName(t.Name);
-                        if(grp != null)
+                        if (grp != null)
                         {
                             t.Group = grp;
                         }
@@ -176,12 +179,12 @@ namespace PML
                 }
             }
         }
-        
+
 
         // Access
         public RuleGroup GroupByName(string name)
         {
-            foreach(RuleGroup grp in _Groups)
+            foreach (RuleGroup grp in _Groups)
             {
                 if (grp.Name == name)
                     return grp;
@@ -202,7 +205,7 @@ namespace PML
 
         public Rule RuleByID(int id)
         {
-            foreach(Rule r in _Rules)
+            foreach (Rule r in _Rules)
             {
                 if (r.ID == id)
                     return r;
@@ -212,7 +215,7 @@ namespace PML
 
         public RuleToken TokenByName(string str)
         {
-            foreach(var t in _Tokens)
+            foreach (var t in _Tokens)
             {
                 if (t.Name == str)
                     return t;
@@ -233,16 +236,16 @@ namespace PML
         // Utils
         bool IsRuleUnique(Rule rule)
         {
-            foreach(Rule other in _Rules)
+            foreach (Rule other in _Rules)
             {
-                if(other.Group == rule.Group)
+                if (other.Group == rule.Group)
                 {
-                    if(other.Tokens.Count == rule.Tokens.Count)
+                    if (other.Tokens.Count == rule.Tokens.Count)
                     {
                         bool found = false;
-                        for(int i = 0; i < rule.Tokens.Count; ++i)
+                        for (int i = 0; i < rule.Tokens.Count; ++i)
                         {
-                            if(other.Tokens[i].Type != rule.Tokens[i].Type ||
+                            if (other.Tokens[i].Type != rule.Tokens[i].Type ||
                                 other.Tokens[i].Name != rule.Tokens[i].Name)
                             {
                                 found = true;
@@ -251,7 +254,7 @@ namespace PML
                         }
 
                         if (!found)
-                            return false;    
+                            return false;
                     }
                 }
             }

@@ -60,7 +60,7 @@ namespace PML.Grammar
             {
                 return new Token(TokenType.EOF);
             }
-            
+
             if (CurrentChar == '#')// Comment
             {
                 while (_Position < _Source.Length && CurrentChar != '\n')
@@ -86,7 +86,7 @@ namespace PML.Grammar
 
                     return Next();
                 }
-                else if(_Position < _Source.Length && CurrentChar == '*')
+                else if (_Position < _Source.Length && CurrentChar == '*')
                 {
                     while (_Position < _Source.Length)
                     {
@@ -115,6 +115,36 @@ namespace PML.Grammar
                         _Column, _Line);
                 }
             }
+            else if (CurrentChar == '{')// Code section
+            {
+                ++_Position;
+                ++_Column;
+
+                string str = "";
+                while (_Position < _Source.Length)
+                {
+                    if (CurrentChar == '\\')
+                    {
+                        ++_Position;
+                        ++_Column;
+
+                        if (_Position >= _Source.Length)
+                            break;
+                    }
+                    else if (CurrentChar == '}')
+                    {
+                        ++_Position;
+                        ++_Column;
+                        break;
+                    }
+
+                    str += CurrentChar;
+                    ++_Position;
+                    ++_Column;
+                }
+
+                return new Token(TokenType.Code, str);
+            }
             else if (CurrentChar == ':')
             {
                 ++_Position;
@@ -136,13 +166,41 @@ namespace PML.Grammar
 
                 return new Token(TokenType.Bar);
             }
+            else if (CurrentChar == '<')
+            {
+                ++_Position;
+                ++_Column;
+
+                return new Token(TokenType.OpenBrokets);
+            }
+            else if (CurrentChar == '>')
+            {
+                ++_Position;
+                ++_Column;
+
+                return new Token(TokenType.CloseBrokets);
+            }
+            else if (CurrentChar == '[')
+            {
+                ++_Position;
+                ++_Column;
+
+                return new Token(TokenType.OpenBracket);
+            }
+            else if (CurrentChar == ']')
+            {
+                ++_Position;
+                ++_Column;
+
+                return new Token(TokenType.CloseBracket);
+            }
             else if (CurrentChar == '%')//Specials
             {
                 ++_Position;
                 ++_Column;
 
                 string str = "";
-                while (_Position < _Source.Length && !IsWhitespace(CurrentChar))
+                while (_Position < _Source.Length && IsAscii(CurrentChar))
                 {
                     str += CurrentChar;
 
@@ -245,7 +303,7 @@ namespace PML.Grammar
             int pos = _Position;
             int line = _Line;
             int col = _Column;
-            
+
             Token t = Next();
 
             _Position = pos;

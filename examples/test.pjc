@@ -1,0 +1,46 @@
+/* Pear JIT C (++) 
+ * 
+ * A LLVM based JIT language designed for very fast math pipelines with many preexecution known switches and parameters.
+ * Code can be written in this language and build with constant elimination and branch removement.
+ * The building process can be done within standard c/c++ and called directly or saved for later use.
+ */
+
+// Standard Library
+#include <pjcmath>
+#include <pjcstdio>
+
+int b; 				// Global
+static float c = 5;		// Translation Unit Global 
+extern constexpr float PI;	// Compile Time Constant defined by Host
+
+short reg(int* ab);		// Function declaration
+
+inline void add(double& r)	// Function definition with reference parameter
+{
+  r += 2.0;
+}
+
+struct System 			// POD Structures (currently only supported)
+{
+  int D;
+  int P;
+};
+
+inline constexpr int some_use(int a, int b) 	// Compile Time only function. Inline is obsolete.
+{
+  return (a*42-b*7)%0xDEADBEEF;
+}
+
+inline int some_use(int a, int b)		// Standard Function. If called with compile time known constants the above function is called instead
+{
+  return a-b;
+}
+
+int main(int argc, const char** argv)
+{
+  const int MIGHTY = 42;
+  constexpr int HOLY = 42;
+
+  printf("Hello World!\n");
+  return -1;
+}

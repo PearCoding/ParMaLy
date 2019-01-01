@@ -1,21 +1,29 @@
-%token NUM;
+%token<Number> NUM;
 %start in;
 
-in:	add_expr
+in:	/* EMPTY */
+	| expr_list
 	;
 
-add_expr:	mul_expr
-			| add_expr '+' mul_expr
-			| add_expr '-' mul_expr
+expr_list:	expr
+		| expr ';'
+		| expr ';' expr_list
+		;
+
+expr:	add_expr { std::cout << Calc($0) << std::endl; }
+	;
+
+add_expr<Expression>:	mul_expr { $$ = $0; }
+			| add_expr[L] '+' mul_expr[R] { $$ = Expr(ET_Add,$L,$R); }
+			| add_expr[L] '-' mul_expr[R] { $$ = Expr(ET_Sub,$L,$R); }
 			;
 			
-mul_expr:	unary_expr
-			| mul_expr '*' unary_expr
-			| mul_expr '/' unary_expr
-			| mul_expr '%' unary_expr
-			| mul_expr '**' unary_expr
-			;
-			
-unary_expr:	'(' add_expr ')'
-			| NUM
+mul_expr<Expression>:	unary_expr { $$ = $0; }
+			| mul_expr[L] '*' unary_expr[R] { $$ = Expr(ET_Mul,$L,$R); }
+			| mul_expr[L] '/' unary_expr[R] { $$ = Expr(ET_Div,$L,$R); }
+			| mul_expr[L] '%' unary_expr[R] { $$ = Expr(ET_Mod,$L,$R); }
+			| mul_expr[L] '*' '*' unary_expr[R] { $$ = Expr(ET_Pow,$L,$R); }
+			;	
+unary_expr<Expression>:	'(' add_expr[E] ')' { $$ = $E; }
+			| NUM { $$ = Expr(ET_Num, $0); }
 			;

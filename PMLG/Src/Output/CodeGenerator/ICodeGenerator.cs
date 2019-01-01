@@ -1,5 +1,5 @@
-﻿/*
- * Copyright (c) 2016, Ömercan Yazici <omercan AT pearcoding.eu>
+/*
+ * Copyright (c) 2016-2019, Ömercan Yazici <omercan AT pearcoding.eu>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -28,38 +28,23 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
-namespace PML.Grammar
+using System.Collections.Generic;
+using System.Linq;
+using System.IO;
+
+namespace PML.Output.CodeGenerator
 {
-    internal enum TokenType
+    using R;
+
+    public class CodeGeneratorSettings
     {
-        Identifier,
-        String,
-        Token,
-        Start,
-        Colon,
-        Semicolon,
-        Bar,
-        OpenBracket,
-        CloseBracket,
-        OpenBrokets,
-        CloseBrokets,
-        Code,
-        EOF
+        public bool EmbedCustomCode = true;
+        public bool EmbedTraceCode = true;
     }
 
-    internal class Token
+    public interface ICodeGenerator
     {
-        public TokenType Type;
-        public string Value;
-
-        public Token(TokenType type)
-        {
-            Type = type;
-        }
-        public Token(TokenType type, string val)
-        {
-            Type = type;
-            Value = val;
-        }
+        void Generate(TextWriter writer, Parser.IParser parser,
+         Environment env, Style.CodeStyle style, CodeGeneratorSettings settings);
     }
 }

@@ -41,11 +41,14 @@ namespace PML.Output
             writer.WriteLine("/* Generated with PMLA */");
             writer.WriteLine();
 
-            foreach(var t in env.Tokens)
+            foreach (var t in env.Tokens)
             {
-                if(t.IsComplex)
+                if (t.IsComplex)
                 {
-                    writer.WriteLine("%token " + t.Name + ";");
+                    if (String.IsNullOrEmpty(t.ReturnType))
+                        writer.WriteLine("%token " + t.Name + ";");
+                    else
+                        writer.WriteLine("%token<" + t.ReturnType + "> " + t.Name + ";");
                 }
             }
 
@@ -53,7 +56,7 @@ namespace PML.Output
                 writer.WriteLine("%start " + env.Start.Name + ";");
 
             writer.WriteLine();
-            foreach(var grp in env.Groups)
+            foreach (var grp in env.Groups)
             {
                 PrintGroup(writer, grp);
                 writer.WriteLine();
@@ -64,10 +67,19 @@ namespace PML.Output
 
         static void PrintGroup(TextWriter writer, RuleGroup grp)
         {
-            int length = grp.Name.Length;
-            writer.Write(grp.Name + ": ");
+            int length;
+            if (String.IsNullOrEmpty(grp.ReturnType))
+            {
+                writer.Write(grp.Name + ": ");
+                length = grp.Name.Length;
+            }
+            else
+            {
+                writer.Write(grp.Name + "<" + grp.ReturnType + ">: ");
+                length = grp.Name.Length + 2 + grp.ReturnType.Length;
+            }
 
-            for(int i = 0; i < grp.Rules.Count; ++i)
+            for (int i = 0; i < grp.Rules.Count; ++i)
             {
                 var r = grp.Rules[i];
 
@@ -76,7 +88,15 @@ namespace PML.Output
                 else
                 {
                     writer.WriteLine(String.Join(" ",
-                        r.Tokens.Select(v => (v.Type == RuleTokenType.Rule || v.IsComplex ? v.Name : "'" + v.Name + "'")).ToArray()));
+                        r.Tokens.Select(v => (v.Type == RuleTokenType.Rule || v.IsComplex ? v.Name : "'" + v.Name + "'") + (String.IsNullOrEmpty(v.CodeIdentifier) ? "" : "[" + v.CodeIdentifier + "]")).ToArray()));
+                }
+
+                if (!String.IsNullOrEmpty(r.Code))
+                {
+                    for (int j = 0; j < length; ++j)
+                        writer.Write(" ");
+
+                    writer.WriteLine("{" + r.Code + "}");
                 }
 
                 for (int j = 0; j < length; ++j)

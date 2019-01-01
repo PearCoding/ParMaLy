@@ -50,6 +50,12 @@ namespace PML
         string _String;
         public string Name { get { return _String; } }
 
+        string _SimpleReturnType;
+        public string ReturnType { get { return Group != null ? Group.ReturnType : _SimpleReturnType; } }
+
+        string _CodeIdentifier;
+        public string CodeIdentifier { get { return _CodeIdentifier; } }
+
         //Rule
         public Rule Parent;
         public RuleGroup Group;
@@ -57,11 +63,13 @@ namespace PML
         //Token
         public bool IsComplex = false;
 
-        public RuleToken(int id, RuleTokenType type, string str)
+        public RuleToken(int id, RuleTokenType type, string str, string returnType, string codeIdentifier)
         {
             _ID = id;
             _Type = type;
             _String = str;
+            _SimpleReturnType = returnType;
+            _CodeIdentifier = codeIdentifier;
         }
 
         public override bool Equals(Object obj)
