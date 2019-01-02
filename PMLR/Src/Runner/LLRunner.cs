@@ -54,7 +54,7 @@ namespace PML.Runner
             List<Events.IEvent> events = new List<Events.IEvent>();
 
             Stack<RuleToken> stack = new Stack<RuleToken>();
-            var start = new RuleToken(0, RuleTokenType.Rule, env.Start.Name);
+            var start = new RuleToken(0, RuleTokenType.Rule, env.Start.Name, "", "");
             start.Group = env.Start;
             stack.Push(start);
 
@@ -103,7 +103,7 @@ namespace PML.Runner
             List<Events.IEvent> events = new List<Events.IEvent>();
 
             Stack<RuleToken> stack = new Stack<RuleToken>();
-            var start = new RuleToken(0, RuleTokenType.Rule, env.Start.Name);
+            var start = new RuleToken(0, RuleTokenType.Rule, env.Start.Name, "", "");
             start.Group = env.Start;
             stack.Push(start);
 
