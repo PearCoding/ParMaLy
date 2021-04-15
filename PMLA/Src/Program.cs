@@ -150,7 +150,7 @@ namespace PML
                 }
                 return 2;
             }
-            catch (FileNotFoundException ex)
+            catch (Exception ex)
             {
                 Console.Error.Write(ex.Message);
                 return -2;
