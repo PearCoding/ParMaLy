@@ -35,10 +35,9 @@ namespace PML
 {
     public class FollowSetCache
     {
-        Dictionary<KeyValuePair<RuleGroup, int>, RuleLookaheadSet> _GroupCache =
+        readonly Dictionary<KeyValuePair<RuleGroup, int>, RuleLookaheadSet> _GroupCache =
             new Dictionary<KeyValuePair<RuleGroup, int>, RuleLookaheadSet>();
-
-        List<int> _Setups = new List<int>();
+        readonly List<int> _Setups = new List<int>();
 
         public int MaxK { get { return _Setups.Max(); } }
 
@@ -65,7 +64,7 @@ namespace PML
         {
             return _GroupCache[new KeyValuePair<RuleGroup, int>(grp, k)];
         }
-        
+
         public void Clear()
         {
             _GroupCache.Clear();

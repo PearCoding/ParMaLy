@@ -34,8 +34,8 @@ using System.Linq;
 
 namespace PML.Parser
 {
-    using Statistics;
     using R;
+    using Statistics;
 
     class RD : IRParser
     {
@@ -45,10 +45,10 @@ namespace PML.Parser
 
         public Statistics Statistics { get { return _Statistics; } }
 
-        List<RState> _States = new List<RState>();
+        readonly List<RState> _States = new List<RState>();
         public IEnumerable<RState> States { get { return _States; } }
 
-        int MaxK;
+        readonly int MaxK;
 
         public int K { get { return MaxK; } }
 
@@ -66,14 +66,14 @@ namespace PML.Parser
             // We can not start without a 'Start' token.
             if (env.Start == null || env.Start.Rules.Count == 0)
                 return;
-            
+
             int currentMaxK = 1;
             env.FirstCache.Setup(env, 1);
             env.FollowCache.Setup(env, 1);
 
             Stopwatch watch = new Stopwatch();
             watch.Start();
-            foreach(var grp in env.Groups)
+            foreach (RuleGroup grp in env.Groups)
             {
                 RState state = new RState(grp);
 
@@ -84,13 +84,13 @@ namespace PML.Parser
                 else
                 {
                     Dictionary<Rule, RuleLookaheadSet> tokens = new Dictionary<Rule, RuleLookaheadSet>();
-                    foreach (var r in grp.Rules)//TODO: Need a better and responsive approach
+                    foreach (Rule r in grp.Rules)//TODO: Need a better and responsive approach
                     {
                         RuleLookaheadSet set = null;
-                        var conflicts = new Dictionary<Rule, RuleLookaheadSet>(tokens);
+                        Dictionary<Rule, RuleLookaheadSet> conflicts = new Dictionary<Rule, RuleLookaheadSet>(tokens);
                         for (int k = 1; k <= MaxK; ++k)
                         {
-                            if(k > currentMaxK)
+                            if (k > currentMaxK)
                             {
                                 currentMaxK = k;
                                 env.FirstCache.Setup(env, k);
@@ -99,14 +99,14 @@ namespace PML.Parser
 
                             set = PredictSet.Generate(env, grp, r.Tokens, k);
 
-                            var newConflict = new Dictionary<Rule, RuleLookaheadSet>();
-                            foreach (var other in conflicts)
+                            Dictionary<Rule, RuleLookaheadSet> newConflict = new Dictionary<Rule, RuleLookaheadSet>();
+                            foreach (KeyValuePair<Rule, RuleLookaheadSet> other in conflicts)
                             {
-                                foreach (var o in other.Value)
+                                foreach (RuleLookahead o in other.Value)
                                 {
                                     if (set.HasIntersection(o))
                                     {
-                                        var newSet = PredictSet.Generate(env, grp, other.Key.Tokens, k);
+                                        RuleLookaheadSet newSet = PredictSet.Generate(env, grp, other.Key.Tokens, k);
                                         newConflict.Add(other.Key, newSet);
                                         tokens[other.Key] = newSet;
                                         break;
@@ -126,7 +126,7 @@ namespace PML.Parser
                         }
                     }
 
-                    foreach(var t in tokens)
+                    foreach (KeyValuePair<Rule, RuleLookaheadSet> t in tokens)
                     {
                         state.Lookaheads.Add(t.Key, t.Value);
                     }

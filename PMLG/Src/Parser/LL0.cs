@@ -28,9 +28,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
-using System;
-using System.Diagnostics;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace PML.Parser
 {
@@ -40,7 +39,7 @@ namespace PML.Parser
     //Pretty useless type of parser... but it's a type.
     public class LL0 : ITDParser
     {
-        LookupTable _Lookup = new LookupTable();
+        readonly LookupTable _Lookup = new LookupTable();
 
         public string Name { get { return "LL(0)"; } }
 
@@ -67,18 +66,18 @@ namespace PML.Parser
             _Statistics = new Statistics();
             _Statistics.TD = new TDStatistics();
 
-            var tokens = new List<RuleToken>(env.Tokens);
+            List<RuleToken> tokens = new List<RuleToken>(env.Tokens);
             tokens.Add(null);//EOF
 
             Stopwatch watch = new Stopwatch();
             watch.Start();
-            foreach(var grp in env.Groups)
+            foreach (RuleGroup grp in env.Groups)
             {
-                foreach (var r in grp.Rules)
+                foreach (Rule r in grp.Rules)
                 {
-                    foreach (var s in tokens)
+                    foreach (RuleToken s in tokens)
                     {
-                        var look = (s == null ? null : new RuleLookahead(s));
+                        RuleLookahead look = (s == null ? null : new RuleLookahead(s));
                         if (_Lookup.Get(grp, look) != null)
                         {
                             _Statistics.TD.Conflicts.Add(

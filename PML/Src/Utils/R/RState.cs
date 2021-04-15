@@ -34,7 +34,7 @@ namespace PML.R
 {
     public class RState
     {
-        RuleGroup _Group;
+        readonly RuleGroup _Group;
         public RuleGroup Group { get { return _Group; } }
 
         public Dictionary<Rule, RuleLookaheadSet> Lookaheads = new Dictionary<Rule, RuleLookaheadSet>();

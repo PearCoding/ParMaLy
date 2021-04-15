@@ -37,13 +37,13 @@ namespace PML
     [System.Diagnostics.DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class Rule : IEquatable<Rule>
     {
-        int _ID;
+        readonly int _ID;
         public int ID { get { return _ID; } }
 
-        RuleGroup _Group;
+        readonly RuleGroup _Group;
         public RuleGroup Group { get { return _Group; } }
 
-        string _Code;
+        readonly string _Code;
         public string Code { get { return _Code; } }
 
         public List<RuleToken> Tokens = new List<RuleToken>();
@@ -62,12 +62,12 @@ namespace PML
                 return Tokens.Count == 0;
             }
         }
-        
+
         public bool HasNonTerminals
         {
             get
             {
-                foreach(var t in Tokens)
+                foreach (RuleToken t in Tokens)
                 {
                     if (t.Type == RuleTokenType.Rule)
                         return true;

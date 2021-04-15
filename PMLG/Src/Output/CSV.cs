@@ -38,7 +38,7 @@ namespace PML.Output
     {
         public static void PrintProceedings(TextWriter writer, IEnumerable<BUStatistics.ProcessEntry> proceedings, Style.CSVStyle style)
         {
-            foreach(var proc in proceedings)
+            foreach (BUStatistics.ProcessEntry proc in proceedings)
             {
                 writer.WriteLine(proc.Job.ID + style.Seperator
                     + proc.TotalStages + style.Seperator

@@ -34,8 +34,8 @@ namespace PML.Grammar
 {
     internal class Parser
     {
-        Lexer _Lexer;
-        Logger _Logger;
+        readonly Lexer _Lexer;
+        readonly Logger _Logger;
 
         public Parser(string source, Logger logger)
         {
@@ -63,7 +63,7 @@ namespace PML.Grammar
 
         List<Statement> gr_stmt_list()
         {
-            var list = new List<Statement>();
+            List<Statement> list = new List<Statement>();
             while (!IsEOF())
             {
                 list.Add(gr_stmt());
@@ -162,7 +162,8 @@ namespace PML.Grammar
             else
                 token = new RuleDefToken(Match(TokenType.Identifier).Value, false);
 
-            if(Lookahead(TokenType.OpenBracket)) {
+            if (Lookahead(TokenType.OpenBracket))
+            {
                 Match(TokenType.OpenBracket);
                 token.CodeIdentifier = Match(TokenType.Identifier).Value;
                 Match(TokenType.CloseBracket);

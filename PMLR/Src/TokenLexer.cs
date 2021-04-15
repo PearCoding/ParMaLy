@@ -34,7 +34,7 @@ namespace PML
 {
     public class TokenLexer
     {
-        List<string> _Input = new List<string>();
+        readonly List<string> _Input = new List<string>();
         int _Position = 0;
 
         public int Position { get { return _Position; } }
@@ -47,15 +47,15 @@ namespace PML
             string tmp = "";
             bool isString = false;
             bool isEscape = false;
-            foreach(var c in source)
+            foreach (char c in source)
             {
-                if(!isEscape && c == '\\')
+                if (!isEscape && c == '\\')
                 {
                     isEscape = true;
                 }
                 else
                 {
-                    if(!isEscape && c == '"')
+                    if (!isEscape && c == '"')
                     {
                         if (isString)
                         {
@@ -71,9 +71,9 @@ namespace PML
                             isString = true;
                         }
                     }
-                    else if(c == '\t' || c == '\n' || c == '\r' || c == ' ')
+                    else if (c == '\t' || c == '\n' || c == '\r' || c == ' ')
                     {
-                        if(tmp != "")
+                        if (tmp != "")
                         {
                             _Input.Add(tmp);
                             tmp = "";
@@ -91,7 +91,7 @@ namespace PML
             {
                 _Input.Add(tmp);
             }
-            
+
         }
 
         public void Reset()
@@ -115,7 +115,7 @@ namespace PML
                 RuleLookahead look = new RuleLookahead();
                 for (int i = offset; i < System.Math.Min(lookahead + 1, Left); ++i)
                 {
-                    var t = env.TokenByName(_Input[_Position + i]);
+                    RuleToken t = env.TokenByName(_Input[_Position + i]);
                     if (t == null)
                         return null;
 
@@ -129,7 +129,7 @@ namespace PML
         {
             return Current(env, lookahead, 1);
         }
-        
+
         public void Step(int lookahead = 1)
         {
             _Position += lookahead;

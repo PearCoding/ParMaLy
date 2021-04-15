@@ -28,7 +28,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
-using System;
 using System.Diagnostics;
 
 namespace PML.Parser
@@ -38,7 +37,7 @@ namespace PML.Parser
 
     public class LLK : ITDParser
     {
-        LookupTable _Lookup = new LookupTable();
+        readonly LookupTable _Lookup = new LookupTable();
 
         public string Name { get { return "LL(" + K + ")"; } }
 
@@ -47,7 +46,7 @@ namespace PML.Parser
         Statistics _Statistics;
         public Statistics Statistics { get { return _Statistics; } }
 
-        int _K;
+        readonly int _K;
 
         public int K { get { return _K; } }
 
@@ -72,12 +71,12 @@ namespace PML.Parser
 
             Stopwatch watch = new Stopwatch();
             watch.Start();
-            foreach(var grp in env.Groups)
+            foreach (RuleGroup grp in env.Groups)
             {
-                foreach (var r in grp.Rules)
+                foreach (Rule r in grp.Rules)
                 {
-                    var predict = PredictSet.Generate(env, grp, r.Tokens, K);
-                    foreach (var s in predict)
+                    RuleLookaheadSet predict = PredictSet.Generate(env, grp, r.Tokens, K);
+                    foreach (RuleLookahead s in predict)
                     {
                         if (_Lookup.Get(grp, s) != null)
                         {
@@ -85,7 +84,7 @@ namespace PML.Parser
                                 new TDStatistics.ConflictEntry(TDStatistics.ConflictType.Lookup, grp, s, r));
                         }
 
-                        _Lookup.Set(grp, s, r);   
+                        _Lookup.Set(grp, s, r);
                     }
                 }
             }

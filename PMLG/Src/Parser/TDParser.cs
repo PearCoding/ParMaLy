@@ -28,8 +28,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
-using System.Collections.Generic;
-
 namespace PML.Parser
 {
     public interface ITDParser : IParser

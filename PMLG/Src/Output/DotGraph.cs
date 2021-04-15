@@ -28,8 +28,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 
 namespace PML.Output
 {
@@ -56,10 +56,10 @@ namespace PML.Output
             string confLabel = "";
             if (style.UseNodeLabel)
             {
-                foreach (var conf in node.All)
+                foreach (BU.RuleConfiguration conf in node.All)
                 {
                     int p = 0;
-                    foreach (var t in conf.Rule.Tokens)
+                    foreach (RuleToken t in conf.Rule.Tokens)
                     {
                         if (p == conf.Pos)
                             confLabel += style.PosIdentificator + " ";
@@ -89,19 +89,19 @@ namespace PML.Output
                 nodestyle = style.StartNode;
 
             writer.WriteLine(node.ID
-                + " [" + nodestyle 
+                + " [" + nodestyle
                 + (!style.UseNodeXLabel ? "" : ",xlabel=\"" + style.NodeXLabelPrefix + (node.ID + style.StateIDOffset) + "\"")
-                + (!style.UseNodeLabel ? "" : ",label=\"" + confLabel + "\"") 
+                + (!style.UseNodeLabel ? "" : ",label=\"" + confLabel + "\"")
                 + "];");
 
-            foreach(var c in node.Production)
+            foreach (BU.RuleState.Connection c in node.Production)
             {
                 string label = "";
-                if(!style.UseRuleName && c.Token.Type == RuleTokenType.Rule)
+                if (!style.UseRuleName && c.Token.Type == RuleTokenType.Rule)
                 {
                     label = style.RuleNamePrefix + env.GroupByName(c.Token.Name).ID + style.RuleNameSuffix;
                 }
-                else if(c.Token.Type == RuleTokenType.Token)
+                else if (c.Token.Type == RuleTokenType.Token)
                 {
                     label = style.TokenNamePrefix + c.Token.Name + style.TokenNameSuffix;
                 }
@@ -114,7 +114,7 @@ namespace PML.Output
                     (!style.UseEdgeLabel ? "" : " [label=\"" + style.EdgeLabelPrefix + label + "\"") + "];");
             }
 
-            foreach (var c in node.Production)
+            foreach (BU.RuleState.Connection c in node.Production)
             {
                 if (!stack.Contains(c.State))
                     PrintStateGraphNode(writer, env, c.State, stack, style);

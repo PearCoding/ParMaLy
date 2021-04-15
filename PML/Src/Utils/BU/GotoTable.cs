@@ -28,7 +28,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
-using System;
 using System.Collections.Generic;
 
 namespace PML.BU
@@ -41,7 +40,7 @@ namespace PML.BU
             public RuleGroup Group;
         }
 
-        Dictionary<int, List<Entry>> _Table = new Dictionary<int, List<Entry>>();
+        readonly Dictionary<int, List<Entry>> _Table = new Dictionary<int, List<Entry>>();
 
         public void Clear()
         {
@@ -53,9 +52,9 @@ namespace PML.BU
             if (!_Table.ContainsKey(state))
                 _Table[state] = new List<Entry>();
 
-            var l = _Table[state];
+            List<Entry> l = _Table[state];
             Entry entry = null;
-            foreach(var e in l)
+            foreach (Entry e in l)
             {
                 if (e.Group == grp)
                 {
@@ -64,7 +63,7 @@ namespace PML.BU
                 }
             }
 
-            if(entry == null)
+            if (entry == null)
             {
                 entry = new Entry();
                 entry.Group = grp;
@@ -80,8 +79,8 @@ namespace PML.BU
             if (!_Table.ContainsKey(state))
                 return null;
 
-            var l = _Table[state];
-            foreach (var e in l)
+            List<Entry> l = _Table[state];
+            foreach (Entry e in l)
             {
                 if (e.Group == grp)
                 {

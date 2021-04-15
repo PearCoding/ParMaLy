@@ -32,8 +32,8 @@ namespace PML.Grammar
 {
     internal class Lexer
     {
-        string _Source;
-        Logger _Logger;
+        readonly string _Source;
+        readonly Logger _Logger;
         int _Position = 0;
 
         int _Line = 1;

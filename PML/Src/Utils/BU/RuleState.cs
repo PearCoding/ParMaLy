@@ -36,13 +36,13 @@ namespace PML.BU
 {
     public class RuleState : IEquatable<RuleState>
     {
-        int _ID;
+        readonly int _ID;
         public int ID { get { return _ID; } }
 
-        List<RuleConfiguration> _Closure = new List<RuleConfiguration>();
+        readonly List<RuleConfiguration> _Closure = new List<RuleConfiguration>();
         public List<RuleConfiguration> Closure { get { return _Closure; } }
 
-        List<RuleConfiguration> _Header = new List<RuleConfiguration>();
+        readonly List<RuleConfiguration> _Header = new List<RuleConfiguration>();
         public List<RuleConfiguration> Header { get { return _Header; } }
 
         public IEnumerable<RuleConfiguration> All { get { return Enumerable.Concat(_Header, _Closure); } }
@@ -66,7 +66,7 @@ namespace PML.BU
             public RuleToken Token;
         }
 
-        List<Connection> _Production = new List<Connection>();
+        readonly List<Connection> _Production = new List<Connection>();
         public List<Connection> Production { get { return _Production; } }
 
         public RuleState(int id)
@@ -89,7 +89,7 @@ namespace PML.BU
             }
         }
 
-        static SemiComparar _SemiComparar = new SemiComparar();
+        static readonly SemiComparar _SemiComparar = new SemiComparar();
         public bool SemiEquals(RuleState p)
         {
             if ((object)p == null)
@@ -137,7 +137,7 @@ namespace PML.BU
             return a.Equals(b);
         }
 
-        public static bool operator != (RuleState a, RuleState b)
+        public static bool operator !=(RuleState a, RuleState b)
         {
             return !(a == b);
         }

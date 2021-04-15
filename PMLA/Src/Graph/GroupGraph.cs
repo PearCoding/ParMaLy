@@ -34,12 +34,12 @@ namespace PML.Graph
 {
     public class GroupGraph
     {
-        List<GroupNode> _Nodes = new List<GroupNode>();
+        readonly List<GroupNode> _Nodes = new List<GroupNode>();
         public List<GroupNode> Nodes { get { return _Nodes; } }
 
         public GroupNode NodeByGroup(RuleGroup grp)
         {
-            foreach(GroupNode node in _Nodes)
+            foreach (GroupNode node in _Nodes)
             {
                 if (grp == node.Group)
                     return node;
@@ -58,11 +58,11 @@ namespace PML.Graph
 
             foreach (GroupNode node in _Nodes)
             {
-                foreach(Rule r in node.Group.Rules)
+                foreach (Rule r in node.Group.Rules)
                 {
-                    foreach(RuleToken t in r.Tokens)
+                    foreach (RuleToken t in r.Tokens)
                     {
-                        if(t.Type == RuleTokenType.Rule)
+                        if (t.Type == RuleTokenType.Rule)
                         {
                             GroupNode other = NodeByGroup(env.GroupByName(t.Name));
 

@@ -40,7 +40,7 @@ namespace PML
         {
             if (k < 1 || tokens.Count() == 0)
             {
-                var s = new RuleLookaheadSet();
+                RuleLookaheadSet s = new RuleLookaheadSet();
                 s.Add((RuleLookahead)null);
                 return s;
             }
@@ -50,9 +50,9 @@ namespace PML
                 set.Add((RuleLookahead)null);
 
                 bool hasTerminals = true;
-                foreach(var t in tokens)
+                foreach (RuleToken t in tokens)
                 {
-                    if(t.Type == RuleTokenType.Rule)
+                    if (t.Type == RuleTokenType.Rule)
                     {
                         hasTerminals = false;
                         break;
@@ -64,17 +64,17 @@ namespace PML
 
                 for (int i = 0; i < tokens.Count(); ++i)
                 {
-                    var t = tokens.ElementAt(i);
+                    RuleToken t = tokens.ElementAt(i);
                     if (t.Type == RuleTokenType.Token)
                     {
-                        var preSet = new RuleLookaheadSet();
-                        foreach (var l in set)
+                        RuleLookaheadSet preSet = new RuleLookaheadSet();
+                        foreach (RuleLookahead l in set)
                         {
                             if (l != null && l.Count == maxLength)
                                 preSet.Add(l);
                             else
                             {
-                                var look = new RuleLookahead();
+                                RuleLookahead look = new RuleLookahead();
                                 if (l != null)
                                     look.AddRange(l);
 
@@ -86,21 +86,21 @@ namespace PML
                     }
                     else
                     {
-                        var otherSet = cache.Get(t.Group, k);
-                        var newSet = new RuleLookaheadSet();
-                        foreach (var l in set)
+                        RuleLookaheadSet otherSet = cache.Get(t.Group, k);
+                        RuleLookaheadSet newSet = new RuleLookaheadSet();
+                        foreach (RuleLookahead l in set)
                         {
                             if (l != null && l.Count == k)
                                 newSet.Add(l);
                             else
                             {
-                                foreach (var o in otherSet)
+                                foreach (RuleLookahead o in otherSet)
                                 {
                                     if (o == null)
                                         newSet.AddUnique(l);
                                     else
                                     {
-                                        var look = new RuleLookahead();
+                                        RuleLookahead look = new RuleLookahead();
 
                                         if (l != null)
                                             look.AddRange(l);
@@ -117,9 +117,9 @@ namespace PML
                         }
                         set = newSet;
                     }
-                    
+
                     bool finished = true;
-                    foreach (var s in set)
+                    foreach (RuleLookahead s in set)
                     {
                         if (s == null || s.Count < k)
                         {
@@ -139,13 +139,13 @@ namespace PML
         public static void Setup(Environment env, FirstSetCache cache, int k)
         {
             // Setup caches
-            foreach (var r in env.Rules)
+            foreach (Rule r in env.Rules)
             {
                 cache.Set(r, k, new RuleLookaheadSet());
             }
-            
+
             Stack<KeyValuePair<Rule, Rule>> stack = new Stack<KeyValuePair<Rule, Rule>>();
-            foreach (var r in env.Rules)
+            foreach (Rule r in env.Rules)
             {
                 SetupInternal(cache, r, stack, k);
             }
@@ -170,18 +170,18 @@ namespace PML
 
                 for (int i = 0; i < rule.Tokens.Count(); ++i)
                 {
-                    var t = rule.Tokens.ElementAt(i);
+                    RuleToken t = rule.Tokens.ElementAt(i);
 
                     if (t.Type == RuleTokenType.Token)
                     {
-                        var preSet = new RuleLookaheadSet();
-                        foreach (var l in set)
+                        RuleLookaheadSet preSet = new RuleLookaheadSet();
+                        foreach (RuleLookahead l in set)
                         {
                             if (l != null && l.Count == maxLength)
                                 preSet.Add(l);
                             else
                             {
-                                var look = new RuleLookahead();
+                                RuleLookahead look = new RuleLookahead();
                                 if (l != null)
                                     look.AddRange(l);
 
@@ -195,7 +195,7 @@ namespace PML
                     {
                         foreach (Rule r in t.Group.Rules)
                         {
-                            var pair = new KeyValuePair<Rule, Rule>(rule, r);
+                            KeyValuePair<Rule, Rule> pair = new KeyValuePair<Rule, Rule>(rule, r);
 
                             if (stack.Contains(pair))
                                 continue;
@@ -205,22 +205,22 @@ namespace PML
                                 SetupInternal(cache, r, stack, k);
                             }
                         }
-                        var otherSet = cache.Get(t.Group, k);
+                        RuleLookaheadSet otherSet = cache.Get(t.Group, k);
 
-                        var newSet = new RuleLookaheadSet();
-                        foreach (var l in set)
+                        RuleLookaheadSet newSet = new RuleLookaheadSet();
+                        foreach (RuleLookahead l in set)
                         {
                             if (l != null && l.Count == maxLength)
                                 newSet.Add(l);
                             else
                             {
-                                foreach (var o in otherSet)
+                                foreach (RuleLookahead o in otherSet)
                                 {
                                     if (o == null)
                                         newSet.AddUnique(l);
                                     else
                                     {
-                                        var look = new RuleLookahead();
+                                        RuleLookahead look = new RuleLookahead();
                                         if (l != null)
                                             look.AddRange(l);
 
@@ -240,7 +240,7 @@ namespace PML
                     cache.Set(rule, k, set);
 
                     bool finished = true;
-                    foreach (var s in set)
+                    foreach (RuleLookahead s in set)
                     {
                         if (s == null || (s.Count < maxLength))
                         {

@@ -47,23 +47,23 @@ namespace PML.Style
 
     public class DotStyle
     {
-        public string StartNode =           "style=filled,fillcolor=\"#666666\",fontcolor=white";
-        public string InnerNode =           "style=filled,fillcolor=\"#ffe070\"";
+        public string StartNode = "style=filled,fillcolor=\"#666666\",fontcolor=white";
+        public string InnerNode = "style=filled,fillcolor=\"#ffe070\"";
 
-        public string Graph =               "splines=true,overlap=false,fontname=\"arial\"";
-        public string Node =                "fontname=\"arial\"";
-        public string Edge =                "fontname=\"arial\"";
+        public string Graph = "splines=true,overlap=false,fontname=\"arial\"";
+        public string Node = "fontname=\"arial\"";
+        public string Edge = "fontname=\"arial\"";
 
-        public string PosIdentificator =    "\u2022";
+        public string PosIdentificator = "\u2022";
 
-        public int StateIDOffset =          0;
+        public int StateIDOffset = 0;
 
-        public bool UseNodeXLabel =         true;
-        public string NodeXLabelPrefix =    "I";
+        public bool UseNodeXLabel = true;
+        public string NodeXLabelPrefix = "I";
 
-        public bool UseNodeLabel =          true;
-        public int MaxNodeLabelLength =     0;
-        public string NodeLabelPrefix =     "";
+        public bool UseNodeLabel = true;
+        public int MaxNodeLabelLength = 0;
+        public string NodeLabelPrefix = "";
         public string NodeLabelJustification = "\\l";
 
         public bool UseEdgeLabel = true;

@@ -30,8 +30,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
 
 namespace PML.Output
 {
@@ -49,12 +49,12 @@ namespace PML.Output
             writer.WriteLine("PML LL " + parser.K);
             WriteLookaheads(writer, parser.Lookup.Colums);
 
-            foreach (var grp in parser.Lookup.Rows)
+            foreach (RuleGroup grp in parser.Lookup.Rows)
             {
                 writer.Write(grp.ID + " ");
-                foreach (var column in parser.Lookup.Colums)
+                foreach (RuleLookahead column in parser.Lookup.Colums)
                 {
-                    var entry = parser.Lookup.Get(grp, column);
+                    TD.LookupTable.Entry entry = parser.Lookup.Get(grp, column);
                     if (entry != null && entry.Rule != null)
                     {
                         writer.Write("" + entry.Rule.ID);
@@ -78,12 +78,12 @@ namespace PML.Output
             WriteLookaheads(writer, parser.ActionTable.Colums);
             writer.WriteLine("" + parser.States.Count);
 
-            foreach (var state in parser.ActionTable.Rows)
+            foreach (int state in parser.ActionTable.Rows)
             {
                 writer.Write(state + " ");
-                foreach (var column in parser.ActionTable.Colums)
+                foreach (RuleLookahead column in parser.ActionTable.Colums)
                 {
-                    var entry = parser.ActionTable.Get(state, column);
+                    BU.ActionTable.Entry entry = parser.ActionTable.Get(state, column);
                     if (entry != null)
                     {
                         if (entry.Action == BU.ActionTable.Action.Accept)
@@ -103,12 +103,12 @@ namespace PML.Output
                 writer.WriteLine();
             }
             writer.WriteLine();
-            foreach (var state in parser.ActionTable.Rows)//Yes, action table ;)
+            foreach (int state in parser.ActionTable.Rows)//Yes, action table ;)
             {
                 writer.Write(state + " ");
-                foreach (var grp in env.Groups)
+                foreach (RuleGroup grp in env.Groups)
                 {
-                    var entry = parser.GotoTable.Get(state, grp);
+                    BU.GotoTable.Entry entry = parser.GotoTable.Get(state, grp);
                     if (entry != null)
                     {
                         writer.Write("" + entry.StateID);

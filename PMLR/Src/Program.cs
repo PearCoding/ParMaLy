@@ -34,8 +34,6 @@ using System.IO;
 
 namespace PML
 {
-    using NDesk.Options;
-
     class Options
     {
         public string EventFile;
@@ -114,7 +112,7 @@ namespace PML
 
             try
             {
-                 runner = PMLReader.Read(File.OpenText(input[0]), env, logger);
+                runner = PMLReader.Read(File.OpenText(input[0]), env, logger);
             }
             catch (FileNotFoundException ex)
             {
@@ -135,9 +133,9 @@ namespace PML
             if (runner == null || lexer == null)
                 return -3;
 
-            var events = runner.Run(lexer, env, logger);
+            IEnumerable<Events.IEvent> events = runner.Run(lexer, env, logger);
 
-            if(!String.IsNullOrEmpty(opts.EventFile))
+            if (!String.IsNullOrEmpty(opts.EventFile))
             {
                 Output.EventFile.PrintEvents(File.CreateText(opts.EventFile), events);
             }

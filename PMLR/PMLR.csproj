@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PML</RootNamespace>
     <AssemblyName>PMLR</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -34,9 +34,8 @@
     <StartupObject>PML.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NDesk.Options, Version=0.2.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NDesk.Options.0.2.1\lib\NDesk.Options.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="NDesk.Options, Version=1.2.5.0, Culture=neutral, PublicKeyToken=11d31d3c6b89255c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NDesk.Options.Core.1.2.5\lib\net472\NDesk.Options.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

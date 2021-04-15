@@ -40,7 +40,7 @@ namespace PML.Output
             grpGraph.Generate(env);
 
             writer.WriteLine("digraph G {");
-            if(!string.IsNullOrEmpty(style.Graph))
+            if (!string.IsNullOrEmpty(style.Graph))
                 writer.WriteLine("graph[" + style.Graph + "];");
             if (!string.IsNullOrEmpty(style.Node))
                 writer.WriteLine("node[" + style.Node + "];");
@@ -49,15 +49,15 @@ namespace PML.Output
             if (env.Start != null)
                 writer.WriteLine("\t" + env.Start.Name + " [" + style.StartNode + "]");
 
-            foreach(RuleGroup grp in env.Groups)
+            foreach (RuleGroup grp in env.Groups)
             {
-                if(grp != env.Start)
+                if (grp != env.Start)
                     writer.WriteLine("\t" + grp.Name + " [" + style.InnerNode + "]");
             }
 
-            foreach (var node in grpGraph.Nodes)
+            foreach (Graph.GroupNode node in grpGraph.Nodes)
             {
-                foreach (var con in node.Connections)
+                foreach (Graph.GroupNode con in node.Connections)
                 {
                     writer.WriteLine("\t" + node.Group.Name + " -> " + con.Group.Name);
                 }

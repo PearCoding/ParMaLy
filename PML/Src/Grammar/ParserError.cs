@@ -48,8 +48,8 @@ namespace PML.Grammar
     [Serializable()]
     public class ParserError : Exception, ISerializable
     {
-        private ErrorType _Type;
-        private Object[] _Values;
+        private readonly ErrorType _Type;
+        private readonly Object[] _Values;
 
         public ErrorType Type
         {
@@ -94,7 +94,7 @@ namespace PML.Grammar
         }
 
         protected ParserError(SerializationInfo info, StreamingContext context) :
-             base( info, context )
+             base(info, context)
         {
             _Type = (ErrorType)info.GetInt32("ERR_Type");
             _Values = info.GetValue("ERR_Values", _Values.GetType()) as object[];

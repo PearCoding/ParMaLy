@@ -29,8 +29,8 @@
  */
 
 using System;
-using System.Linq;
 using System.IO;
+using System.Linq;
 
 namespace PML.Output
 {
@@ -41,7 +41,7 @@ namespace PML.Output
             writer.WriteLine("/* Generated with PMLA */");
             writer.WriteLine();
 
-            foreach (var t in env.Tokens)
+            foreach (RuleToken t in env.Tokens)
             {
                 if (t.IsComplex)
                 {
@@ -56,7 +56,7 @@ namespace PML.Output
                 writer.WriteLine("%start " + env.Start.Name + ";");
 
             writer.WriteLine();
-            foreach (var grp in env.Groups)
+            foreach (RuleGroup grp in env.Groups)
             {
                 PrintGroup(writer, grp);
                 writer.WriteLine();
@@ -81,7 +81,7 @@ namespace PML.Output
 
             for (int i = 0; i < grp.Rules.Count; ++i)
             {
-                var r = grp.Rules[i];
+                Rule r = grp.Rules[i];
 
                 if (r.IsEmpty)
                     writer.WriteLine("/* EMPTY */");

@@ -41,7 +41,7 @@ namespace PML.TD
             public RuleLookahead Lookahead;
         }
 
-        Dictionary<RuleGroup, List<Entry>> _Table = new Dictionary<RuleGroup, List<Entry>>();
+        readonly Dictionary<RuleGroup, List<Entry>> _Table = new Dictionary<RuleGroup, List<Entry>>();
 
         public void Clear()
         {
@@ -53,8 +53,8 @@ namespace PML.TD
             if (!_Table.ContainsKey(grp))
                 return false;
 
-            var l = _Table[grp];
-            foreach (var e in l)
+            List<Entry> l = _Table[grp];
+            foreach (Entry e in l)
             {
                 if (e.Lookahead == lookahead)
                     return true;
@@ -68,9 +68,9 @@ namespace PML.TD
             if (!_Table.ContainsKey(grp))
                 _Table[grp] = new List<Entry>();
 
-            var l = _Table[grp];
+            List<Entry> l = _Table[grp];
             Entry entry = null;
-            foreach(var e in l)
+            foreach (Entry e in l)
             {
                 if (e.Lookahead == lookahead)
                 {
@@ -79,7 +79,7 @@ namespace PML.TD
                 }
             }
 
-            if(entry == null)
+            if (entry == null)
             {
                 entry = new Entry();
                 entry.Lookahead = lookahead;
@@ -95,8 +95,8 @@ namespace PML.TD
             if (!_Table.ContainsKey(grp))
                 return null;
 
-            var l = _Table[grp];
-            foreach (var e in l)
+            List<Entry> l = _Table[grp];
+            foreach (Entry e in l)
             {
                 if (e.Lookahead == lookahead)
                     return e;
@@ -111,9 +111,9 @@ namespace PML.TD
             get
             {
                 List<RuleLookahead> columns = new List<RuleLookahead>();
-                foreach (var p in _Table)
+                foreach (KeyValuePair<RuleGroup, List<Entry>> p in _Table)
                 {
-                    foreach (var e in p.Value)
+                    foreach (Entry e in p.Value)
                     {
                         if (!columns.Contains(e.Lookahead))
                             columns.Add(e.Lookahead);

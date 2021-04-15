@@ -29,8 +29,8 @@
  */
 
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
 
 namespace PML.Output.CodeGenerator
 {
@@ -40,13 +40,14 @@ namespace PML.Output.CodeGenerator
     {
         public void Generate(TextWriter writer, Parser.IParser parser, Environment env, Style.CodeStyle style, CodeGeneratorSettings settings)
         {
-            if(!(parser is Parser.IRParser)) {
+            if (!(parser is Parser.IRParser))
+            {
                 return;
             }
 
-            var states = ((Parser.IRParser)parser).States;
-            
-            foreach (var t in env.Tokens)
+            IEnumerable<RState> states = ((Parser.IRParser)parser).States;
+
+            foreach (RuleToken t in env.Tokens)
             {
                 if (t.IsComplex)
                 {
@@ -58,7 +59,7 @@ namespace PML.Output.CodeGenerator
                 }
             }
 
-            foreach (var state in states)
+            foreach (RState state in states)
             {
                 writer.WriteLine("function " + style.FunctionNamePrefix + state.Group.Name + "() {");
                 if (state.Lookaheads.Count == 1)
@@ -68,7 +69,7 @@ namespace PML.Output.CodeGenerator
                 else
                 {
                     int i = 0;
-                    var list = state.Lookaheads.ToList();
+                    List<KeyValuePair<Rule, RuleLookaheadSet>> list = state.Lookaheads.ToList();
                     list.Sort(
                         delegate (KeyValuePair<Rule, RuleLookaheadSet> pair1,
                             KeyValuePair<Rule, RuleLookaheadSet> pair2)
@@ -77,7 +78,7 @@ namespace PML.Output.CodeGenerator
                                 .CompareTo(pair1.Value.Max(v => v != null ? v.Count : 1));
                         });
 
-                    foreach (var p in list)
+                    foreach (KeyValuePair<Rule, RuleLookaheadSet> p in list)
                     {
                         writer.WriteLine(style.Ident + "-- Rule: " + p.Key.ToString());
                         if (i != 0)
@@ -88,10 +89,11 @@ namespace PML.Output.CodeGenerator
                         writer.Write("if(");
 
                         if (style.UseInExpression)
-                        { 
+                        {
                             writer.Write("current() in [");
                             writer.Write(string.Join(",", p.Value.Lookaheads.Select(
-                                        delegate (RuleLookahead v) {
+                                        delegate (RuleLookahead v)
+                                        {
                                             if (v.Count() != 1)
                                                 return "[" + v.Join("", s => (s == null ? style.NullExpression : style.StringBracket + s.Name + style.StringBracket)) + "]";
                                             else
@@ -104,8 +106,9 @@ namespace PML.Output.CodeGenerator
                         {
                             writer.Write(string.Join(" ||\n" + style.Ident + style.Ident + style.Ident,
                                 p.Value.Lookaheads.Select(
-                                            delegate (RuleLookahead v) {
-                                                if(v == null)
+                                            delegate (RuleLookahead v)
+                                            {
+                                                if (v == null)
                                                 {
                                                     return "current() == " + style.NullExpression;
                                                 }
@@ -147,7 +150,7 @@ namespace PML.Output.CodeGenerator
             }
             else
             {
-                foreach (var t in rule.Tokens)
+                foreach (RuleToken t in rule.Tokens)
                 {
                     if (t.Type == RuleTokenType.Token)
                         writer.WriteLine(prefix + "accept(" + style.StringBracket + t.Name + style.StringBracket + ");");

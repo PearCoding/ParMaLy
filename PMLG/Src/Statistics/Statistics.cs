@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace PML.Statistics
 {
@@ -39,7 +36,7 @@ namespace PML.Statistics
             }
         }
 
-        List<ConflictEntry> _Conflicts = new List<ConflictEntry>();
+        readonly List<ConflictEntry> _Conflicts = new List<ConflictEntry>();
         public List<ConflictEntry> Conflicts { get { return _Conflicts; } }
 
         public class ProcessEntry
@@ -58,7 +55,7 @@ namespace PML.Statistics
             }
         }
 
-        List<ProcessEntry> _Proceedings = new List<ProcessEntry>();
+        readonly List<ProcessEntry> _Proceedings = new List<ProcessEntry>();
         public List<ProcessEntry> Proceedings { get { return _Proceedings; } }
     }
 
@@ -86,7 +83,7 @@ namespace PML.Statistics
             }
         }
 
-        List<ConflictEntry> _Conflicts = new List<ConflictEntry>();
+        readonly List<ConflictEntry> _Conflicts = new List<ConflictEntry>();
         public List<ConflictEntry> Conflicts { get { return _Conflicts; } }
     }
 
@@ -110,7 +107,7 @@ namespace PML.Statistics
             }
         }
 
-        List<ConflictEntry> _Conflicts = new List<ConflictEntry>();
+        readonly List<ConflictEntry> _Conflicts = new List<ConflictEntry>();
         public List<ConflictEntry> Conflicts { get { return _Conflicts; } }
     }
 }

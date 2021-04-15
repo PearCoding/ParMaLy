@@ -41,19 +41,19 @@ namespace PML
     [System.Diagnostics.DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class RuleToken : System.IEquatable<RuleToken>
     {
-        RuleTokenType _Type;
+        readonly RuleTokenType _Type;
         public RuleTokenType Type { get { return _Type; } }
 
-        int _ID;
+        readonly int _ID;
         public int ID { get { return _ID; } }
 
-        string _String;
+        readonly string _String;
         public string Name { get { return _String; } }
 
-        string _SimpleReturnType;
+        readonly string _SimpleReturnType;
         public string ReturnType { get { return Group != null ? Group.ReturnType : _SimpleReturnType; } }
 
-        string _CodeIdentifier;
+        readonly string _CodeIdentifier;
         public string CodeIdentifier { get { return _CodeIdentifier; } }
 
         //Rule

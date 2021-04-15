@@ -38,14 +38,14 @@ namespace PML
     [System.Diagnostics.DebuggerDisplay("Set {DebuggerDisplay,nq}")]
     public class RuleLookaheadSet : IEquatable<RuleLookaheadSet>, IEnumerable<RuleLookahead>
     {
-        List<RuleLookahead> _Lookaheads = new List<RuleLookahead>();
+        readonly List<RuleLookahead> _Lookaheads = new List<RuleLookahead>();
 
         public List<RuleLookahead> Lookaheads { get { return _Lookaheads; } }
 
-        public RuleLookahead this [int index]
+        public RuleLookahead this[int index]
         {
             get { return _Lookaheads[index]; }
-        } 
+        }
 
         public RuleLookaheadSet()
         {
@@ -53,7 +53,7 @@ namespace PML
 
         public RuleLookaheadSet(IEnumerable<RuleLookahead> tokens)
         {
-            foreach (var s in tokens)
+            foreach (RuleLookahead s in tokens)
                 _Lookaheads.Add(s);
         }
 
@@ -81,7 +81,7 @@ namespace PML
         public bool AddRangeUnique(IEnumerable<RuleLookahead> looks)
         {
             bool added = false;
-            foreach(var l in looks)
+            foreach (RuleLookahead l in looks)
             {
                 if (!_Lookaheads.Contains(l))
                 {
@@ -99,9 +99,9 @@ namespace PML
 
         public bool HasIntersection(RuleLookahead lookahead)
         {
-            foreach(var look in _Lookaheads)
+            foreach (RuleLookahead look in _Lookaheads)
             {
-                if((look == null && lookahead == null) ||
+                if ((look == null && lookahead == null) ||
                     (look != null && lookahead != null && lookahead.HasIntersection(look)))
                 {
                     return true;
@@ -115,7 +115,7 @@ namespace PML
 
         public override string ToString()
         {
-            return "[" + String.Join(",", _Lookaheads.Select(v => v!= null ? v.ToString() : "$").ToArray()) + "]";
+            return "[" + String.Join(",", _Lookaheads.Select(v => v != null ? v.ToString() : "$").ToArray()) + "]";
         }
 
         public override bool Equals(Object obj)

@@ -41,7 +41,7 @@ namespace PML
                 return null;//Empty
             else
             {//TODO
-                var l = env.FirstCache.Generate(tokens, k);
+                RuleLookaheadSet l = env.FirstCache.Generate(tokens, k);
                 if (l.Contains((RuleLookahead)null))
                 {
                     return new RuleLookaheadSet(l.Where(v => v != null).Union(env.FollowCache.Get(grp, k)));

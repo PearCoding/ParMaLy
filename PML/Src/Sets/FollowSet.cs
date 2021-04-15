@@ -28,7 +28,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
-using System.Collections.Generic;
 using System.Linq;
 
 namespace PML
@@ -39,29 +38,29 @@ namespace PML
         public static void Setup(Environment env, FollowSetCache cache, int k)
         {
             // Setup caches
-            foreach (var grp in env.Groups)
+            foreach (RuleGroup grp in env.Groups)
             {
                 cache.Set(grp, k, new RuleLookaheadSet());
             }
-            
+
             // Rule 1: Add EOF to starter group
-            if(env.Start != null)
+            if (env.Start != null)
             {
-                var set = cache.Get(env.Start, k);
+                RuleLookaheadSet set = cache.Get(env.Start, k);
                 set.Add(null);
             }
 
             // Rule 2:
-            foreach (var r in env.Rules)
+            foreach (Rule r in env.Rules)
             {
                 for (int i = 0; i < r.Tokens.Count - 1; ++i)
                 {
                     RuleToken t = r.Tokens[i];
                     if (t.Type == RuleTokenType.Rule)
                     {
-                        var l = env.FirstCache.Generate(r.Tokens.Skip(i + 1), k);
-                        var set = cache.Get(t.Group, k);
-                        foreach (var look in l)
+                        RuleLookaheadSet l = env.FirstCache.Generate(r.Tokens.Skip(i + 1), k);
+                        RuleLookaheadSet set = cache.Get(t.Group, k);
+                        foreach (RuleLookahead look in l)
                         {
                             if (!set.Contains(look))
                                 set.Add(look);
@@ -69,7 +68,7 @@ namespace PML
                     }
                 }
             }
-            
+
             // Rule 3:
             foreach (Rule r in env.Rules)
             {
@@ -78,22 +77,22 @@ namespace PML
                     RuleToken t = r.Tokens[i];
                     if (t.Type == RuleTokenType.Rule)
                     {
-                        var setT = cache.Get(t.Group, k);
-                        var setR = cache.Get(r.Group, k);
+                        RuleLookaheadSet setT = cache.Get(t.Group, k);
+                        RuleLookaheadSet setR = cache.Get(r.Group, k);
                         if (i == r.Tokens.Count - 1)
                         {
-                            foreach (var look in setR)
+                            foreach (RuleLookahead look in setR)
                             {
                                 setT.AddUnique(look);
                             }
                         }
                         else
                         {
-                            var l = env.FirstCache.Generate(r.Tokens.Skip(i + 1), k);
+                            RuleLookaheadSet l = env.FirstCache.Generate(r.Tokens.Skip(i + 1), k);
 
                             if (l.Contains((RuleLookahead)null))
                             {
-                                foreach (var look in setR)
+                                foreach (RuleLookahead look in setR)
                                 {
                                     setT.AddUnique(look);
                                 }

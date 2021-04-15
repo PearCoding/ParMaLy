@@ -37,13 +37,13 @@ namespace PML.BU
     [System.Diagnostics.DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class RuleConfiguration : IEquatable<RuleConfiguration>
     {
-        Rule _Rule;
+        readonly Rule _Rule;
         public Rule Rule { get { return _Rule; } }
 
-        int _Pos;
+        readonly int _Pos;
         public int Pos { get { return _Pos; } }
 
-        RuleLookaheadSet _Lookaheads = new RuleLookaheadSet();
+        readonly RuleLookaheadSet _Lookaheads = new RuleLookaheadSet();
         public RuleLookaheadSet Lookaheads { get { return _Lookaheads; } }
 
         // Will be used when generating the closure.
@@ -111,7 +111,7 @@ namespace PML.BU
             RuleConfiguration p = obj as RuleConfiguration;
             return Equals(p);
         }
-        
+
         public bool Equals(RuleConfiguration p)
         {
             return SemiEquals(p) && _Lookaheads.Equals(p._Lookaheads);
@@ -122,18 +122,18 @@ namespace PML.BU
             return SemiHashCode ^ _Lookaheads.GetHashCode();
         }
 
-        public static bool operator == (RuleConfiguration a, RuleConfiguration b)
+        public static bool operator ==(RuleConfiguration a, RuleConfiguration b)
         {
             if (Object.ReferenceEquals(a, b))
                 return true;
-            
+
             if ((object)a == null)
                 return false;
-            
+
             return a.Equals(b);
         }
 
-        public static bool operator != (RuleConfiguration a, RuleConfiguration b)
+        public static bool operator !=(RuleConfiguration a, RuleConfiguration b)
         {
             return !(a == b);
         }
@@ -156,8 +156,8 @@ namespace PML.BU
 
                 p++;
             }
-            
-            if(p == Pos)
+
+            if (p == Pos)
                 str += "\u2022 ";
 
             return str + _Lookaheads.ToString();

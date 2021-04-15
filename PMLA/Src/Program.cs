@@ -29,13 +29,12 @@
  */
 
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
+using NDesk.Options;
 
 namespace PML
 {
-    using NDesk.Options;
-
     class Options
     {
         public string StyleFile;
@@ -117,12 +116,12 @@ namespace PML
                 return -4;
             }
 
-            if(opts.ShowHelp)
+            if (opts.ShowHelp)
             {
                 ShowHelp(p);
                 return 0;
             }
-            
+
             if (input.Count != 1)
             {
                 Console.WriteLine("No grammar file given.");
@@ -138,20 +137,20 @@ namespace PML
                 string source = File.ReadAllText(file);
                 env.Parse(source);
             }
-            catch(Grammar.ParserError err)
+            catch (Grammar.ParserError err)
             {
-				if(err.Type == PML.Grammar.ErrorType.Parser_WrongToken)
-				{
-					Console.Error.WriteLine("Error at {0}[{1}] while parsing grammer file:", err.Value(0), err.Value(1));
-					Console.Error.WriteLine("  Expected '{0}' but got '{1}'", err.Value(2), err.Value(3));
-				}
-				else
-				{
-					Console.Error.Write(err.Type.ToString());
-				}
+                if (err.Type == PML.Grammar.ErrorType.Parser_WrongToken)
+                {
+                    Console.Error.WriteLine("Error at {0}[{1}] while parsing grammer file:", err.Value(0), err.Value(1));
+                    Console.Error.WriteLine("  Expected '{0}' but got '{1}'", err.Value(2), err.Value(3));
+                }
+                else
+                {
+                    Console.Error.Write(err.Type.ToString());
+                }
                 return 2;
             }
-            catch(FileNotFoundException ex)
+            catch (FileNotFoundException ex)
             {
                 Console.Error.Write(ex.Message);
                 return -2;

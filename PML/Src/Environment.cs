@@ -34,14 +34,13 @@ namespace PML
 {
     public class Environment
     {
-        Logger _Logger;
-        List<Rule> _Rules = new List<Rule>();
+        readonly Logger _Logger;
+        readonly List<Rule> _Rules = new List<Rule>();
         RuleGroup _Start;
-        List<RuleGroup> _Groups = new List<RuleGroup>();
-        List<RuleToken> _Tokens = new List<RuleToken>();
-
-        FirstSetCache _FirstCache = new FirstSetCache();
-        FollowSetCache _FollowCache = new FollowSetCache();
+        readonly List<RuleGroup> _Groups = new List<RuleGroup>();
+        readonly List<RuleToken> _Tokens = new List<RuleToken>();
+        readonly FirstSetCache _FirstCache = new FirstSetCache();
+        readonly FollowSetCache _FollowCache = new FollowSetCache();
 
         public Logger Logger { get { return _Logger; } }
         public List<Rule> Rules { get { return _Rules; } }
@@ -68,7 +67,7 @@ namespace PML
             const string unqualifiedTokenReturnType = "";
 
             Grammar.Parser parser = new Grammar.Parser(source, _Logger);
-            var tree = parser.Parse();
+            Grammar.SyntaxTree tree = parser.Parse();
 
             //First pass tokens
             foreach (Grammar.Statement stmt in tree.Statements)
@@ -108,7 +107,7 @@ namespace PML
                         {
                             if (t.WasString)
                             {
-                                var token = new RuleToken(_Tokens.Count, RuleTokenType.Token, t.Name, unqualifiedTokenReturnType, t.CodeIdentifier);
+                                RuleToken token = new RuleToken(_Tokens.Count, RuleTokenType.Token, t.Name, unqualifiedTokenReturnType, t.CodeIdentifier);
                                 if (!_Tokens.Contains(token))
                                 {
                                     _Tokens.Add(token);
@@ -119,7 +118,7 @@ namespace PML
                             }
                             else
                             {
-                                var token = TokenByName(t.Name);
+                                RuleToken token = TokenByName(t.Name);
                                 if (token == null)
                                 {
                                     token = new RuleToken(-1, RuleTokenType.Rule, t.Name, unqualifiedTokenReturnType, t.CodeIdentifier);
@@ -160,9 +159,9 @@ namespace PML
             }
 
             // Fourth pass: Set groups in tokens
-            foreach (var r in _Rules)
+            foreach (Rule r in _Rules)
             {
-                foreach (var t in r.Tokens)
+                foreach (RuleToken t in r.Tokens)
                 {
                     if (t.Type == RuleTokenType.Rule)
                     {
@@ -215,7 +214,7 @@ namespace PML
 
         public RuleToken TokenByName(string str)
         {
-            foreach (var t in _Tokens)
+            foreach (RuleToken t in _Tokens)
             {
                 if (t.Name == str)
                     return t;
@@ -225,7 +224,7 @@ namespace PML
 
         public RuleToken TokenByID(int id)
         {
-            foreach (var t in _Tokens)
+            foreach (RuleToken t in _Tokens)
             {
                 if (t.ID == id)
                     return t;

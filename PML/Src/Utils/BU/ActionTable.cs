@@ -48,7 +48,7 @@ namespace PML.BU
             public RuleLookahead Lookahead;
         }
 
-        Dictionary<int, List<Entry>> _Table = new Dictionary<int, List<Entry>>();
+        readonly Dictionary<int, List<Entry>> _Table = new Dictionary<int, List<Entry>>();
 
         public void Clear()
         {
@@ -60,9 +60,9 @@ namespace PML.BU
             if (!_Table.ContainsKey(state))
                 _Table[state] = new List<Entry>();
 
-            var l = _Table[state];
+            List<Entry> l = _Table[state];
             Entry entry = null;
-            foreach(var e in l)
+            foreach (Entry e in l)
             {
                 if (e.Lookahead == lookahead)
                 {
@@ -71,7 +71,7 @@ namespace PML.BU
                 }
             }
 
-            if(entry == null)
+            if (entry == null)
             {
                 entry = new Entry();
                 entry.Lookahead = lookahead;
@@ -88,8 +88,8 @@ namespace PML.BU
             if (!_Table.ContainsKey(state))
                 return null;
 
-            var l = _Table[state];
-            foreach (var e in l)
+            List<Entry> l = _Table[state];
+            foreach (Entry e in l)
             {
                 if (e.Lookahead == lookahead)
                     return e;
@@ -105,9 +105,9 @@ namespace PML.BU
             get
             {
                 List<RuleLookahead> columns = new List<RuleLookahead>();
-                foreach(var p in _Table)
+                foreach (KeyValuePair<int, List<Entry>> p in _Table)
                 {
-                    foreach(var e in p.Value)
+                    foreach (Entry e in p.Value)
                     {
                         if (!columns.Contains(e.Lookahead))
                             columns.Add(e.Lookahead);

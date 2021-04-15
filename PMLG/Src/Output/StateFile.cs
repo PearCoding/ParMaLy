@@ -28,9 +28,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
-using System.IO;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 
 namespace PML.Output
 {
@@ -38,10 +37,10 @@ namespace PML.Output
     {
         public static void PrintStates(TextWriter writer, List<BU.RuleState> states, Environment env, bool idOnly = false)
         {
-            foreach(var state in states)
+            foreach (BU.RuleState state in states)
             {
                 writer.WriteLine("[" + state.ID + "]");
-                foreach(var conf in state.All)
+                foreach (BU.RuleConfiguration conf in state.All)
                 {
                     if (idOnly)
                         writer.Write("  " + conf.Rule.Group.ID + "|" + conf.Rule.ID + " -> ");
@@ -65,7 +64,7 @@ namespace PML.Output
 
                             if (t.Type == RuleTokenType.Rule)
                             {
-                                if(idOnly)
+                                if (idOnly)
                                 {
                                     RuleGroup g = env.GroupByName(t.Name);
                                     writer.Write("<" + g.ID + "> ");
@@ -79,9 +78,9 @@ namespace PML.Output
                             p++;
                         }
 
-                        if(conf.IsLast)
+                        if (conf.IsLast)
                             writer.Write("# ");
-                        
+
                         writer.Write(conf.Lookaheads.ToString());
                     }
                     writer.WriteLine();

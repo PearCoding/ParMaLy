@@ -32,20 +32,20 @@ using System.Collections.Generic;
 
 namespace PML.Parser
 {
-    using Statistics;
     using BU;
+    using Statistics;
 
     public class SLR : IBUParser
     {
-        IBUParser _BUP = null;
-        ActionTable _ActionTable = new ActionTable();
+        readonly IBUParser _BUP = null;
+        readonly ActionTable _ActionTable = new ActionTable();
         Statistics _Statistics;
         public string Name { get { return "SLR(" + K + ", " + D + ")"; } }
 
-        int _K = 1;
+        readonly int _K = 1;
         public int K { get { return _K; } }
 
-        int _D = 0;
+        readonly int _D = 0;
         public int D { get { return _D; } }
 
         public List<RuleState> States { get { return _BUP.States; } }
@@ -74,22 +74,22 @@ namespace PML.Parser
 
             foreach (RuleState state in States)
             {
-                foreach(RuleConfiguration conf in state.All)
+                foreach (RuleConfiguration conf in state.All)
                 {
-                    if(conf.Rule.Group == env.Start && conf.IsLast)//Accept
+                    if (conf.Rule.Group == env.Start && conf.IsLast)//Accept
                     {
-                        var a = _ActionTable.Get(state.ID, null);
+                        ActionTable.Entry a = _ActionTable.Get(state.ID, null);
                         if (a != null && a.Action != ActionTable.Action.Accept)
                             Statistics.BU.Conflicts.Add(new BUStatistics.ConflictEntry(BUStatistics.ConflictType.Accept, state));
 
                         _ActionTable.Set(state.ID, null, ActionTable.Action.Accept, -1);
                     }
-                    else if(conf.IsLast)
+                    else if (conf.IsLast)
                     {
-                        var follow = env.FollowCache.Get(conf.Rule.Group, K);
-                        foreach(var look in follow)
+                        RuleLookaheadSet follow = env.FollowCache.Get(conf.Rule.Group, K);
+                        foreach (RuleLookahead look in follow)
                         {
-                            var a = _ActionTable.Get(state.ID, look);
+                            ActionTable.Entry a = _ActionTable.Get(state.ID, look);
                             if (a != null)
                             {
                                 if (a.Action != ActionTable.Action.Shift && a.StateID != conf.Rule.ID)
@@ -103,14 +103,14 @@ namespace PML.Parser
                             _ActionTable.Set(state.ID, look, ActionTable.Action.Reduce, conf.Rule.ID);
                         }
                     }
-                    else if(conf.GetNext().Type == RuleTokenType.Token)
+                    else if (conf.GetNext().Type == RuleTokenType.Token)
                     {
                         RuleToken next = conf.GetNext();
                         RuleLookahead look = new RuleLookahead(next);
                         RuleState found = null;
-                        foreach(RuleState.Connection c in state.Production)
+                        foreach (RuleState.Connection c in state.Production)
                         {
-                            if(c.Token == next)
+                            if (c.Token == next)
                             {
                                 if (found != null)
                                     Statistics.BU.Conflicts.Add(
@@ -120,7 +120,7 @@ namespace PML.Parser
                             }
                         }
 
-                        var a = _ActionTable.Get(state.ID, look);
+                        ActionTable.Entry a = _ActionTable.Get(state.ID, look);
                         if (a != null)
                         {
                             if (a.Action != ActionTable.Action.Shift)
@@ -136,7 +136,7 @@ namespace PML.Parser
                 }
             }
         }
-        
+
         public void Generate(Environment env, Logger logger)
         {
             env.FirstCache.Setup(env, K);

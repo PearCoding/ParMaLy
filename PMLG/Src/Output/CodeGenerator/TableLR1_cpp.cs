@@ -29,13 +29,12 @@
  */
 
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
 
 namespace PML.Output.CodeGenerator
 {
     using PML.Parser;
-    using R;
 
     public class TableLR1_CPP : ICodeGenerator
     {
@@ -51,7 +50,7 @@ namespace PML.Output.CodeGenerator
         }
 
         private CodeGeneratorSettings _Settings;
-        private CPPEmbeddedCodeGenerator _EmbeddedGenerator = new CPPEmbeddedCodeGenerator("__ret", "p_");
+        private readonly CPPEmbeddedCodeGenerator _EmbeddedGenerator = new CPPEmbeddedCodeGenerator("__ret", "p_");
 
         public void Generate(TextWriter writer, Parser.IParser parser, Environment env, Style.CodeStyle style, CodeGeneratorSettings settings)
         {
@@ -62,7 +61,7 @@ namespace PML.Output.CodeGenerator
             }
 
             _Settings = settings;
-            var context = ((Parser.IBUParser)parser);
+            IBUParser context = ((Parser.IBUParser)parser);
 
             writer.WriteLine("struct ParseResult {");
             writer.WriteLine("\tbool Successful;");
@@ -111,7 +110,7 @@ namespace PML.Output.CodeGenerator
             TokenMapper token_mapper = new TokenMapper();
             int counter = 0;
             int defcounter = 1000;
-            foreach (var t in env.Tokens)
+            foreach (RuleToken t in env.Tokens)
             {
                 if (t.IsComplex)
                 {
@@ -151,7 +150,7 @@ namespace PML.Output.CodeGenerator
             writer.WriteLine("enum BURuleGroup {");
             GroupMapper group_mapper = new GroupMapper();
             int counter = 0;
-            foreach (var t in env.Groups)
+            foreach (RuleGroup t in env.Groups)
             {
                 string name = "BURG_" + counter;
                 writer.WriteLine("\t" + name + "=" + counter + ",\t// " + t.Name);
@@ -169,7 +168,7 @@ namespace PML.Output.CodeGenerator
         {
             // TODO: Make a compressed version!
             // TODO: Make lr(k) version, not only k=1
-            var actionTable = context.ActionTable;
+            BU.ActionTable actionTable = context.ActionTable;
             int k = 1; //context.K
 
             writer.WriteLine("/* Action Table */");
@@ -181,7 +180,7 @@ namespace PML.Output.CodeGenerator
             int indirectTokenArraySize = (int)System.Math.Pow(tokenMapper.NumberMap.Count + 1, k);
             long[] indirectTokenMap = new long[indirectTokenArraySize];
             int counter = 0;
-            foreach (var lookahead in actionTable.Colums)
+            foreach (RuleLookahead lookahead in actionTable.Colums)
             {
                 if (lookahead == null || lookahead.Count < 1 || lookahead[0] == null) // EOF
                 {
@@ -189,7 +188,7 @@ namespace PML.Output.CodeGenerator
                 }
                 else
                 {
-                    var t = lookahead[0];
+                    RuleToken t = lookahead[0];
                     indirectTokenMap[tokenMapper.NumberMap[t]] = counter;
                 }
 
@@ -200,7 +199,7 @@ namespace PML.Output.CodeGenerator
             writer.WriteLine("switch(t){");
             writer.WriteLine("default:");
             writer.WriteLine("case _BUT_EOF: return " + indirectTokenMap[0] + ";");
-            foreach (var t in env.Tokens)
+            foreach (RuleToken t in env.Tokens)
             {
                 writer.WriteLine("case " + tokenMapper.StringMap[t] + ": return " + indirectTokenMap[tokenMapper.NumberMap[t]] + ";");
             }
@@ -210,12 +209,12 @@ namespace PML.Output.CodeGenerator
 
             // Actual table
             writer.WriteLine("const static table_entry_t actionTable[]={");
-            foreach (var state in actionTable.Rows)
+            foreach (int state in actionTable.Rows)
             {
                 writer.Write("\t");
-                foreach (var s in actionTable.Colums)
+                foreach (RuleLookahead s in actionTable.Colums)
                 {
-                    var e = actionTable.Get(state, s);
+                    BU.ActionTable.Entry e = actionTable.Get(state, s);
                     if (e == null)
                     {
                         writer.Write("0, ");
@@ -253,7 +252,7 @@ namespace PML.Output.CodeGenerator
         {
             // TODO: Make a compressed version!
             // TODO: Make lr(k) version, not only k=1
-            var gotoTable = context.GotoTable;
+            BU.GotoTable gotoTable = context.GotoTable;
             int k = 1; //context.K
 
             writer.WriteLine("/* Goto Table */");
@@ -263,7 +262,7 @@ namespace PML.Output.CodeGenerator
             int indirectGroupArraySize = (int)System.Math.Pow(groupMapper.NumberMap.Count, k);
             long[] indirectGroupMap = new long[indirectGroupArraySize];
             int counter = 0;
-            foreach (var grp in env.Groups)
+            foreach (RuleGroup grp in env.Groups)
             {
                 indirectGroupMap[groupMapper.NumberMap[grp]] = counter;
                 counter++;
@@ -275,12 +274,12 @@ namespace PML.Output.CodeGenerator
 
             // Actual table
             writer.WriteLine("const static state_t gotoTable[]={");
-            foreach (var state in context.ActionTable.Rows)
+            foreach (int state in context.ActionTable.Rows)
             {
                 writer.Write("\t");
-                foreach (var s in env.Groups)
+                foreach (RuleGroup s in env.Groups)
                 {
-                    var e = gotoTable.Get(state, s);
+                    BU.GotoTable.Entry e = gotoTable.Get(state, s);
                     if (e == null)
                     {
                         writer.Write("0, ");
@@ -302,13 +301,13 @@ namespace PML.Output.CodeGenerator
             writer.WriteLine("/* Glue Tables */");
 
             string[] grpsList = new string[env.Rules.Count];
-            foreach (var rule in env.Rules)
+            foreach (Rule rule in env.Rules)
             {
                 grpsList[rule.ID] = group_mapper.StringMap[rule.Group];
             }
 
             int[] betaList = new int[env.Rules.Count];
-            foreach (var rule in env.Rules)
+            foreach (Rule rule in env.Rules)
             {
                 betaList[rule.ID] = rule.Tokens.Count;
             }
@@ -327,7 +326,7 @@ namespace PML.Output.CodeGenerator
         private void SetupEmbeddedCodeFunctionsHead(TextWriter writer, IBUParser context, PML.Environment env)
         {
             writer.WriteLine("/* Embedded Code Function Declarations */");
-            foreach (var rule in env.Rules)
+            foreach (Rule rule in env.Rules)
             {
                 if (string.IsNullOrEmpty(rule.Code))
                     continue;
@@ -340,7 +339,7 @@ namespace PML.Output.CodeGenerator
         private void SetupEmbeddedCodeFunctions(TextWriter writer, IBUParser context, PML.Environment env)
         {
             writer.WriteLine("/* Embedded Code Function Definitions */");
-            foreach (var rule in env.Rules)
+            foreach (Rule rule in env.Rules)
             {
                 if (string.IsNullOrEmpty(rule.Code))
                     continue;
@@ -374,7 +373,7 @@ namespace PML.Output.CodeGenerator
 
             List<string> paramList = new List<string>();
             int counter = 0;
-            foreach (var t in rule.Tokens)
+            foreach (RuleToken t in rule.Tokens)
             {
                 if (!string.IsNullOrEmpty(t.ReturnType))
                 {
@@ -475,13 +474,13 @@ namespace PML.Output.CodeGenerator
         {
             writer.WriteLine("\t\t\tswitch(suffix){");
             writer.WriteLine("\t\t\t\tdefault:break;");
-            foreach (var rule in env.Rules)
+            foreach (Rule rule in env.Rules)
             {
                 // Make further test to see if rule is really needed to be defined
                 if (string.IsNullOrEmpty(rule.Code))
                 {
                     bool required = false;
-                    foreach (var t in rule.Tokens)
+                    foreach (RuleToken t in rule.Tokens)
                     {
                         if (!string.IsNullOrEmpty(t.ReturnType))
                         {

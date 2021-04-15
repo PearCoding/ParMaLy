@@ -29,13 +29,11 @@
  */
 
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 
 namespace PML
 {
-    using NDesk.Options;
-
     class Options
     {
         public string StyleFile;
@@ -74,7 +72,7 @@ namespace PML
 
     class Program
     {
-        private static Dictionary<string, Dictionary<string, Output.CodeGenerator.ICodeGenerator>> _CodeGenerators = new Dictionary<string, Dictionary<string, Output.CodeGenerator.ICodeGenerator>>
+        private static readonly Dictionary<string, Dictionary<string, Output.CodeGenerator.ICodeGenerator>> _CodeGenerators = new Dictionary<string, Dictionary<string, Output.CodeGenerator.ICodeGenerator>>
         {
             {"rd", new Dictionary<string, Output.CodeGenerator.ICodeGenerator>{
                 {"cpp", new Output.CodeGenerator.RD_CPP()}}},

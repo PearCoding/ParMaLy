@@ -29,20 +29,20 @@
  */
 
 using System;
-using System.Linq;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PML
 {
     [System.Diagnostics.DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class RuleLookahead : IEquatable<RuleLookahead>, IEnumerable<RuleToken>
     {
-        List<RuleToken> _Tokens;
+        readonly List<RuleToken> _Tokens;
 
         public int Count { get { return _Tokens.Count; } }
 
-        public RuleToken this [int index]
+        public RuleToken this[int index]
         {
             get { return _Tokens[index]; }
             set { _Tokens[index] = value; }
@@ -78,7 +78,7 @@ namespace PML
             return String.Join(delim, _Tokens.Select(v => v.Name).ToArray());
         }
 
-        public string Join(string delim, Func<RuleToken, string> selector) 
+        public string Join(string delim, Func<RuleToken, string> selector)
         {
             return String.Join(delim, _Tokens.Select(selector).ToArray());
         }
@@ -90,7 +90,7 @@ namespace PML
 
         public bool HasIntersection(RuleLookahead lookahead)
         {
-            for(int i = 0; i < Math.Min(Count, lookahead.Count); ++i)
+            for (int i = 0; i < Math.Min(Count, lookahead.Count); ++i)
             {
                 if (lookahead[i] != _Tokens[i])
                     return false;
@@ -127,7 +127,7 @@ namespace PML
             return EnumeratorUtils.GetOrderDependentHashCode(_Tokens);
         }
 
-        public static bool operator == (RuleLookahead a, RuleLookahead b)
+        public static bool operator ==(RuleLookahead a, RuleLookahead b)
         {
             if (Object.ReferenceEquals(a, b))
                 return true;
@@ -138,7 +138,7 @@ namespace PML
             return a.Equals(b);
         }
 
-        public static bool operator != (RuleLookahead a, RuleLookahead b)
+        public static bool operator !=(RuleLookahead a, RuleLookahead b)
         {
             return !(a == b);
         }

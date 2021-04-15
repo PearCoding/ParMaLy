@@ -29,18 +29,14 @@
  */
 
 using System.Collections.Generic;
-using System.Linq;
-using System.IO;
 
 namespace PML.Output.CodeGenerator
 {
-    using R;
-
     public class CPPEmbeddedCodeGenerator
     {
-        private char _P_IDENT = '$';
-        private string _ReturnValue;
-        private string _ParamPrefix;
+        private readonly char _P_IDENT = '$';
+        private readonly string _ReturnValue;
+        private readonly string _ParamPrefix;
 
         public CPPEmbeddedCodeGenerator(string retVal, string paramPrefix)
         {
@@ -55,7 +51,7 @@ namespace PML.Output.CodeGenerator
 
             Dictionary<string, string> paramMapper = new Dictionary<string, string>();
             int counter = 0;
-            foreach (var t in rule.Tokens)
+            foreach (RuleToken t in rule.Tokens)
             {
                 if (!string.IsNullOrEmpty(t.ReturnType))
                 {

@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 
 namespace PML.Tests
 {
-    using NUnit.Framework;
-
     [TestFixture]
     public class LL_Test
     {
-        string Test_Source_1 =
+        readonly string Test_Source_1 =
             @"%start A;
             A:	'a' B;
             B:	'a' B;";
@@ -25,7 +21,7 @@ namespace PML.Tests
             ll0.Generate(env, logger);
 
             Assert.AreEqual(ll0.Statistics.TD.Conflicts.Count, 0);
-            var lookup = ll0.Lookup;
+            TD.LookupTable lookup = ll0.Lookup;
 
             Assert.AreEqual(lookup.Get(env.GroupByName("A"), new RuleLookahead(env.TokenByName("a"))).Rule,
                 env.GroupByName("A").Rules.First());
@@ -38,7 +34,7 @@ namespace PML.Tests
                 env.GroupByName("B").Rules.First());
         }
 
-        string Test_Source_2 =
+        readonly string Test_Source_2 =
             @"%start A;
             A:	'a' B;
             B:	'a' B | /* EMPTY */;";
@@ -58,12 +54,12 @@ namespace PML.Tests
             Parser.LLK ll1 = new Parser.LLK(1);
             ll1.Generate(env, logger);
             Assert.AreEqual(ll1.Statistics.TD.Conflicts.Count, 0);
-            var lookup = ll1.Lookup;
+            TD.LookupTable lookup = ll1.Lookup;
 
             // TODO
         }
 
-        string Test_Source_3 =
+        readonly string Test_Source_3 =
             @"%start A;
             A:	'a' B;
             B:	B 'a' | C 'a';
@@ -87,7 +83,7 @@ namespace PML.Tests
             Assert.AreNotEqual(ll1.Statistics.TD.Conflicts.Count, 0);
         }
 
-        string Test_Source_4 =
+        readonly string Test_Source_4 =
             @"%start A;
             A:	B | C ;
             B:	'a' 'b' ;
@@ -112,7 +108,7 @@ namespace PML.Tests
             Parser.LLK ll2 = new Parser.LLK(2);
             ll2.Generate(env, logger);
             Assert.AreEqual(ll2.Statistics.TD.Conflicts.Count, 0);
-            var lookup = ll2.Lookup;
+            TD.LookupTable lookup = ll2.Lookup;
 
             // TODO
         }

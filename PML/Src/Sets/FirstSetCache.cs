@@ -35,12 +35,11 @@ namespace PML
 {
     public class FirstSetCache
     {
-        Dictionary<KeyValuePair<Rule, int>, RuleLookaheadSet> _RuleCache =
+        readonly Dictionary<KeyValuePair<Rule, int>, RuleLookaheadSet> _RuleCache =
             new Dictionary<KeyValuePair<Rule, int>, RuleLookaheadSet>();
-        Dictionary<KeyValuePair<IEnumerable<RuleToken>, int>, RuleLookaheadSet> _ExprCache =
+        readonly Dictionary<KeyValuePair<IEnumerable<RuleToken>, int>, RuleLookaheadSet> _ExprCache =
             new Dictionary<KeyValuePair<IEnumerable<RuleToken>, int>, RuleLookaheadSet>();
-
-        List<int> _Setups = new List<int>();
+        readonly List<int> _Setups = new List<int>();
 
         public int MaxK { get { return _Setups.Max(); } }
 
@@ -55,16 +54,16 @@ namespace PML
 
         public RuleLookaheadSet Generate(IEnumerable<RuleToken> tokens, int k)
         {
-            var key = new KeyValuePair<IEnumerable<RuleToken>, int>(tokens, k);
+            KeyValuePair<IEnumerable<RuleToken>, int> key = new KeyValuePair<IEnumerable<RuleToken>, int>(tokens, k);
             if (_ExprCache.ContainsKey(key))
             {
                 return _ExprCache[key];
             }
             else
             {
-                var res = FirstSet.Generate(tokens, k, this);
+                RuleLookaheadSet res = FirstSet.Generate(tokens, k, this);
 
-                if(k >= 1)
+                if (k >= 1)
                     _ExprCache.Add(key, res);
 
                 return res;
@@ -78,7 +77,7 @@ namespace PML
 
         public bool Has(RuleGroup grp, int k)
         {
-            foreach(var p in _RuleCache)
+            foreach (KeyValuePair<KeyValuePair<Rule, int>, RuleLookaheadSet> p in _RuleCache)
             {
                 if (p.Key.Key.Group == grp && p.Key.Value == k)
                     return true;
@@ -99,17 +98,17 @@ namespace PML
         public RuleLookaheadSet Get(RuleGroup grp, int k)
         {
             RuleLookaheadSet set = new RuleLookaheadSet();
-            foreach(var r in grp.Rules)
+            foreach (Rule r in grp.Rules)
             {
-                if(Has(r, k))
+                if (Has(r, k))
                 {
-                    var s = Get(r, k);
+                    RuleLookaheadSet s = Get(r, k);
                     set.AddRangeUnique(s);
                 }
             }
             return set;
         }
-        
+
         public void Clear()
         {
             _RuleCache.Clear();

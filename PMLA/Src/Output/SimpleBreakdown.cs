@@ -29,8 +29,8 @@
  */
 
 using System;
-using System.Linq;
 using System.IO;
+using System.Linq;
 
 namespace PML.Output
 {
@@ -65,10 +65,10 @@ namespace PML.Output
             Graph.GroupGraph grpGraph = new Graph.GroupGraph();
             grpGraph.Generate(env);
             writer.WriteLine("Group Graph:");
-            foreach(var node in grpGraph.Nodes)
+            foreach (Graph.GroupNode node in grpGraph.Nodes)
             {
                 writer.WriteLine("  [" + node.Group.Name + "]:");
-                foreach (var con in node.Connections)
+                foreach (Graph.GroupNode con in node.Connections)
                 {
                     writer.WriteLine("    --> [" + con.Group.Name + "]");
                 }
@@ -76,10 +76,10 @@ namespace PML.Output
 
             writer.WriteLine("Left Recursion:");
             env.FirstCache.Setup(env, 1);
-            foreach (var grp in env.Groups)
+            foreach (RuleGroup grp in env.Groups)
             {
                 writer.WriteLine("  " + grp.Name + ": " + (Preprocess.LeftRecursion.HasLeftRecursion(grp, env.FirstCache) ? "YES" : "NO"));
-            }   
+            }
 
             writer.Flush();
         }

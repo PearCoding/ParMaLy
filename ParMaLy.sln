@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31112.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PMLA", "PMLA\PMLA.csproj", "{94BADB9E-9C5A-4463-8E6E-C5508D409719}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -14,16 +14,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj
 		{94BADB9E-9C5A-4463-8E6E-C5508D409719} = {94BADB9E-9C5A-4463-8E6E-C5508D409719}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DL-Library", "datalisp\DL-Library.csproj", "{0362048A-7482-4552-BD1D-41AE85AB20B0}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PMLR", "PMLR\PMLR.csproj", "{3E443352-8A89-4608-959D-DE9D152900A1}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C6391D62-417D-4EA6-A313-0E63C66E2754} = {C6391D62-417D-4EA6-A313-0E63C66E2754}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PML", "PML\PML.csproj", "{C6391D62-417D-4EA6-A313-0E63C66E2754}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PML", "PML\PML.csproj", "{C6391D62-417D-4EA6-A313-0E63C66E2754}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PMLG", "PMLG\PMLG.csproj", "{DBF29C4A-464E-4E2F-8F70-7D0E90D70836}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PMLG", "PMLG\PMLG.csproj", "{DBF29C4A-464E-4E2F-8F70-7D0E90D70836}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,10 +37,6 @@ Global
 		{067456C0-086C-46A8-B37F-1405717B7BFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{067456C0-086C-46A8-B37F-1405717B7BFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{067456C0-086C-46A8-B37F-1405717B7BFC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0362048A-7482-4552-BD1D-41AE85AB20B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0362048A-7482-4552-BD1D-41AE85AB20B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0362048A-7482-4552-BD1D-41AE85AB20B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0362048A-7482-4552-BD1D-41AE85AB20B0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3E443352-8A89-4608-959D-DE9D152900A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3E443352-8A89-4608-959D-DE9D152900A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E443352-8A89-4608-959D-DE9D152900A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -58,5 +52,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {67E02B42-8A25-4F43-B99C-403F3CDE83F9}
 	EndGlobalSection
 EndGlobal

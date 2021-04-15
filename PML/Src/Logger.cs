@@ -50,11 +50,11 @@ namespace PML
         int _ErrorCount = 0;
         public int ErrorCount { get { return _ErrorCount; } }
 
-        TextWriter _Writer;
+        readonly TextWriter _Writer;
 
         public Logger(bool logToFile = true)
         {
-            if(logToFile)
+            if (logToFile)
                 _Writer = File.CreateText("pml_" + DateTime.Now.ToString("yyyyMMddHHmmssffff") + ".log");
         }
 

@@ -28,8 +28,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
-using System;
-using System.Linq;
 using System.IO;
 
 namespace PML.Output
@@ -37,7 +35,7 @@ namespace PML.Output
     public static class SetFile
     {
         public static void PrintFirstSets(TextWriter writer, FirstSetCache cache, Environment env)
-        {            
+        {
             for (int i = 1; i <= cache.MaxK; ++i)
             {
                 writer.WriteLine("K = " + i);
@@ -46,10 +44,10 @@ namespace PML.Output
                     if (cache.Has(grp, i))
                     {
                         writer.WriteLine("  " + grp.Name + ":");
-                        var set = cache.Get(grp, i);
-                        foreach(var l in set)
+                        RuleLookaheadSet set = cache.Get(grp, i);
+                        foreach (RuleLookahead l in set)
                         {
-                            if(l == null)
+                            if (l == null)
                                 writer.WriteLine("    /* EMPTY */");
                             else
                                 writer.WriteLine("    " + l.Join(",",
@@ -58,7 +56,7 @@ namespace PML.Output
                     }
                 }
 
-                if(i != cache.MaxK)
+                if (i != cache.MaxK)
                 {
                     for (int j = 0; j < 80; ++j)
                         writer.Write("-");
@@ -79,8 +77,8 @@ namespace PML.Output
                     if (cache.Has(grp, i))
                     {
                         writer.WriteLine("  " + grp.Name + ":");
-                        var set = cache.Get(grp, i);
-                        foreach (var l in set)
+                        RuleLookaheadSet set = cache.Get(grp, i);
+                        foreach (RuleLookahead l in set)
                         {
                             if (l == null)
                                 writer.WriteLine("    $");
@@ -111,9 +109,9 @@ namespace PML.Output
                     writer.WriteLine("  " + grp.Name + ":");
                     foreach (Rule rule in grp.Rules)
                     {
-                        var set = PredictSet.Generate(env, grp, rule.Tokens, i);
+                        RuleLookaheadSet set = PredictSet.Generate(env, grp, rule.Tokens, i);
                         writer.WriteLine("    [" + rule.ID + "]:");
-                        foreach (var l in set)
+                        foreach (RuleLookahead l in set)
                         {
                             if (l == null)
                                 writer.WriteLine("      $");

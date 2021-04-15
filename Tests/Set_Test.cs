@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 
 namespace PML.Tests
 {
-    using NUnit.Framework;
-
     [TestFixture]
     public class Set_Test
     {
-        string Test_Source =
+        readonly string Test_Source =
             @"%token ID;
             %start A;
             A:	S B;
@@ -24,12 +20,12 @@ namespace PML.Tests
             Environment env = new Environment(new Logger(false));
             env.Parse(Test_Source);
             env.FirstCache.Setup(env, 1);
-            
-            var A = env.FirstCache.Get(env.GroupByName("A"), 1);
-            var B = env.FirstCache.Get(env.GroupByName("B"), 1);
-            var S = env.FirstCache.Get(env.GroupByName("S"), 1);
-            var T = env.FirstCache.Get(env.GroupByName("T"), 1);
-            var F = env.FirstCache.Get(env.GroupByName("F"), 1);
+
+            RuleLookaheadSet A = env.FirstCache.Get(env.GroupByName("A"), 1);
+            RuleLookaheadSet B = env.FirstCache.Get(env.GroupByName("B"), 1);
+            RuleLookaheadSet S = env.FirstCache.Get(env.GroupByName("S"), 1);
+            RuleLookaheadSet T = env.FirstCache.Get(env.GroupByName("T"), 1);
+            RuleLookaheadSet F = env.FirstCache.Get(env.GroupByName("F"), 1);
 
             Assert.AreEqual(A.Count(), 2);
             Assert.AreEqual(B.Count(), 2);
@@ -52,7 +48,7 @@ namespace PML.Tests
             Assert.AreEqual(env.TokenByName("ID"), A[1][0]);
 
             Assert.AreEqual(env.TokenByName("+"), B[0][0]);
-        
+
             Assert.AreEqual(env.TokenByName("("), S[0][0]);
             Assert.AreEqual(env.TokenByName("ID"), S[1][0]);
 
@@ -70,18 +66,18 @@ namespace PML.Tests
             env.FirstCache.Setup(env, 1);
             env.FollowCache.Setup(env, 1);
 
-            var A = env.FollowCache.Get(env.GroupByName("A"), 1);
-            var B = env.FollowCache.Get(env.GroupByName("B"), 1);
-            var S = env.FollowCache.Get(env.GroupByName("S"), 1);
-            var T = env.FollowCache.Get(env.GroupByName("T"), 1);
-            var F = env.FollowCache.Get(env.GroupByName("F"), 1);
+            RuleLookaheadSet A = env.FollowCache.Get(env.GroupByName("A"), 1);
+            RuleLookaheadSet B = env.FollowCache.Get(env.GroupByName("B"), 1);
+            RuleLookaheadSet S = env.FollowCache.Get(env.GroupByName("S"), 1);
+            RuleLookaheadSet T = env.FollowCache.Get(env.GroupByName("T"), 1);
+            RuleLookaheadSet F = env.FollowCache.Get(env.GroupByName("F"), 1);
 
             Assert.AreEqual(A.Count(), 2);
             Assert.AreEqual(B.Count(), 2);
             Assert.AreEqual(S.Count(), 3);
             Assert.AreEqual(T.Count(), 3);
             Assert.AreEqual(F.Count(), 4);
-            
+
             Assert.IsNull(A[0]);
             Assert.AreEqual(A[1].Count(), 1);
 
@@ -102,12 +98,12 @@ namespace PML.Tests
             Assert.AreEqual(F[3].Count(), 1);
 
             Assert.AreEqual(env.TokenByName(")"), A[1][0]);
-            
+
             Assert.AreEqual(env.TokenByName(")"), B[1][0]);
-            
+
             Assert.AreEqual(env.TokenByName("+"), S[0][0]);
             Assert.AreEqual(env.TokenByName(")"), S[2][0]);
-            
+
             Assert.AreEqual(env.TokenByName("+"), T[0][0]);
             Assert.AreEqual(env.TokenByName(")"), T[2][0]);
 
@@ -116,7 +112,7 @@ namespace PML.Tests
             Assert.AreEqual(env.TokenByName(")"), F[3][0]);
         }
 
-        string Test_Source_2 =
+        readonly string Test_Source_2 =
             @"%start A;
             A:	'a' B 'a' 'a' | 'b' C 'b' 'a' ;
             B:	'b' | /*EMPTY*/ ;
@@ -129,9 +125,9 @@ namespace PML.Tests
             env.Parse(Test_Source_2);
             env.FirstCache.Setup(env, 2);
 
-            var A = env.FirstCache.Get(env.GroupByName("A"), 2);
-            var B = env.FirstCache.Get(env.GroupByName("B"), 2);
-            var C = env.FirstCache.Get(env.GroupByName("C"), 2);
+            RuleLookaheadSet A = env.FirstCache.Get(env.GroupByName("A"), 2);
+            RuleLookaheadSet B = env.FirstCache.Get(env.GroupByName("B"), 2);
+            RuleLookaheadSet C = env.FirstCache.Get(env.GroupByName("C"), 2);
 
             Assert.AreEqual(A.Count(), 3);
             Assert.AreEqual(B.Count(), 2);
@@ -157,7 +153,7 @@ namespace PML.Tests
             Assert.AreEqual(env.TokenByName("b"), B[0][0]);
             Assert.AreEqual(env.TokenByName("b"), C[0][0]);
         }
-        
+
         [Test]
         public void Follow2()
         {
@@ -166,9 +162,9 @@ namespace PML.Tests
             env.FirstCache.Setup(env, 2);
             env.FollowCache.Setup(env, 2);
 
-            var A = env.FollowCache.Get(env.GroupByName("A"), 2);
-            var B = env.FollowCache.Get(env.GroupByName("B"), 2);
-            var C = env.FollowCache.Get(env.GroupByName("C"), 2);
+            RuleLookaheadSet A = env.FollowCache.Get(env.GroupByName("A"), 2);
+            RuleLookaheadSet B = env.FollowCache.Get(env.GroupByName("B"), 2);
+            RuleLookaheadSet C = env.FollowCache.Get(env.GroupByName("C"), 2);
 
             Assert.AreEqual(A.Count(), 1);
             Assert.AreEqual(B.Count(), 1);
@@ -185,7 +181,7 @@ namespace PML.Tests
             Assert.AreEqual(env.TokenByName("a"), C[0][1]);
         }
 
-        string Test_Source_3 =
+        readonly string Test_Source_3 =
             @"%start A;
             A:	B 'b' 'a' | 'b' B 'a' 'a' ;
             B:	'b' C | /*EMPTY*/ ;
@@ -197,10 +193,10 @@ namespace PML.Tests
             env.Parse(Test_Source_3);
             env.FirstCache.Setup(env, 3);
 
-            var A = env.FirstCache.Get(env.GroupByName("A"), 3);
-            var B = env.FirstCache.Get(env.GroupByName("B"), 3);
-            var C = env.FirstCache.Get(env.GroupByName("C"), 3);
-            
+            RuleLookaheadSet A = env.FirstCache.Get(env.GroupByName("A"), 3);
+            RuleLookaheadSet B = env.FirstCache.Get(env.GroupByName("B"), 3);
+            RuleLookaheadSet C = env.FirstCache.Get(env.GroupByName("C"), 3);
+
             Assert.AreEqual(A.Count(), 5);
             Assert.AreEqual(B.Count(), 4);
             Assert.AreEqual(C.Count(), 6);
@@ -281,9 +277,9 @@ namespace PML.Tests
             env.FirstCache.Setup(env, 3);
             env.FollowCache.Setup(env, 3);
 
-            var A = env.FollowCache.Get(env.GroupByName("A"), 3);
-            var B = env.FollowCache.Get(env.GroupByName("B"), 3);
-            var C = env.FollowCache.Get(env.GroupByName("C"), 3);
+            RuleLookaheadSet A = env.FollowCache.Get(env.GroupByName("A"), 3);
+            RuleLookaheadSet B = env.FollowCache.Get(env.GroupByName("B"), 3);
+            RuleLookaheadSet C = env.FollowCache.Get(env.GroupByName("C"), 3);
 
             Assert.AreEqual(A.Count(), 1);
             Assert.AreEqual(B.Count(), 2);

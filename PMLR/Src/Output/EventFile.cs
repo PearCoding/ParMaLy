@@ -29,8 +29,8 @@
  */
 
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
 
 namespace PML.Output
 {
@@ -39,14 +39,14 @@ namespace PML.Output
         public static void PrintEvents(TextWriter writer, IEnumerable<Events.IEvent> events)
         {
             int i = 1;
-            foreach(var e in events)
+            foreach (Events.IEvent e in events)
             {
                 writer.WriteLine("#-------------------------------------------------#");
                 PrintEvent(writer, i, e);
                 ++i;
             }
 
-            if(events.Count() != 0)
+            if (events.Count() != 0)
                 writer.WriteLine("#-------------------------------------------------#");
 
             writer.Flush();
@@ -55,9 +55,9 @@ namespace PML.Output
         static void PrintEvent(TextWriter writer, int i, Events.IEvent e)
         {
             writer.WriteLine("[" + i + "] Event: " + e.Name);
-            if(e is Events.LLRuleEvent)
+            if (e is Events.LLRuleEvent)
             {
-                var re = e as Events.LLRuleEvent;
+                Events.LLRuleEvent re = e as Events.LLRuleEvent;
                 writer.WriteLine("  Current position: " + re.Position);
                 writer.WriteLine("  Current stack: " + string.Join(", ", re.Stack.Select(v => "'" + v.Name + "'").ToArray()));
                 writer.WriteLine("  Current lookahead: " + (re.Lookahead == null ? "$" : re.Lookahead.ToString()));
@@ -65,7 +65,7 @@ namespace PML.Output
             }
             else if (e is Events.LLTokenEvent)
             {
-                var te = e as Events.LLTokenEvent;
+                Events.LLTokenEvent te = e as Events.LLTokenEvent;
                 writer.WriteLine("  Current position: " + te.Position);
                 writer.WriteLine("  Current stack: " + string.Join(", ", te.Stack.Select(v => "'" + v.Name + "'").ToArray()));
                 writer.WriteLine("  Current lookahead: " + (te.Lookahead == null ? "$" : te.Lookahead.ToString()));
@@ -73,14 +73,14 @@ namespace PML.Output
             }
             else if (e is Events.LRAcceptEvent)
             {
-                var ae = e as Events.LRAcceptEvent;
+                Events.LRAcceptEvent ae = e as Events.LRAcceptEvent;
                 writer.WriteLine("  Current position: " + ae.Position);
                 writer.WriteLine("  Current stack: " + string.Join(", ", ae.Stack.Select(v => v.ToString()).ToArray()));
                 writer.WriteLine("  Current lookahead: " + (ae.Lookahead == null ? "$" : ae.Lookahead.ToString()));
             }
             else if (e is Events.LRShiftEvent)
             {
-                var se = e as Events.LRShiftEvent;
+                Events.LRShiftEvent se = e as Events.LRShiftEvent;
                 writer.WriteLine("  Current position: " + se.Position);
                 writer.WriteLine("  Current stack: " + string.Join(", ", se.Stack.Select(v => v.ToString()).ToArray()));
                 writer.WriteLine("  Current lookahead: " + (se.Lookahead == null ? "$" : se.Lookahead.ToString()));
@@ -88,7 +88,7 @@ namespace PML.Output
             }
             else if (e is Events.LRReduceEvent)
             {
-                var re = e as Events.LRReduceEvent;
+                Events.LRReduceEvent re = e as Events.LRReduceEvent;
                 writer.WriteLine("  Current position: " + re.Position);
                 writer.WriteLine("  Current stack: " + string.Join(", ", re.Stack.Select(v => v.ToString()).ToArray()));
                 writer.WriteLine("  Current lookahead: " + (re.Lookahead == null ? "$" : re.Lookahead.ToString()));

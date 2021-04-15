@@ -29,7 +29,6 @@
  */
 
 using System.Collections.Generic;
-using System.Linq;
 
 namespace PML.Runner
 {
@@ -54,8 +53,8 @@ namespace PML.Runner
 
             while (true)
             {
-                var look = (lexer.Left > 0 ? lexer.Current(env, K <= 1 ? 0 : (K - 1)) : null);
-                var action = ActionTable.Get(stack.Peek(), look);
+                RuleLookahead look = (lexer.Left > 0 ? lexer.Current(env, K <= 1 ? 0 : (K - 1)) : null);
+                BU.ActionTable.Entry action = ActionTable.Get(stack.Peek(), look);
 
                 //if (look != null)
                 //{
@@ -69,18 +68,18 @@ namespace PML.Runner
                 //    }
                 //}
 
-                if(action == null)
+                if (action == null)
                 {
                     logger.Log(LogLevel.Error, "Parser Error: State " + stack.Peek() + " with lookahead "
                         + (look != null ? "[" + look.Join(",") + "]" : "$"));
                     break;
                 }
-                else if(action.Action == BU.ActionTable.Action.Accept)
+                else if (action.Action == BU.ActionTable.Action.Accept)
                 {
                     events.Add(new Events.LRAcceptEvent(stack, look, lexer.Position));
                     break;
                 }
-                else if(action.Action == BU.ActionTable.Action.Shift)
+                else if (action.Action == BU.ActionTable.Action.Shift)
                 {
                     events.Add(new Events.LRShiftEvent(action.StateID, stack, look, lexer.Position));
                     stack.Push(action.StateID);
@@ -88,15 +87,15 @@ namespace PML.Runner
                 }
                 else//Reduce
                 {
-                    var rule = env.RuleByID(action.StateID);
+                    Rule rule = env.RuleByID(action.StateID);
                     events.Add(new Events.LRReduceEvent(rule, stack, look, lexer.Position));
 
                     for (int i = 0; i < rule.Tokens.Count; ++i)
                         stack.Pop();
 
-                    var go = GotoTable.Get(stack.Peek(), rule.Group);
+                    BU.GotoTable.Entry go = GotoTable.Get(stack.Peek(), rule.Group);
 
-                    if(go != null)
+                    if (go != null)
                         stack.Push(go.StateID);
                     else
                         logger.Log(LogLevel.Error, "Parser Error: No GoTo for State " + stack.Peek() + " with lookahead "
@@ -104,7 +103,7 @@ namespace PML.Runner
                 }
             }
 
-            if(lexer.Left != 0)
+            if (lexer.Left != 0)
                 logger.Log(LogLevel.Error, "Parser did not finished properly.");
 
             return events;

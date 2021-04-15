@@ -29,8 +29,8 @@
  */
 
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
 
 namespace PML.Output
 {
@@ -45,20 +45,20 @@ namespace PML.Output
             writer.WriteLine("<tr class='" + style.TableTr_Class + "' id='" + style.TableTr_ID_Prefix + tr + "'>\n<th></th>");
             tr++;
 
-            var tokens = table.Colums;
+            IEnumerable<RuleLookahead> tokens = table.Colums;
             AddActionHeader(0, writer, tokens, style);
             writer.WriteLine("</tr>");
 
-            foreach(var state in table.Rows)
+            foreach (int state in table.Rows)
             {
                 writer.WriteLine("<tr class='" + style.TableTr_Class + "' id='" + style.TableTr_ID_Prefix + tr + "'>");
                 tr++;
 
                 AddFirstColumn(writer, state, style);
                 int td = 1;
-                foreach (var s in tokens)
+                foreach (RuleLookahead s in tokens)
                 {
-                    var e = table.Get(state, s);
+                    BU.ActionTable.Entry e = table.Get(state, s);
                     AddActionEntry(td, e, writer, style);
                     td++;
                 }
@@ -81,16 +81,16 @@ namespace PML.Output
             AddGotoHeader(0, writer, env.Groups, style);
             writer.WriteLine("</tr>");
 
-            foreach (var state in table.Rows)
+            foreach (int state in table.Rows)
             {
                 writer.WriteLine("<tr class='" + style.TableTr_Class + "' id='" + style.TableTr_ID_Prefix + tr + "'>");
                 tr++;
 
                 AddFirstColumn(writer, state, style);
                 int td = 1;
-                foreach (var s in env.Groups)
+                foreach (RuleGroup s in env.Groups)
                 {
-                    var e = table.Get(state, s);
+                    BU.GotoTable.Entry e = table.Get(state, s);
                     AddGotoEntry(td, e, writer, style);
                     td++;
                 }
@@ -110,28 +110,28 @@ namespace PML.Output
             int tr = 0;
             writer.WriteLine("<tr class='" + style.TableTr_Class + "' id='" + style.TableTr_ID_Prefix + tr + "'>\n<th></th>");
             tr++;
-            var tokens = actionTable.Colums;
+            IEnumerable<RuleLookahead> tokens = actionTable.Colums;
             AddActionHeader(0, writer, tokens, style);
             AddGotoHeader(tokens.Count(), writer, env.Groups, style);
             writer.WriteLine("</tr>");
 
-            foreach (var state in actionTable.Rows)
+            foreach (int state in actionTable.Rows)
             {
                 writer.WriteLine("<tr class='" + style.TableTr_Class + "' id='" + style.TableTr_ID_Prefix + tr + "'>");
                 tr++;
 
                 AddFirstColumn(writer, state, style);
                 int td = 1;
-                foreach (var s in tokens)
+                foreach (RuleLookahead s in tokens)
                 {
-                    var e = actionTable.Get(state, s);
+                    BU.ActionTable.Entry e = actionTable.Get(state, s);
                     AddActionEntry(td, e, writer, style);
                     td++;
                 }
 
-                foreach (var s in env.Groups)
+                foreach (RuleGroup s in env.Groups)
                 {
-                    var e = gotoTable.Get(state, s);
+                    BU.GotoTable.Entry e = gotoTable.Get(state, s);
                     AddGotoEntry(td, e, writer, style);
                     td++;
                 }
@@ -152,20 +152,20 @@ namespace PML.Output
             int tr = 0;
             writer.WriteLine("<tr class='" + style.TableTr_Class + "' id='" + style.TableTr_ID_Prefix + tr + "'>\n<th></th>");
             tr++;
-            var tokens = lookup.Colums;
+            IEnumerable<RuleLookahead> tokens = lookup.Colums;
             AddActionHeader(0, writer, tokens, style);
             writer.WriteLine("</tr>");
 
-            foreach (var grp in env.Groups)
+            foreach (RuleGroup grp in env.Groups)
             {
                 writer.WriteLine("<tr class='" + style.TableTr_Class + "' id='" + style.TableTr_ID_Prefix + tr + "'>");
                 tr++;
 
                 AddFirstColumn(writer, grp, style);
                 int td = 1;
-                foreach (var s in tokens)
+                foreach (RuleLookahead s in tokens)
                 {
-                    var e = lookup.Get(grp, s);//For now
+                    TD.LookupTable.Entry e = lookup.Get(grp, s);//For now
                     AddLookupEntry(td, e, writer, style);
                     td++;
                 }
@@ -214,7 +214,7 @@ namespace PML.Output
         static void AddActionHeader(int off, TextWriter writer, IEnumerable<RuleLookahead> tokens, Style.HtmlStyle style)
         {
             int th = off;
-            foreach (var s in tokens)
+            foreach (RuleLookahead s in tokens)
             {
                 writer.WriteLine("<th class='" + style.TableTh_Class + "' id='" + style.TableTh_ID_Prefix + th + "'>"
                     + (s == null ? style.EOF_Identificator : s.ToString()) + "</th>");//TODO: Remove prefix etc.
@@ -257,7 +257,7 @@ namespace PML.Output
         static void AddGotoHeader(int off, TextWriter writer, List<RuleGroup> grps, Style.HtmlStyle style)
         {
             int th = off;
-            foreach (var s in grps)
+            foreach (RuleGroup s in grps)
             {
                 writer.WriteLine("<th class='" + style.TableTh_Class + "' id='" + style.TableTh_ID_Prefix + th + "'>"
                     + (style.UseRuleName ? s.Name : style.RuleNamePrefix + s.ID + style.RuleNameSuffix) + "</th>");

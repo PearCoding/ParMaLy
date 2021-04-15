@@ -29,25 +29,25 @@
  */
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-    using System.Diagnostics;
 
 namespace PML.Parser
 {
-    using Statistics;
     using BU;
+    using Statistics;
 
     public class LALR : IBUParser
     {
-        List<RuleState> _States = new List<RuleState>();
+        readonly List<RuleState> _States = new List<RuleState>();
         RuleState _StartState;
-        ActionTable _ActionTable = new ActionTable();
-        GotoTable _GotoTable = new GotoTable();
+        readonly ActionTable _ActionTable = new ActionTable();
+        readonly GotoTable _GotoTable = new GotoTable();
         Statistics _Statistics;
 
         public string Name { get { return "LALR(" + K + ")"; } }
 
-        int _K = 1;
+        readonly int _K = 1;
         public int K { get { return _K; } }
 
         public List<RuleState> States { get { return _States; } }
@@ -90,7 +90,7 @@ namespace PML.Parser
             Stopwatch watch = new Stopwatch();
             while (queue.Count != 0)
             {
-                var s = queue.Dequeue();
+                RuleState s = queue.Dequeue();
                 BUStatistics.ProcessEntry process = new BUStatistics.ProcessEntry(s, _States.Count, queue.Count);
 
                 System.Console.WriteLine("State ID: " + s.ID + " Queue: " + queue.Count + " left. Full state count: " + _States.Count);
@@ -111,13 +111,13 @@ namespace PML.Parser
             int i = 0;
             while (i >= 0)
             {
-                var c = state[i];
+                RuleConfiguration c = state[i];
                 c.Dirty = false;
                 if (!c.IsLast)
                 {
-                    var t = c.GetNext();
+                    RuleToken t = c.GetNext();
 
-                    if(t.Type == RuleTokenType.Rule)
+                    if (t.Type == RuleTokenType.Rule)
                     {
                         List<RuleToken> tmp;
                         int newp = c.Pos + 1;
@@ -128,18 +128,18 @@ namespace PML.Parser
 
                         for (int j = 0; j < c.Lookaheads.Count(); ++j)
                         {
-                            var look = c.Lookaheads[j];
-                            var delta = firstCache.Generate(
+                            RuleLookahead look = c.Lookaheads[j];
+                            RuleLookaheadSet delta = firstCache.Generate(
                                 look == null ? tmp : tmp.Concat(look.Take(System.Math.Min(look.Count, K))),
                                 K);
 
-                            foreach (var r in t.Group.Rules)
+                            foreach (Rule r in t.Group.Rules)
                             {
                                 RuleLookaheadSet set = new RuleLookaheadSet(delta);
                                 RuleConfiguration conf2 = new RuleConfiguration(r, 0, set);
 
                                 RuleConfiguration other = null;
-                                foreach (var c2 in state.All)
+                                foreach (RuleConfiguration c2 in state.All)
                                 {
                                     if (c2.SemiEquals(conf2))
                                     {
@@ -174,19 +174,19 @@ namespace PML.Parser
 
         void StepState(RuleState state, Queue<RuleState> queue, FirstSetCache firstCache, Logger logger)
         {
-            foreach (var c in state.All)
+            foreach (RuleConfiguration c in state.All)
             {
                 if (!c.IsLast)
                 {
                     RuleState newState = new RuleState(_States.Count);
                     newState.Header.Add(new RuleConfiguration(c.Rule, c.Pos + 1, c.Lookaheads));//c.Lookaheads
 
-                    var t = c.GetNext();
-                    foreach (var c2 in state.All)
+                    RuleToken t = c.GetNext();
+                    foreach (RuleConfiguration c2 in state.All)
                     {
                         if (!c2.IsLast && c2.GetNext().Type == t.Type && c2.GetNext().Name == t.Name)
                         {
-                            var n = new RuleConfiguration(c2.Rule, c2.Pos + 1, c2.Lookaheads);//c. Lookaheads
+                            RuleConfiguration n = new RuleConfiguration(c2.Rule, c2.Pos + 1, c2.Lookaheads);//c. Lookaheads
                             if (!newState.Header.Contains(n))
                                 newState.Header.Add(n);
                         }
@@ -194,7 +194,7 @@ namespace PML.Parser
 
                     // The merge state, which is different to LR(1)
                     RuleState mergeState = null;
-                    foreach (var s in _States)
+                    foreach (RuleState s in _States)
                     {
                         if (s.SemiEquals(newState))
                         {
@@ -208,9 +208,9 @@ namespace PML.Parser
                         _States.Add(newState);
 
                         RuleState.Connection con = null;
-                        foreach (var con2 in state.Production)
+                        foreach (RuleState.Connection con2 in state.Production)
                         {
-                            if(con2.State == newState && con2.Token == t)
+                            if (con2.State == newState && con2.Token == t)
                             {
                                 con = con2;
                                 break;
@@ -229,16 +229,16 @@ namespace PML.Parser
                     }
                     else
                     {
-                        if(mergeState.Closure.Count != 0)
+                        if (mergeState.Closure.Count != 0)
                             GenerateClosure(newState, firstCache, logger);
 
-                        foreach (var c2 in newState.All)
+                        foreach (RuleConfiguration c2 in newState.All)
                         {
-                            foreach(var c3 in mergeState.All)
+                            foreach (RuleConfiguration c3 in mergeState.All)
                             {
-                                if(c2.SemiEquals(c3))
+                                if (c2.SemiEquals(c3))
                                 {
-                                    foreach(var l in c2.Lookaheads)
+                                    foreach (RuleLookahead l in c2.Lookaheads)
                                     {
                                         if (!c3.Lookaheads.Contains(l))
                                             c3.Lookaheads.Add(l);
@@ -248,7 +248,7 @@ namespace PML.Parser
                         }
 
                         RuleState.Connection con = null;
-                        foreach (var con2 in state.Production)
+                        foreach (RuleState.Connection con2 in state.Production)
                         {
                             if (con2.State == mergeState && con2.Token == t)
                             {
@@ -273,31 +273,31 @@ namespace PML.Parser
         {
             _ActionTable.Clear();
 
-            foreach(RuleState state in _States)
+            foreach (RuleState state in _States)
             {
-                foreach(RuleConfiguration conf in state.All)
+                foreach (RuleConfiguration conf in state.All)
                 {
-                    if(conf.Rule.Group == env.Start &&
+                    if (conf.Rule.Group == env.Start &&
                         conf.IsLast &&
                         conf.Lookaheads.Contains((RuleLookahead)null))//Accept
                     {
-                        var a = _ActionTable.Get(state.ID, null);
+                        ActionTable.Entry a = _ActionTable.Get(state.ID, null);
                         if (a != null && a.Action != ActionTable.Action.Accept)
                             Statistics.BU.Conflicts.Add(new BUStatistics.ConflictEntry(BUStatistics.ConflictType.Accept, state));
 
                         _ActionTable.Set(state.ID, null, ActionTable.Action.Accept, -1);
                     }
-                    else if(conf.IsLast)//Reduce
+                    else if (conf.IsLast)//Reduce
                     {
-                        foreach (var l in conf.Lookaheads.Lookaheads)
+                        foreach (RuleLookahead l in conf.Lookaheads.Lookaheads)
                         {
-                            var a = _ActionTable.Get(state.ID, l);
+                            ActionTable.Entry a = _ActionTable.Get(state.ID, l);
                             if (a != null)
                             {
                                 if (a.Action != ActionTable.Action.Shift && a.StateID != conf.Rule.ID)
                                     Statistics.BU.Conflicts.Add(
                                         new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ReduceReduce, state, l));
-                                else if(a.Action == ActionTable.Action.Shift)
+                                else if (a.Action == ActionTable.Action.Shift)
                                     Statistics.BU.Conflicts.Add(
                                         new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftReduce, state, l));
                             }
@@ -305,14 +305,14 @@ namespace PML.Parser
                             _ActionTable.Set(state.ID, l, ActionTable.Action.Reduce, conf.Rule.ID);
                         }
                     }
-                    else if(conf.GetNext().Type == RuleTokenType.Token)//Shift
+                    else if (conf.GetNext().Type == RuleTokenType.Token)//Shift
                     {
                         RuleToken next = conf.GetNext();
                         RuleLookahead look = new RuleLookahead(next);
                         RuleState found = null;
-                        foreach(RuleState.Connection c in state.Production)
+                        foreach (RuleState.Connection c in state.Production)
                         {
-                            if(c.Token == next)
+                            if (c.Token == next)
                             {
                                 if (found != null)
                                     Statistics.BU.Conflicts.Add(
@@ -322,13 +322,13 @@ namespace PML.Parser
                             }
                         }
 
-                        var a = _ActionTable.Get(state.ID, look);
+                        ActionTable.Entry a = _ActionTable.Get(state.ID, look);
                         if (a != null)
                         {
                             if (a.Action != ActionTable.Action.Shift)
                                 Statistics.BU.Conflicts.Add(
                                     new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftReduce, state, look));
-                            else if(a.Action == ActionTable.Action.Shift && a.StateID != found.ID)
+                            else if (a.Action == ActionTable.Action.Shift && a.StateID != found.ID)
                                 Statistics.BU.Conflicts.Add(
                                     new BUStatistics.ConflictEntry(BUStatistics.ConflictType.ShiftShift, state, look));
                         }
@@ -344,9 +344,9 @@ namespace PML.Parser
 
             foreach (RuleState state in _States)
             {
-                foreach (var c in state.Production)
+                foreach (RuleState.Connection c in state.Production)
                 {
-                    if(c.Token.Type == RuleTokenType.Rule)
+                    if (c.Token.Type == RuleTokenType.Rule)
                     {
                         _GotoTable.Set(state.ID, c.Token.Group, c.State.ID);
                     }

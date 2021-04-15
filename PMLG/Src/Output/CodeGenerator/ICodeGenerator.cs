@@ -28,14 +28,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
-using System.Collections.Generic;
-using System.Linq;
 using System.IO;
 
 namespace PML.Output.CodeGenerator
 {
-    using R;
-
     public class CodeGeneratorSettings
     {
         public bool EmbedCustomCode = true;

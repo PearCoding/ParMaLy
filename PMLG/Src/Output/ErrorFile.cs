@@ -29,9 +29,8 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
 
 namespace PML.Output
 {
@@ -64,7 +63,7 @@ namespace PML.Output
             if (stats.Conflicts.Count != 0)
             {
                 writer.WriteLine("Conflicts:");
-                foreach (var e in stats.Conflicts)
+                foreach (BUStatistics.ConflictEntry e in stats.Conflicts)
                 {
                     string special = "";
                     string token = "";
@@ -102,7 +101,7 @@ namespace PML.Output
             if (stats.Conflicts.Count != 0)
             {
                 writer.WriteLine("Conflicts:");
-                foreach (var e in stats.Conflicts)
+                foreach (TDStatistics.ConflictEntry e in stats.Conflicts)
                 {
                     string special = "";
                     string token = "";
@@ -129,7 +128,7 @@ namespace PML.Output
             if (stats.Conflicts.Count != 0)
             {
                 writer.WriteLine("Conflicts:");
-                foreach (var e in stats.Conflicts)
+                foreach (RStatistics.ConflictEntry e in stats.Conflicts)
                 {
                     string special = "";
                     switch (e.Type)
@@ -142,7 +141,7 @@ namespace PML.Output
                             break;
                     }
 
-                    writer.WriteLine("  [" + special + "] State " + e.State.Group.Name 
+                    writer.WriteLine("  [" + special + "] State " + e.State.Group.Name
                         + " with lookahead " + String.Join("; ",
                             e.State.Lookaheads.Select(v => v.Value.ToString()).ToArray()));
                 }

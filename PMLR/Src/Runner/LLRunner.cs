@@ -45,7 +45,7 @@ namespace PML.Runner
         }
 
         public IEnumerable<Events.IEvent> Run(TokenLexer lexer, Environment env, Logger logger)
-        {    
+        {
             return K < 1 ? Run0(lexer, env, logger) : RunK(lexer, env, logger);
         }
 
@@ -54,13 +54,13 @@ namespace PML.Runner
             List<Events.IEvent> events = new List<Events.IEvent>();
 
             Stack<RuleToken> stack = new Stack<RuleToken>();
-            var start = new RuleToken(0, RuleTokenType.Rule, env.Start.Name, "", "");
+            RuleToken start = new RuleToken(0, RuleTokenType.Rule, env.Start.Name, "", "");
             start.Group = env.Start;
             stack.Push(start);
 
             while (lexer.Left > 0 || stack.Count > 0)
             {
-                var t = stack.Pop();
+                RuleToken t = stack.Pop();
 
                 if (lexer.Current(env)[0] == t)
                 {
@@ -79,7 +79,7 @@ namespace PML.Runner
                     {
                         events.Add(new Events.LLRuleEvent(t.Group.Rules[0], stack, null, lexer.Position));
 
-                        foreach (var nt in t.Group.Rules[0].Tokens.Reverse<RuleToken>())
+                        foreach (RuleToken nt in t.Group.Rules[0].Tokens.Reverse<RuleToken>())
                         {
                             stack.Push(nt);
                         }
@@ -103,13 +103,13 @@ namespace PML.Runner
             List<Events.IEvent> events = new List<Events.IEvent>();
 
             Stack<RuleToken> stack = new Stack<RuleToken>();
-            var start = new RuleToken(0, RuleTokenType.Rule, env.Start.Name, "", "");
+            RuleToken start = new RuleToken(0, RuleTokenType.Rule, env.Start.Name, "", "");
             start.Group = env.Start;
             stack.Push(start);
 
             while (lexer.Left > 0 && stack.Count > 0)
             {
-                var t = stack.Pop();
+                RuleToken t = stack.Pop();
 
                 if (lexer.Current(env)[0] == t)
                 {
@@ -124,13 +124,13 @@ namespace PML.Runner
                 }
                 else
                 {
-                    var look = lexer.Current(env, K - 1);
+                    RuleLookahead look = lexer.Current(env, K - 1);
                     if (Table.Has(t.Group, look))
                     {
-                        var e = Table.Get(t.Group, look);
+                        TD.LookupTable.Entry e = Table.Get(t.Group, look);
                         events.Add(new Events.LLRuleEvent(e.Rule, stack, look, lexer.Position));
 
-                        foreach (var nt in e.Rule.Tokens.Reverse<RuleToken>())
+                        foreach (RuleToken nt in e.Rule.Tokens.Reverse<RuleToken>())
                         {
                             stack.Push(nt);
                         }
