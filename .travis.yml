@@ -1,5 +1,7 @@
 language: csharp
 solution: ParMaLy.sln
+mono: none
+dotnet: 5.0.202
 script:
-  - xbuild /p:Configuration=Release ParMaLy.sln
-  - mono ./packages/NUnit.ConsoleRunner.*/tools/nunit3-console.exe ./Tests/bin/Release/Tests.dll
+  - dotnet restore
+  - dotnet test
