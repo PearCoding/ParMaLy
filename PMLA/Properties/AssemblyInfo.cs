@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("ParMaLy - Analyzer")]
-[assembly: AssemblyCopyright("Copyright ©  2016, Ömercan Yazici <omercan@pearcoding.eu>")]
+[assembly: AssemblyCopyright("Copyright ©  2016-2021, Ömercan Yazici <omercan@pearcoding.eu>")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

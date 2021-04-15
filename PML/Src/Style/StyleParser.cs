@@ -28,9 +28,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
-using System;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace PML.Style
 {
@@ -38,7 +36,7 @@ namespace PML.Style
     {
         public static Style Parse(string source, PML.Logger logger)
         {
-            var options = new JsonSerializerOptions
+            JsonSerializerOptions options = new JsonSerializerOptions
             {
                 IncludeFields = true,
             };

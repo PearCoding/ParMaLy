@@ -28,10 +28,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
  */
 
+using NDesk.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using NDesk.Options;
 
 namespace PML
 {

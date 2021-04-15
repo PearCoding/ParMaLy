@@ -30,7 +30,6 @@
 
 using System;
 using System.Runtime.Serialization;
-using System.Security.Permissions;
 
 namespace PML.Grammar
 {
@@ -100,7 +99,6 @@ namespace PML.Grammar
             _Values = info.GetValue("ERR_Values", _Values.GetType()) as object[];
         }
 
-        [SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             if (info == null)
