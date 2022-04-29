@@ -158,7 +158,7 @@ namespace PML
 
             // Preprocess stuff:
             if (opts.FixLeftRecursion)
-                env = Preprocess.LeftRecursion.FixLeftRecursion(env);
+                Preprocess.LeftRecursion.FixLeftRecursion(env);
 
             // Analyze stuff:
             Style.Style style = null;

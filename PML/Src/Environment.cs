@@ -260,5 +260,51 @@ namespace PML
 
             return true;
         }
+
+        // Sort groups by topological order
+        public void SortByTopologicalOrder()
+        {
+            // TODO: This can be done more efficiently
+            LinkedList<RuleGroup> result = new();
+            HashSet<RuleGroup> tmps = new();
+
+            void Visit(RuleGroup grp)
+            {
+                if (result.Contains(grp))
+                    return;
+
+                if (tmps.Contains(grp))
+                    return; // Cyclic
+
+                tmps.Add(grp);
+
+                foreach (Rule rule in grp.Rules)
+                {
+                    foreach (RuleToken token in rule.Tokens)
+                    {
+                        if (token.Type == RuleTokenType.Rule
+                        && token.Group != grp)
+                        {
+                            Visit(token.Group);
+                        }
+                    }
+                }
+
+                tmps.Remove(grp);
+                _Groups.Remove(grp);
+                result.AddFirst(grp);
+            }
+
+            // Work through all non-terminals
+            while (_Groups.Count > 0)
+                Visit(_Groups[0]);
+
+            // Assign result as new list
+            foreach (RuleGroup grp in result)
+            {
+                grp.ID = _Groups.Count;
+                _Groups.Add(grp);
+            }
+        }
     }
 }

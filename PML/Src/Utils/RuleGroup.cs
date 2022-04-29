@@ -36,8 +36,8 @@ namespace PML
     [System.Diagnostics.DebuggerDisplay("<{ID}> {Name,nq}")]
     public class RuleGroup : IEquatable<RuleGroup>
     {
-        readonly int _ID;
-        public int ID { get { return _ID; } }
+        int _ID;
+        public int ID { get { return _ID; } set { _ID = value; } }
 
         readonly string _Name;
         public string Name { get { return _Name; } }

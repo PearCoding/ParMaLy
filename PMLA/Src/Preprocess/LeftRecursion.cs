@@ -73,167 +73,207 @@ namespace PML.Preprocess
             return false;
         }
 
-        // Fix
-        public static Environment FixLeftRecursion(Environment input)
+        private static bool HasDirectLeftRecursion(RuleGroup grp)
         {
-            Environment output = new Environment(input.Logger);
-            output.Tokens.AddRange(input.Tokens);
-
-            foreach (RuleGroup oldGrp in input.Groups)
+            foreach (Rule rule in grp.Rules)
             {
-                RuleGroup newGrp = new RuleGroup(output.Groups.Count, oldGrp.Name, oldGrp.ReturnType);
-                output.Groups.Add(newGrp);
-
-                if (input.Start == oldGrp)
-                    output.Start = newGrp;
-
-                // Remove indirect recursion
-                foreach (Rule oldRule in oldGrp.Rules)
+                if (!rule.IsEmpty &&
+                       rule.Tokens[0].Type == RuleTokenType.Rule &&
+                       rule.Tokens[0].Group == grp)
                 {
-                    if (!oldRule.IsEmpty &&
-                        oldRule.Tokens[0].Type == RuleTokenType.Rule &&
-                        oldRule.Tokens[0].Group.ID < oldGrp.ID)
-                    {
-                        IEnumerable<RuleToken> beta = oldRule.Tokens.Skip(1);
-                        // We can not use the same ids... It can change in the future!
-                        RuleGroup otherGrp = input.GroupByName(oldRule.Tokens[0].Group.Name);
-
-                        foreach (Rule rule in otherGrp.Rules)
-                        {
-                            Rule newRule = new Rule(output.Rules.Count, newGrp, rule.Code);
-
-                            foreach (RuleToken t in rule.Tokens.Concat(beta))
-                            {
-                                if (t.Type == RuleTokenType.Token)
-                                    newRule.Tokens.Add(output.TokenByName(t.Name));
-                                else
-                                {
-                                    RuleToken nt = new RuleToken(0, t.Type, t.Name, t.ReturnType, t.CodeIdentifier);
-                                    nt.Parent = newRule;
-                                    newRule.Tokens.Add(nt);
-                                }
-                            }
-
-                            output.Rules.Add(newRule);
-                            newGrp.Rules.Add(newRule);
-                        }
-                    }
+                    return true;
                 }
+            }
+            return false;
+        }
 
-                // Remove direct recursion
-                bool hasDirectRecursion = false;
-                foreach (Rule oldRule in oldGrp.Rules)
-                {
-                    if (!oldRule.IsEmpty &&
-                           oldRule.Tokens[0].Type == RuleTokenType.Rule &&
-                           oldRule.Tokens[0].Group == oldGrp)
-                    {
-                        hasDirectRecursion = true;
-                        break;
-                    }
-                }
+        private static void HandleDirectLeftRecursion(Environment env, RuleGroup grp)
+        {
+            List<Rule> rulesToRemove = new();
+            List<Rule> rulesToAdd = new();
+            RuleGroup tail = null;
 
-                if (hasDirectRecursion)
+            // Continue until no direct left recursion is left
+            while (HasDirectLeftRecursion(grp))
+            {
+                if (tail == null)
                 {
-                    RuleGroup tail = new RuleGroup(output.Groups.Count, oldGrp.Name + "__tail", oldGrp.ReturnType);
-                    output.Groups.Add(tail);
-                    Rule emptyRule = new Rule(output.Rules.Count, tail, "");
-                    output.Rules.Add(emptyRule);
+                    tail = new RuleGroup(env.Groups.Count, grp.Name + "__tail", grp.ReturnType);
+                    env.Groups.Add(tail);
+
+                    // Add empty rule
+                    Rule emptyRule = new Rule(env.Rules.Count, tail, "");
+                    env.Rules.Add(emptyRule);
                     tail.Rules.Add(emptyRule);
-
-                    foreach (Rule oldRule in oldGrp.Rules)
-                    {
-                        if (!oldRule.IsEmpty &&
-                            oldRule.Tokens[0].Type == RuleTokenType.Rule &&
-                            oldRule.Tokens[0].Group == oldGrp)
-                        {
-                            IEnumerable<RuleToken> alpha = oldRule.Tokens.Skip(1);
-
-                            Rule newRule = new Rule(output.Rules.Count, tail, oldRule.Code);
-                            foreach (RuleToken t in alpha)
-                            {
-                                if (t.Type == RuleTokenType.Token)
-                                    newRule.Tokens.Add(output.TokenByName(t.Name));
-                                else
-                                {
-                                    RuleToken nt = new RuleToken(0, t.Type, t.Name, t.ReturnType, t.CodeIdentifier);
-                                    nt.Parent = newRule;
-                                    newRule.Tokens.Add(nt);
-                                }
-                            }
-
-                            RuleToken tailt = new RuleToken(0, RuleTokenType.Rule, tail.Name, "/*TODO*/", "");
-                            tailt.Parent = newRule;
-                            newRule.Tokens.Add(tailt);
-
-                            output.Rules.Add(newRule);
-                            tail.Rules.Add(newRule);
-                        }
-                        else if (!oldRule.IsEmpty &&
-                            oldRule.Tokens[0].Type == RuleTokenType.Rule &&
-                            oldRule.Tokens[0].Group.ID < oldGrp.ID)
-                        {
-                            // Ignore it
-                            // Will be handled by the indirect recursion path.
-                        }
-                        else
-                        {
-                            Rule newRule = new Rule(output.Rules.Count, newGrp, oldRule.Code);
-                            foreach (RuleToken t in oldRule.Tokens)
-                            {
-                                if (t.Type == RuleTokenType.Token)
-                                    newRule.Tokens.Add(output.TokenByName(t.Name));
-                                else
-                                {
-                                    RuleToken nt = new RuleToken(0, t.Type, t.Name, t.ReturnType, t.CodeIdentifier);
-                                    nt.Parent = newRule;
-                                    newRule.Tokens.Add(nt);
-                                }
-                            }
-
-                            RuleToken tailt = new RuleToken(0, RuleTokenType.Rule, tail.Name, "/*TODO*/", "");
-                            tailt.Parent = newRule;
-                            newRule.Tokens.Add(tailt);
-
-                            output.Rules.Add(newRule);
-                            newGrp.Rules.Add(newRule);
-                        }
-                    }
                 }
-                else
+
+                foreach (Rule rule in grp.Rules)
                 {
-                    foreach (Rule oldRule in oldGrp.Rules)
+                    // Rule starting with the group nonterminal
+                    if (!rule.IsEmpty &&
+                        rule.Tokens[0].Type == RuleTokenType.Rule &&
+                        rule.Tokens[0].Group == grp)
                     {
-                        Rule newRule = new Rule(output.Rules.Count, newGrp, oldRule.Code);
-                        foreach (RuleToken t in oldRule.Tokens)
+                        rulesToRemove.Add(rule);
+
+                        if (rule.Tokens.Count == 1) // Infinite loop!
+                            continue;
+
+                        IEnumerable<RuleToken> alpha = rule.Tokens.Skip(1);
+
+                        Rule newRule = new Rule(env.Rules.Count, tail, rule.Code);
+                        foreach (RuleToken t in alpha)
                         {
                             if (t.Type == RuleTokenType.Token)
-                                newRule.Tokens.Add(output.TokenByName(t.Name));
+                                newRule.Tokens.Add(env.TokenByName(t.Name));
                             else
                             {
                                 RuleToken nt = new RuleToken(0, t.Type, t.Name, t.ReturnType, t.CodeIdentifier);
                                 nt.Parent = newRule;
+                                nt.IsComplex = t.IsComplex;
+                                nt.Group = t.Group;
                                 newRule.Tokens.Add(nt);
                             }
                         }
-                        output.Rules.Add(newRule);
-                        newGrp.Rules.Add(newRule);
+
+                        RuleToken tailt = new RuleToken(0, RuleTokenType.Rule, tail.Name, "/*TODO*/", "");
+                        tailt.Parent = newRule;
+                        tailt.Group = tail;
+                        newRule.Tokens.Add(tailt);
+
+                        // As we modify the tail, we can directly change it here
+                        env.Rules.Add(newRule);
+                        tail.Rules.Add(newRule);
+                    }
+                    else
+                    // Rule NOT starting with the group nonterminal
+                    {
+                        rulesToRemove.Add(rule);
+                        Rule newRule = new Rule(env.Rules.Count, grp, rule.Code);
+                        foreach (RuleToken t in rule.Tokens)
+                        {
+                            if (t.Type == RuleTokenType.Token)
+                                newRule.Tokens.Add(env.TokenByName(t.Name));
+                            else
+                            {
+                                RuleToken nt = new RuleToken(0, t.Type, t.Name, t.ReturnType, t.CodeIdentifier);
+                                nt.Parent = newRule;
+                                nt.IsComplex = t.IsComplex;
+                                nt.Group = t.Group;
+                                newRule.Tokens.Add(nt);
+                            }
+                        }
+
+                        RuleToken tailt = new RuleToken(0, RuleTokenType.Rule, tail.Name, "/*TODO*/", "");
+                        tailt.Parent = newRule;
+                        tailt.Group = tail;
+                        newRule.Tokens.Add(tailt);
+
+                        rulesToAdd.Add(newRule);
                     }
                 }
-            }//End of groups loop
 
-            // Set groups in tokens
-            foreach (Rule r in output.Rules)
-            {
-                foreach (RuleToken t in r.Tokens)
+                // Handle out of loop list changes
+                foreach (Rule rule in rulesToRemove)
                 {
-                    if (t.Type == RuleTokenType.Rule)
+                    env.Rules.Remove(rule);
+                    grp.Rules.Remove(rule);
+                }
+
+                foreach (Rule rule in rulesToAdd)
+                {
+                    env.Rules.Add(rule);
+                    grp.Rules.Add(rule);
+                }
+
+                rulesToRemove.Clear();
+                rulesToAdd.Clear();
+            }
+        }
+
+        private static void HandleIndirectLeftRecursion(Environment env, RuleGroup grp)
+        {
+            List<Rule> rulesToRemove = new();
+            List<Rule> rulesToAdd = new();
+
+            // Fix indirect left recursion until nothing changes
+            while (true)
+            {
+                foreach (Rule oldRule in grp.Rules)
+                {
+                    if (!oldRule.IsEmpty &&
+                        oldRule.Tokens[0].Type == RuleTokenType.Rule &&
+                        oldRule.Tokens[0].Group.ID < grp.ID)
                     {
-                        t.Group = output.GroupByName(t.Name);
+                        IEnumerable<RuleToken> beta = oldRule.Tokens.Skip(1);
+                        rulesToRemove.Add(oldRule);
+
+                        RuleGroup otherGrp = oldRule.Tokens[0].Group;
+                        foreach (Rule rule in otherGrp.Rules)
+                        {
+                            Rule newRule = new Rule(env.Rules.Count, grp, rule.Code);
+
+                            foreach (RuleToken t in rule.Tokens.Concat(beta))
+                            {
+                                if (t.Type == RuleTokenType.Token)
+                                    newRule.Tokens.Add(env.TokenByName(t.Name));
+                                else
+                                {
+                                    RuleToken nt = new RuleToken(0, t.Type, t.Name, t.ReturnType, t.CodeIdentifier);
+                                    nt.Parent = newRule;
+                                    nt.Group = t.Group;
+                                    nt.IsComplex = t.IsComplex;
+                                    newRule.Tokens.Add(nt);
+                                }
+                            }
+
+                            rulesToAdd.Add(newRule);
+                        }
                     }
+                }
+
+                // Handle out of loop list changes
+                if (rulesToRemove.Count > 0)
+                {
+                    foreach (Rule rule in rulesToRemove)
+                    {
+                        env.Rules.Remove(rule);
+                        grp.Rules.Remove(rule);
+                    }
+
+                    foreach (Rule rule in rulesToAdd)
+                    {
+                        env.Rules.Add(rule);
+                        grp.Rules.Add(rule);
+                    }
+
+                    rulesToRemove.Clear();
+                    rulesToAdd.Clear();
+                }
+                else
+                {
+                    break;
                 }
             }
-            return output;
         }
+
+        // Fix
+        public static void FixLeftRecursion(Environment input)
+        {
+            // Make sure it is properly sorted
+            input.SortByTopologicalOrder();
+
+            // Copy such that newly created "tails" are not iterated
+            List<RuleGroup> groups = new(input.Groups);
+            foreach (RuleGroup grp in groups)
+            {
+                HandleIndirectLeftRecursion(input, grp);
+                HandleDirectLeftRecursion(input, grp);
+            }
+
+            // Make sure it is properly sorted afterwards
+            input.SortByTopologicalOrder();
+        }
+
     }
 }
