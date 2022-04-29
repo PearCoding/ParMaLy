@@ -51,9 +51,9 @@ namespace PML.Output.CodeGenerator
             {
                 if (t.IsComplex)
                 {
-                    writer.WriteLine("function " + style.ComplexCheckPrefix + t.Name + "(c) {");
-                    writer.WriteLine(style.Ident + "-- TODO");
-                    writer.WriteLine(style.Ident + "return true;");
+                    writer.WriteLine(style.FunctionPrefixBool + " " + style.ComplexCheckPrefix + t.Name + "(c) {");
+                    writer.WriteLine(style.Ident + style.Comment + " TODO");
+                    writer.WriteLine(style.Ident + "return " + style.TrueIdentifier + ";");
                     writer.WriteLine("}");
                     writer.WriteLine();
                 }
@@ -61,7 +61,7 @@ namespace PML.Output.CodeGenerator
 
             foreach (RState state in states)
             {
-                writer.WriteLine("function " + style.FunctionNamePrefix + state.Group.Name + "() {");
+                writer.WriteLine(style.FunctionPrefixVoid + " " + style.FunctionNamePrefix + state.Group.Name + "() {");
                 if (state.Lookaheads.Count == 1)
                 {
                     PrintRDRule(writer, state.Lookaheads.First().Key, style.Ident, style);
@@ -80,7 +80,7 @@ namespace PML.Output.CodeGenerator
 
                     foreach (KeyValuePair<Rule, RuleLookaheadSet> p in list)
                     {
-                        writer.WriteLine(style.Ident + "-- Rule: " + p.Key.ToString());
+                        writer.WriteLine(style.Ident + style.Comment + " Rule: " + p.Key.ToString());
                         if (i != 0)
                             writer.Write(style.Ident + "else ");
                         else
@@ -146,7 +146,7 @@ namespace PML.Output.CodeGenerator
         {
             if (rule.IsEmpty)
             {
-                writer.WriteLine(prefix + "-- EMPTY");
+                writer.WriteLine(prefix + style.Comment + " EMPTY");
             }
             else
             {

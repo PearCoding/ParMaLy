@@ -133,10 +133,14 @@ namespace PML.Style
     public class CodeStyle
     {
         public bool UseInExpression = false;
-        public string NullExpression = "null";
+        public string NullExpression = "nullptr";
         public string StringBracket = "\"";
         public string FunctionNamePrefix = "gr_";
         public string ComplexCheckPrefix = "is_";
         public string Ident = "\t";
+        public string TrueIdentifier = "true";
+        public string Comment = "//";
+        public string FunctionPrefixBool = "bool";
+        public string FunctionPrefixVoid = "void";
     }
 }
